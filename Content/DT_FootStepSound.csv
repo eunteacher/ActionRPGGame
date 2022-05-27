@@ -1,0 +1,7 @@
+---,Type,WalkSound,RunSound
+0,Default,SoundCue'/Game/Sounds/Dirt/Cue_Dirt_Walk.Cue_Dirt_Walk',SoundCue'/Game/Sounds/Dirt/Cue_Dirt_Run.Cue_Dirt_Run'
+1,Sand,SoundCue'/Game/Sounds/Sand/Cue_Sand_Walk.Cue_Sand_Walk',SoundCue'/Game/Sounds/Sand/Cue_Sand_Run.Cue_Sand_Run'
+2,Wood,SoundCue'/Game/Sounds/Wood/Cue_Wood_Walk.Cue_Wood_Walk',SoundCue'/Game/Sounds/Wood/Cue_Wood_Run.Cue_Wood_Run'
+3,Stone,SoundCue'/Game/Sounds/Stone/Cue_Stone_Walk.Cue_Stone_Walk',SoundCue'/Game/Sounds/Stone/Cue_Stone_Run.Cue_Stone_Run'
+4,Forest,SoundCue'/Game/Sounds/Grass/Cue_Grass_Walk.Cue_Grass_Walk',SoundCue'/Game/Sounds/Grass/Cue_Grass_Run.Cue_Grass_Run'
+5,Snow,SoundCue'/Game/Sounds/Snow/Cue_Snow_Walk.Cue_Snow_Walk',SoundCue'/Game/Sounds/Snow/Cue_Snow_Run.Cue_Snow_Run'
