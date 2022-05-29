@@ -1,5 +1,5 @@
 #include "Components/CSoundComponent.h"
-#include "Global.h"
+#include "ActionRPGGame.h"
 #include "GameFramework/Character.h"
 
 // 생성자
@@ -22,7 +22,7 @@ void UCSoundComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// 데이터 테이블 값을 가져온다.
-	if (SoundTable != nullptr)
+	if (IsValid(SoundTable))
 	{
 		TArray<FSoundData*> soundDatas;
 		SoundTable->GetAllRows<FSoundData>("", soundDatas);
@@ -41,7 +41,7 @@ void UCSoundComponent::BeginPlay()
 // OwnerCharacter의 위치에서 JumpSound를 Play
 void UCSoundComponent::PlayJumpSound()
 {
-	if (SoundData->Jump != nullptr && OwnerCharacter != nullptr)
+	if (SoundData->Jump != nullptr && IsValid(OwnerCharacter))
 	{
 		CLog::Log("Play Jump Sound");
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundData->Jump, OwnerCharacter->GetActorLocation(), OwnerCharacter->GetActorRotation());
@@ -51,7 +51,7 @@ void UCSoundComponent::PlayJumpSound()
 // OwnerCharacter의 위치에서 LandSound를 Play
 void UCSoundComponent::PlayLandSound()
 {
-	if (SoundData->Land != nullptr && OwnerCharacter != nullptr)
+	if (SoundData->Land != nullptr && IsValid(OwnerCharacter))
 	{
 		CLog::Log("Play Land Sound");
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundData->Land, OwnerCharacter->GetActorLocation(), OwnerCharacter->GetActorRotation());
@@ -61,7 +61,7 @@ void UCSoundComponent::PlayLandSound()
 // OwnerCharacter의 위치에서 EvadeSound를 Play
 void UCSoundComponent::PlayEvadeSound()
 {
-	if (SoundData->Evade != nullptr && OwnerCharacter != nullptr)
+	if (SoundData->Evade != nullptr && IsValid(OwnerCharacter))
 	{
 		CLog::Log("Play Evade Sound");
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundData->Evade, OwnerCharacter->GetActorLocation(), OwnerCharacter->GetActorRotation());

@@ -1,5 +1,5 @@
 #include "Components/CFootStepSoundComponent.h"
-#include "Global.h"
+#include "ActionRPGGame.h"
 #include "GameFramework/Character.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 
@@ -25,7 +25,7 @@ void UCFootStepSoundComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// 데이터 테이블 값을 가져온다.
-	if (FootStepSoundTable != nullptr)
+	if (IsValid(FootStepSoundTable))
 	{
 		TArray<FFootStepSoundData*> footStepSoundDatas;
 		FootStepSoundTable->GetAllRows<FFootStepSoundData>("", footStepSoundDatas);
@@ -60,7 +60,7 @@ void UCFootStepSoundComponent::PlayFootStepSound(const ESpeedType InType, const 
 {
 	//CLog::Log("PlayFootStepSound");
 	ACharacter* OwnerCharacter = Cast<ACharacter>(GetOwner()); // Owner 가져오기
-	if (OwnerCharacter != nullptr)
+	if (IsValid(OwnerCharacter))
 	{
 		// Line Trace 매개 변수 선언
 		FVector socketLocation; // 소켓 위치

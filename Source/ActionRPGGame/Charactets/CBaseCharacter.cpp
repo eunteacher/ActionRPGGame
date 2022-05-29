@@ -1,5 +1,6 @@
 #include "Charactets/CBaseCharacter.h"
-#include "Global.h"
+#include "ActionRPGGame.h"
+#include "Abilites/CAbilitySystemComponent.h"
 #include "Components/CFootStepSoundComponent.h"
 #include "Components/CSoundComponent.h"
 #include "Components/CMontageComponent.h"
@@ -14,7 +15,10 @@ ACBaseCharacter::ACBaseCharacter()
 	Sound = CreateDefaultSubobject<UCSoundComponent>("Sound");
 	FootStepSound = CreateDefaultSubobject<UCFootStepSoundComponent>("FootStepSound");
 	Montage = CreateDefaultSubobject<UCMontageComponent>("Montage");
+	AbilitySystem = CreateDefaultSubobject<UCAbilitySystemComponent>("AbilitySystem");
 
+	// AttrubuteSet 생성
+	AttributeSet = CreateDefaultSubobject<UCAttributeSet>("AttributeSet");
 	// 멤버변수 초기화
 	SpeedType = ESpeedType::Walk;
 }
@@ -31,11 +35,12 @@ void ACBaseCharacter::Landed(const FHitResult& Hit)
 	Super::Landed(Hit);
 
 	// 착지 사운드
-	if(Sound != nullptr)
+	if(IsValid(Sound))
 	{
 		Sound->PlayLandSound();
 	}
 }
+
 // Tick
 void ACBaseCharacter::Tick(float DeltaTime)
 {
@@ -61,4 +66,26 @@ void ACBaseCharacter::SetMaxSpeed(ESpeedType InSpeed)
 		GetCharacterMovement()->MaxWalkSpeed = 600.0f;
 	}
 }
+
+void ACBaseCharacter::OnHealthChanged(const FGameplayTagContainer& EventTags)
+{
+}
+
+void ACBaseCharacter::OnManaChanged(const FGameplayTagContainer& EventTags)
+{
+}
+
+void ACBaseCharacter::OnStaminaChanged(const FGameplayTagContainer& EventTags)
+{
+}
+
+void ACBaseCharacter::OnWalkSpeedChanged(const FGameplayTagContainer& EventTags)
+{
+}
+
+void ACBaseCharacter::OnRunSpeedChanged(const FGameplayTagContainer& EventTags)
+{
+}
+
+
 

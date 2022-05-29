@@ -1,5 +1,6 @@
 #include "Charactets/CPlayerCharacter.h"
-#include "Global.h"
+#include "ActionRPGGame.h"
+#include "CPlayerController.h"
 #include "Components/InputComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -70,7 +71,7 @@ ACPlayerCharacter::ACPlayerCharacter()
 	 	GetMesh()->SetAnimInstanceClass(animInstance);
 	 }
 
-	if(Sound != nullptr)
+	if(IsValid(Sound))
 	{
 		// 모델 타입 정의
 		Sound->SetModelType(EModelType::GhostLady);
@@ -113,7 +114,7 @@ void ACPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 void ACPlayerCharacter::MoveForward(float InValue)
 {
-	if (Controller != nullptr && InValue != 0.0f)
+	if (IsValid(Controller) && InValue != 0.0f)
 	{
 		// 컨트롤러의 Yaw 값
 		const FRotator rotation = Controller->GetControlRotation(); // 컨트롤러의 회전 값
@@ -126,7 +127,7 @@ void ACPlayerCharacter::MoveForward(float InValue)
 
 void ACPlayerCharacter::MoveRight(float InValue)
 {
-	if (Controller != nullptr && InValue != 0.0f)
+	if (IsValid(Controller) && InValue != 0.0f)
 	{
 		// 컨트롤러의 Yaw 값
 		const FRotator rotation = Controller->GetControlRotation();
@@ -150,23 +151,7 @@ void ACPlayerCharacter::LookUpAtRate(float InRate)
 void ACPlayerCharacter::OnJump()
 {
 	CLog::Log("OnJump()");
-	// 앉은 상태에서는 점프를 할 수 없음
-	// if (State->GetCurrentStateType() != EStateType::Crouch)
-	// {
-	// 	// bEnableDoubleJump은 Jump 애니메이션에서 노티파티 스테이트로 구간을 설정하여 Begin()에서 true End()에서 false
-	// 	if (!bEnableDoubleJump && State->GetCurrentStateType() != EStateType::DoubleJump)
-	// 	{
-	// 		State->SetJump();
-	// 	}
-	// 	else
-	// 	{
-	// 		// DoubleJump 몽타주 및 Sound 실행
-	// 		if (State->GetCurrentStateType() != EStateType::DoubleJump)
-	// 		{
-	// 			State->SetDoubleJump();
-	// 		}
-	// 	}
-	// }
+	
 }
 // StopJumping() 호출
 void ACPlayerCharacter::OffJump()
@@ -202,6 +187,52 @@ void ACPlayerCharacter::OnEvade()
 {
 	CLog::Log("OnEvade");
 	// State->SetEvade();
+}
+
+void ACPlayerCharacter::OnHealthChanged(const FGameplayTagContainer& EventTags)
+{
+	Super::OnHealthChanged(EventTags);
+
+	ACPlayerController* playerController = GetController<ACPlayerController>();
+	if(IsValid(playerController))
+	{
+		playerController->UpdateHealth(AttributeSet->GetHealth(),AttributeSet->GetMaxHealth());
+	}
+	
+}
+
+void ACPlayerCharacter::OnManaChanged(const FGameplayTagContainer& EventTags)
+{
+	Super::OnManaChanged(EventTags);
+	ACPlayerController* playerController = GetController<ACPlayerController>();
+	if(IsValid(playerController))
+	{
+		playerController->UpdateMana(AttributeSet->GetMana(),AttributeSet->GetMaxMana());
+	}
+}
+
+void ACPlayerCharacter::OnStaminaChanged(const FGameplayTagContainer& EventTags)
+{
+	Super::OnStaminaChanged(EventTags);
+	ACPlayerController* playerController = GetController<ACPlayerController>();
+	if(IsValid(playerController))
+	{
+		playerController->UpdateStamina(AttributeSet->GetStamina(),AttributeSet->GetMaxStamina());
+	}
+}
+
+void ACPlayerCharacter::OnWalkSpeedChanged(const FGameplayTagContainer& EventTags)
+{
+	Super::OnWalkSpeedChanged(EventTags);
+	// MaxSpeed 값 변경
+	GetCharacterMovement()->MaxWalkSpeed = 200.0f;
+}
+
+void ACPlayerCharacter::OnRunSpeedChanged(const FGameplayTagContainer& EventTags)
+{
+	Super::OnRunSpeedChanged(EventTags);
+	// MaxSpeed 값 변경
+	GetCharacterMovement()->MaxWalkSpeed = 600.0f;
 }
 
 

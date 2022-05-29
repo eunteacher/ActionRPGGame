@@ -66,4 +66,9 @@ protected:
 	UFUNCTION()
 	void OnEvade();
 
+	virtual void OnHealthChanged(const FGameplayTagContainer& EventTags) override;
+	virtual void OnManaChanged(const FGameplayTagContainer& EventTags) override;
+	virtual void OnStaminaChanged(const struct FGameplayTagContainer& EventTags) override;
+	virtual void OnWalkSpeedChanged(const struct FGameplayTagContainer& EventTags) override;
+	virtual void OnRunSpeedChanged(const struct FGameplayTagContainer& EventTags) override;
 };

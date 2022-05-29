@@ -1,5 +1,5 @@
 #include "Charactets/CAnimInstance.h"
-#include "Global.h"
+#include "ActionRPGGame.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 // #include "Components/CStateComponent.h"
@@ -13,8 +13,8 @@ void UCAnimInstance::NativeBeginPlay()
 void UCAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
-
-	if (OwnerCharacter != nullptr)
+	
+	if (IsValid(OwnerCharacter))
 	{
 		Speed = OwnerCharacter->GetVelocity().Size2D(); // 속도의 크기
 		Velocity = OwnerCharacter->GetVelocity(); // 속력

@@ -4,9 +4,7 @@
 // 언리얼 엔진에서 제공하는 로그 카테고리 이외에 개발자가 필요한 카테고리를 직접 만들어서 사용할 수 있다.
 // 로그 카테고리
 DEFINE_LOG_CATEGORY_STATIC(GameProject, Display, All)
-
 // Print
-
 void CLog::Print(int32 InValue, int32 InKey, float InDuration, FColor InColor)
 {
 	GEngine->AddOnScreenDebugMessage(InKey, InDuration, InColor, FString::FromInt(InValue));

@@ -1,5 +1,5 @@
 #include "Notifies/CAnimNotify_RightFootStep.h"
-#include "Global.h"
+#include "ActionRPGGame.h"
 #include "Charactets/CBaseCharacter.h"
 #include "Components/CFootStepSoundComponent.h"
 
@@ -19,7 +19,7 @@ void UCAnimNotify_RightFootStep::Notify(USkeletalMeshComponent* MeshComp, UAnimS
 			CLog::Log("footStepSound == nullptr");
 		}
 		
-		if(footStepSound != nullptr && MeshComp->GetOwner<ACBaseCharacter>() != nullptr)		
+		if(IsValid(footStepSound) && IsValid(MeshComp->GetOwner<ACBaseCharacter>()))			
 		{
 			// 현재 SpeedType를 캐릭터를 통해서 가져온다.
 			footStepSound->NotifyRightFootStep(MeshComp->GetOwner<ACBaseCharacter>()->GetCurrentSpeedType());

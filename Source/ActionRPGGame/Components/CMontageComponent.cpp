@@ -1,5 +1,5 @@
 #include "Components/CMontageComponent.h"
-#include "Global.h"
+#include "ActionRPGGame.h"
 #include "GameFramework/Character.h"
 // 생성자 
 UCMontageComponent::UCMontageComponent()
@@ -18,7 +18,7 @@ void UCMontageComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// 데이터 테이블 값을 가져온다.
-	if(MontageTable != nullptr)
+	if(IsValid(MontageTable))
 	{
 		TArray<FMontageData*> montageDatas;
 		MontageTable->GetAllRows<FMontageData>("", montageDatas);
@@ -45,7 +45,7 @@ void UCMontageComponent::PlayMontage(const EMontageType InType)
 	// InType에 해당하는 데이터를 가져온다.
 	const FMontageData* data = MontageData[(int32)InType];
 	ACharacter* ownerCharacter = Cast<ACharacter>(GetOwner()); // Owner 가져오기
-	if(data != nullptr && ownerCharacter != nullptr)
+	if(data != nullptr && IsValid(ownerCharacter))
 	{
 		if (data->AnimMontage != nullptr)
 		{
