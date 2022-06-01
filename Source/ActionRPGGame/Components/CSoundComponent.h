@@ -27,23 +27,14 @@ public:
 	UFUNCTION(Category = "PlaySound")
 	void PlayEvadeSound();
 
-	// Setter
-	// ModelType을 매개변수로 받는다.
-	void SetModelType(EModelType InType) { ModelType = InType; }
 protected:
 	// BeginPlay
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditDefaultsOnly, Category = "DataTable")
+	UPROPERTY(VisibleDefaultsOnly, Category = "DataTable")
 	UDataTable* SoundTable; // 데이터 테이블
-
-	// 모델 타입은 Character 생성자에서 정의
-	UPROPERTY(EditAnywhere, Category = "Type")
-	EModelType ModelType; // 캐릭터 모델 타입
-
 private:
 	UPROPERTY()
-	ACharacter* OwnerCharacter; // Owner Character
-
+	class ACBaseCharacter* OwnerCharacter; // Owner Character
 	struct FSoundData* SoundData; // 사운드 데이터
 };

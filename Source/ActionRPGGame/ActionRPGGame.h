@@ -13,5 +13,3 @@
 #include "Utilities/CLog.h"
 #include "Types/CEnumTypes.h"
 #include "Types/CDataTableType.h"
-
-

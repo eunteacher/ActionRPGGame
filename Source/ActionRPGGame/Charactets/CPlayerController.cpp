@@ -1,6 +1,5 @@
 #include "Charactets/CPlayerController.h"
 #include "ActionRPGGame.h"
-#include "CBaseCharacter.h"
 #include "Blueprint/UserWidget.h"
 #include "Widgets/CUserWidget_HUD.h"
 
@@ -30,6 +29,8 @@ void ACPlayerController::BeginPlay()
 		if (IsValid(UserWidgetHUD))
 		{
 			UserWidgetHUD->AddToViewport();
+			UserWidgetHUD->SetOwningPlayer(this); // 위젯의 OwningPlayer를 설정
+			UserWidgetHUD->Bind(); // 델리게이트 바인딩
 		}
 	}
 }
@@ -38,19 +39,4 @@ void ACPlayerController::BeginPlay()
 void ACPlayerController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-}
-
-void ACPlayerController::UpdateHealth(float InHealth, float InMaxHealth)
-{
-	UserWidgetHUD->UpdateHealth(InHealth, InMaxHealth);
-}
-
-void ACPlayerController::UpdateMana(float InMana, float InMaxMana)
-{
-	UserWidgetHUD->UpdateMana(InMana, InMaxMana);
-}
-
-void ACPlayerController::UpdateStamina(float InStamina, float InMaxStamina)
-{
-	UserWidgetHUD->UpdateStamina(InStamina, InMaxStamina);
 }

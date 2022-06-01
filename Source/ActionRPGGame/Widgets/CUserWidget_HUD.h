@@ -14,15 +14,8 @@ class ACTIONRPGGAME_API UCUserWidget_HUD : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	UFUNCTION()
-	void UpdateStamina(float InStamina, float InMaxStamina);
-
-	UFUNCTION()
-	void UpdateHealth(float InHealth, float InMaxHealth);
-
-	UFUNCTION()
-	void UpdateMana(float InMana, float InMaxMana);
-
+	void Bind();
+	
 protected:
 	UPROPERTY(meta = (BindWidget))
 	UCanvasPanel* CanvasPanel;
@@ -47,4 +40,14 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	class UCUserWidget_Ability* Ability;
+
+	UFUNCTION()
+	void UpdateStamina(float& InStamina, float& InMaxStamina);
+
+	UFUNCTION()
+	void UpdateHealth(float& InValue, float& InMaxValue);
+
+	UFUNCTION()
+	void UpdateMana(float& InMana, float& InMaxMana);
+
 };

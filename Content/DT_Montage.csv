@@ -1,0 +1,10 @@
+---,MontageType,AnimMontage,PlayRatio,StartSection,Particle,HitNiagaraEffect,SocketName,ModelType
+1,EvadeForward,AnimMontage'/Game/Characters/Animations/Montages/EvadeForward_Montage.EvadeForward_Montage',1,None,None,None,None,GhostLady
+2,EvadeBack,AnimMontage'/Game/Characters/Animations/Montages/EvadeBack_Montage.EvadeBack_Montage',1,,,,,GhostLady
+3,EvadeLeft,AnimMontage'/Game/Characters/Animations/Montages/EvadeLeft_Montage.EvadeLeft_Montage',1,,,,,GhostLady
+4,EvadeRight,AnimMontage'/Game/Characters/Animations/Montages/EvadeRight_Montage.EvadeRight_Montage',1,,,,,GhostLady
+5,Equip_Sword,,1,,,,,GhostLady
+6,Equip_Bow,,1,,,,,GhostLady
+7,Sword_Combo1,,1,,,,,GhostLady
+8,"	Sword_Combo2,",,1,,,,,GhostLady
+9,Sword_Combo3,,1,,,,,GhostLady

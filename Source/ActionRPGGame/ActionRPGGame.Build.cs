@@ -1,7 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 using UnrealBuildTool;
-
 public class ActionRPGGame : ModuleRules
 {
 	public ActionRPGGame(ReadOnlyTargetRules Target) : base(Target)
@@ -10,8 +9,8 @@ public class ActionRPGGame : ModuleRules
 
 		PublicDependencyModuleNames.AddRange(new string[]
 		{
-			"GameplayAbilities", "GameplayTags", "GameplayTasks", "Core", "CoreUObject", "Engine", "InputCore", "UMG",
-			"PhysicsCore", "Niagara", "RD"
+			"Core", "CoreUObject", "Engine", "InputCore", "UMG", "GameplayAbilities", "GameplayTags", "GameplayTasks",
+			"PhysicsCore", "Niagara", "RD", "GameplayCameras"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore", "AnimGraphRuntime" });

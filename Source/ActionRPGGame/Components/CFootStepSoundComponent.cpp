@@ -27,18 +27,7 @@ void UCFootStepSoundComponent::BeginPlay()
 	// 데이터 테이블 값을 가져온다.
 	if (IsValid(FootStepSoundTable))
 	{
-		TArray<FFootStepSoundData*> footStepSoundDatas;
-		FootStepSoundTable->GetAllRows<FFootStepSoundData>("", footStepSoundDatas);
-		for (int32 i = 0; i < (int32)EPhysicalSurface::SurfaceType62; i++)
-		{
-			for (FFootStepSoundData* data : footStepSoundDatas)
-			{
-				if ((EPhysicalSurface)i == data->Type)
-				{
-					FootStepSoundData[i] = data;
-				}
-			}
-		}
+		FootStepSoundTable->GetAllRows<FFootStepSoundData>("", FootStepSoundData);
 	}
 }
 
@@ -64,8 +53,8 @@ void UCFootStepSoundComponent::PlayFootStepSound(const ESpeedType InType, const 
 	{
 		// Line Trace 매개 변수 선언
 		FVector socketLocation; // 소켓 위치
-		FVector start; // 시작
-		FVector end; // 끝
+		FVector start; // Trace 시작
+		FVector end; // Trace 끝
 		FHitResult hit; // Hit 구조체
 		TArray<AActor*> actorToIgnore; // Ignore Actor
 		actorToIgnore.Add(OwnerCharacter); // 소유하고 있는 캐릭터 추가
@@ -88,12 +77,6 @@ void UCFootStepSoundComponent::PlayFootStepSound(const ESpeedType InType, const 
 		{
 			// CLog::Log("Trace HitResult True");
 			TEnumAsByte<EPhysicalSurface> physicalSurfaceType = UPhysicalMaterial::DetermineSurfaceType(hit.PhysMaterial.Get());
-
-			if (physicalSurfaceType == EPhysicalSurface::SurfaceType_Default)
-			{
-				CLog::Log("SurfaceType_Default");
-			}
-
 			// 데이터가 없으면 종료
 			if (FootStepSoundData[(int32)physicalSurfaceType] == nullptr)
 			{

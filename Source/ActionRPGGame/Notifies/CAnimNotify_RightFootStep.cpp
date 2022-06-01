@@ -10,7 +10,7 @@ FString UCAnimNotify_RightFootStep::GetNotifyName_Implementation() const
 
 void UCAnimNotify_RightFootStep::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
-	if (MeshComp != nullptr && MeshComp->GetOwner() != nullptr)
+	if (IsValid(MeshComp) && IsValid(MeshComp->GetOwner()))
 	{
 		// Get CFootStepSoundComponent
 		UCFootStepSoundComponent* footStepSound = Cast<UCFootStepSoundComponent>(MeshComp->GetOwner()->GetComponentByClass(UCFootStepSoundComponent::StaticClass()));

@@ -1,13 +1,13 @@
 #include "Charactets/CAnimInstance.h"
 #include "ActionRPGGame.h"
-#include "GameFramework/Character.h"
+#include "CBaseCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 // #include "Components/CStateComponent.h"
 
 void UCAnimInstance::NativeBeginPlay()
 {
 	Super::NativeBeginPlay();
-	OwnerCharacter = Cast<ACharacter>(TryGetPawnOwner());
+	OwnerCharacter = Cast<ACBaseCharacter>(TryGetPawnOwner());
 }
 
 void UCAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -22,11 +22,6 @@ void UCAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		Direction = UKismetAnimationLibrary::CalculateDirection(OwnerCharacter->GetVelocity(), OwnerCharacter->GetActorRotation());
 		IsFall = OwnerCharacter->GetCharacterMovement()->IsFalling();
 		IsMoving = Speed > 3.0f && !UKismetMathLibrary::EqualEqual_VectorVector(OwnerCharacter->GetCharacterMovement()->GetCurrentAcceleration(), FVector(0.0f, 0.0f, 0.0f),0.0f) ? true : false;
-
-		// UCStateComponent* state = Cast<UCStateComponent>(OwnerCharacter->GetComponentByClass(UCStateComponent::StaticClass()));
-		//if(state != nullptr)
-		//{
-		//	 IsCrouch = EStateType::Crouch == state->GetCurrentStateType() ? true : false;
-		//}
+		IsCrouch = OwnerCharacter->bIsCrouched;
 	}
 }

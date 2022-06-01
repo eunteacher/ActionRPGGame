@@ -6,42 +6,64 @@
 UENUM(BlueprintType)
 enum class EWeaponType : uint8
 {
-	Dual, Bow, Throw, Max
+	Sword,
+	Bow,
+	Projectile,
+	Max
 };
 
 // 몽타주 타입
 UENUM(BlueprintType)
 enum class EMontageType : uint8
 {
-	DoubleJump, EvadeForward, EvadeBack, EvadeLeft, EvadeRight, Max
+	EvadeForward,
+	EvadeBack,
+	EvadeLeft,
+	EvadeRight,
+	Equip_Sword,
+	Equip_Bow,
+	Unequip_Sword,
+	Unequip_Bow,
+	Sword_Combo1,
+	Sword_Combo2,
+	Sword_Combo3,
+	Max
 };
 
 // Model Type
 UENUM(BlueprintType)
 enum class EModelType : uint8
 {
-	GhostLady, Max
+	GhostLady,
+	Max
 };
 
 // Status Type
 UENUM(BlueprintType)
 enum class EStatusType : uint8
 {
-	Player, Monster, Max
+	Player,
+	Monster,
+	Max
 };
 
 // 캐릭터의 스피드 타입
 UENUM(BlueprintType)
 enum class ESpeedType : uint8
 {
-	Walk, Run, Max
+	Walk,
+	Run,
+	Max
 };
 
 // 캐릭터의 상태 타입
 UENUM(BlueprintType)
 enum class EStateType : uint8
 {
-	Idle, Crouch, Jump, DoubleJump, Evade, Max
+	Idle_Walk_Run,
+	Jump,
+	Evade,
+	Equip,
+	Unequip,
+	Max
 };
-
-

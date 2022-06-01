@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/ProgressBar.h"
 #include "CUserWidget_BaseProgressBar.generated.h"
 
 UCLASS()
@@ -13,7 +14,7 @@ public:
 	// ProgressBar 업데이트 함수
 	UFUNCTION()
 		void UpdateValue(float InValue, float InMaxValue);
-	
+
 protected:
 	UPROPERTY(meta = (BindWidget))
 	class UOverlay* Overlay;
@@ -22,6 +23,6 @@ protected:
 	class UImage* Frame;
 
 	UPROPERTY(meta = (BindWidget))
-	class UProgressBar* ProgressBar;
+	UProgressBar* ProgressBar;
 	
 };

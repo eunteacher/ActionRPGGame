@@ -1,6 +1,0 @@
----,Type,AnimMontage,PlayRatio,StartSection,Particle,HitNiagaraEffect,SocketName
-1,DoubleJump,AnimMontage'/Game/Player/Animations/Montages/DoubleJump_Montage.DoubleJump_Montage',1,None,ParticleSystem'/Game/Effects/Particles/P_DoubleJump.P_DoubleJump',None,root
-2,EvadeForward,AnimMontage'/Game/Player/Animations/Montages/Evade_F_Montage.Evade_F_Montage',1,,,,
-3,EvadeBack,AnimMontage'/Game/Player/Animations/Montages/Evade_B_Montage.Evade_B_Montage',1,,,,
-4,EvadeLeft,AnimMontage'/Game/Player/Animations/Montages/Evade_L_Montage.Evade_L_Montage',1,,,,
-5,EvadeRight,AnimMontage'/Game/Player/Animations/Montages/Evade_R_Montage.Evade_R_Montage',1,,,,

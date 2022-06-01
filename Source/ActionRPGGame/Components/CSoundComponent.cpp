@@ -1,5 +1,6 @@
 #include "Components/CSoundComponent.h"
 #include "ActionRPGGame.h"
+#include "Charactets/CBaseCharacter.h"
 #include "GameFramework/Character.h"
 
 // 생성자
@@ -13,7 +14,7 @@ UCSoundComponent::UCSoundComponent()
 		SoundTable = SoundTableAsset.Object;
 	}
 
-	OwnerCharacter = Cast<ACharacter>(GetOwner()); // Owner Character 가져오기
+	OwnerCharacter = GetOwner<ACBaseCharacter>();
 }
 
 // BeginPlay
@@ -29,7 +30,8 @@ void UCSoundComponent::BeginPlay()
 
 		for (FSoundData* data : soundDatas)
 		{
-			if (ModelType == data->Type) // 모델 타입과 데이터의 타입이 같다면
+			// ModelType과 맞는 사운드 데이터를 가져와 저장
+			if (OwnerCharacter->GetCurrentModelType() == data->Type) // 모델 타입과 데이터의 타입이 같다면
 			{
 				SoundData = data;
 			}

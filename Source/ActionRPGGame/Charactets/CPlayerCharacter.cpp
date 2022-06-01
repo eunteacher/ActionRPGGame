@@ -3,12 +3,14 @@
 #include "CPlayerController.h"
 #include "Components/InputComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "Components/WidgetComponent.h"
 #include "Components/CSoundComponent.h"
 #include "Components/CMontageComponent.h"
+#include "Weapon/CWeapon_Sword.h"
 
 ACPlayerCharacter::ACPlayerCharacter()
 {
@@ -71,22 +73,93 @@ ACPlayerCharacter::ACPlayerCharacter()
 	 	GetMesh()->SetAnimInstanceClass(animInstance);
 	 }
 
-	if(IsValid(Sound))
+	// 데이터 테이블 에셋을 가져와 저장
+	// DataTable'/Game/DataTables/DT_Status.DT_Status'
+	static ConstructorHelpers::FObjectFinder<UDataTable> statusTableAsset(TEXT("DataTable'/Game/DataTables/DT_Status.DT_Status'"));
+	if (statusTableAsset.Succeeded())
 	{
-		// 모델 타입 정의
-		Sound->SetModelType(EModelType::GhostLady);
+		StatusTable = statusTableAsset.Object;
 	}
+
+	// Weapon 클래스를 가져와 WepaonClass에 저장
+	// Blueprint'/Game/Weapons/Blueprints/BP_CWeapon_Sword.BP_CWeapon_Sword'
+	ConstructorHelpers::FClassFinder<ACWeapon_Base> nearWeaponBlueprintClass(TEXT("Blueprint'/Game/Weapons/Blueprints/BP_CWeapon_Sword.BP_CWeapon_Sword_C'"));
+	if (nearWeaponBlueprintClass.Succeeded())
+	{
+		NearWeaponClass = nearWeaponBlueprintClass.Class;
+	}
+
+	// Weapon 클래스를 가져와 WepaonClass에 저장
+	// ConstructorHelpers::FClassFinder<ACWeapon_Base> farWeaponBlueprintClass(TEXT(""));
+	// if (farWeaponBlueprintClass.Succeeded())
+	// {
+	// 	FarWeaponClass = farWeaponBlueprintClass.Class;
+	// }
 }
 // BeginPlay
 void ACPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-}
 
+	if (IsValid(StatusTable))
+	{
+		// 데이터 테이블 읽기
+		TArray<FStatusData*> statusDatas;
+		StatusTable->GetAllRows<FStatusData>("", statusDatas);
+		for (FStatusData* data : statusDatas)
+		{
+			if (data->Type == EStatusType::Player)
+			{
+				StatusData = data;
+			}
+		}
+	}
+
+	if (IsValid(NearWeaponClass))
+	{
+		FTransform transform;
+		NearWeapon = GetWorld()->SpawnActorDeferred<ACWeapon_Sword>
+		(
+			NearWeaponClass,
+			transform,
+			this,
+			nullptr,
+			ESpawnActorCollisionHandlingMethod::AlwaysSpawn
+		);
+		NearWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, false), FName("Sword"));
+		UGameplayStatics::FinishSpawningActor(NearWeapon, transform);
+	}
+	
+}
+// Tick
 void ACPlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if(StatusData != nullptr)
+	{
+		// 뛰기 상태일 경우 
+		if(SpeedType == ESpeedType::Run)
+		{
+			// MaxStamina의 10%보다 작을 경우 OnWalk()
+			if(StatusData->Stamina < StatusData->MaxStamina * 0.1f)
+			{
+				OnWalk();
+			}
+			else
+			{
+				// 스테미너 감소 
+				StatusData->Stamina -= 100.0f * DeltaTime;
+				UpdateStamina(StatusData->Stamina,StatusData->MaxStamina);
+			}
+		}
+		else
+		{
+			// 뛰기 상태가 아니라면 스테미너 증가
+			StatusData->Stamina += 50.0f * DeltaTime;
+			UpdateStamina(StatusData->Stamina,StatusData->MaxStamina);
+		}		
+	}
 }
 
 void ACPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -147,92 +220,160 @@ void ACPlayerCharacter::LookUpAtRate(float InRate)
 {
 	AddControllerPitchInput(InRate * TurnRate * GetWorld()->GetDeltaSeconds());
 }
-
+// Jump() 호출
 void ACPlayerCharacter::OnJump()
 {
-	CLog::Log("OnJump()");
-	
+	if(IsValid(Sound) && !GetCharacterMovement()->IsFalling())
+	{
+		StateType = EStateType::Jump;
+		Sound->PlayJumpSound();
+		Jump();
+	}
 }
+	
 // StopJumping() 호출
 void ACPlayerCharacter::OffJump()
 {
 	StopJumping();
 }
-// 걷기로 변환
+// CBaseCharacter 클래스에 있는 SetMaxSpeed() 호출
 void ACPlayerCharacter::OnWalk()
 {
 	CLog::Log("OnWalk()");
 	SetMaxSpeed(ESpeedType::Walk);
 }
-// 뛰기로 변환
+// CBaseCharacter 클래스에 있는 SetMaxSpeed() 호출
 void ACPlayerCharacter::OnRun()
 {
 	CLog::Log("OnRun()");
 	SetMaxSpeed(ESpeedType::Run);
 }
-// 앉기로 변환
+// Crouch() 호출
 void ACPlayerCharacter::OnCrouch()
 {
 	CLog::Log("OnCrouch");
-	// State->SetCrouch();
+	Crouch();
 }
-
+// UnCrouch() 호출
 void ACPlayerCharacter::OffCrouch()
 {
 	CLog::Log("OffCrouch");
-	// State->SetIdle();
+	UnCrouch();
 }
-// 피하기로 변환
+// 캐릭터의 마지막 입력 방향으로 구르기를 실행한다.
 void ACPlayerCharacter::OnEvade()
 {
 	CLog::Log("OnEvade");
-	// State->SetEvade();
-}
-
-void ACPlayerCharacter::OnHealthChanged(const FGameplayTagContainer& EventTags)
-{
-	Super::OnHealthChanged(EventTags);
-
-	ACPlayerController* playerController = GetController<ACPlayerController>();
-	if(IsValid(playerController))
+	if(!GetCharacterMovement()->IsFalling()) // 공중 상태가 아닐 경우 
 	{
-		playerController->UpdateHealth(AttributeSet->GetHealth(),AttributeSet->GetMaxHealth());
-	}
-	
-}
+		StateType = EStateType::Evade; // StateType 설정
+		// 마지막 입력 값을 가져온다.
+		FVector inputDirection = GetLastMovementInputVector();
+		// 캐릭터의 Forward 벡터와 내적
+		float dotForward = UKismetMathLibrary::Dot_VectorVector(GetActorForwardVector(), inputDirection);
+		// 캐럭티의 Forward 벡터와 외적
+		FVector crossValue = UKismetMathLibrary::Cross_VectorVector(GetActorForwardVector(), inputDirection);
+		// 캐릭터의 Up 벡터와 외적의 값을 내적
+		float dotUp = UKismetMathLibrary::Dot_VectorVector(GetActorUpVector(), crossValue);
 
-void ACPlayerCharacter::OnManaChanged(const FGameplayTagContainer& EventTags)
+		// 실행할 몽타주 타입 설정
+		EMontageType montageType = EMontageType::Max;
+		if (dotForward > 0.0f && (dotUp < 0.1f && dotUp > -0.1f))
+		{
+			CLog::Log("Forward");
+			montageType = EMontageType::EvadeForward;
+		}
+		else if (dotForward < 0.0f && (dotUp < 0.1f && dotUp > -0.1f))
+		{
+			CLog::Log("Back");
+			montageType = EMontageType::EvadeBack;
+		}
+		else if (dotUp > 0.0f && (dotForward < 0.1f && dotForward > -0.1f))
+		{
+			CLog::Log("Right");
+			montageType = EMontageType::EvadeRight;
+		}
+		else if (dotUp < 0.0f && (dotForward < 0.1f && dotForward > -0.1f))
+		{
+			CLog::Log("Left");
+			montageType = EMontageType::EvadeLeft;
+		}
+
+		if(IsValid(Montage) && IsValid(Sound) && montageType != EMontageType::Max)
+		{
+			Montage->PlayMontage(ModelType, montageType); // 몽타주 실행
+			Sound->PlayEvadeSound(); // 사운드 실행
+
+			FVector direction; // 구르기 방향
+			switch (montageType)
+			{
+			case EMontageType::EvadeForward:
+				direction = GetActorForwardVector();
+				break;
+
+			case EMontageType::EvadeBack:
+				direction = GetActorForwardVector() * -1.0f;
+				break;
+
+			case EMontageType::EvadeLeft:
+				direction = GetActorRightVector() * -1.0f;
+				break;
+
+			case EMontageType::EvadeRight:
+				direction = GetActorRightVector();
+				break;
+
+			default:
+				break;
+			}
+
+			FLatentActionInfo info;
+			info.CallbackTarget = this;
+
+			FVector evadeLocation = GetActorLocation(); // Evade 도착 위치
+			evadeLocation += direction * 300.0f;
+			FRotator evadeRotation = GetActorRotation(); // Evade 방향
+
+			// 캐릭터 이동
+			UKismetSystemLibrary::MoveComponentTo
+			(
+				GetCapsuleComponent(),
+				evadeLocation,
+				evadeRotation,
+				false,
+				false,
+				0.3f,
+				false,
+				EMoveComponentAction::Move,
+				info
+			);
+		} // if(IsValid(Montage) && IsValid(Sound))
+	}
+}
+// 델리게이트 호출 - Update Health
+void ACPlayerCharacter::UpdateHealth(float& InHealth, float& InMaxHealth)
 {
-	Super::OnManaChanged(EventTags);
-	ACPlayerController* playerController = GetController<ACPlayerController>();
-	if(IsValid(playerController))
+	const ACPlayerController* controller = GetController<ACPlayerController>();
+	if(IsValid(controller) && controller->OnHealthChanged.IsBound())
 	{
-		playerController->UpdateMana(AttributeSet->GetMana(),AttributeSet->GetMaxMana());
+		controller->OnHealthChanged.Broadcast(InHealth,InMaxHealth);
 	}
 }
-
-void ACPlayerCharacter::OnStaminaChanged(const FGameplayTagContainer& EventTags)
+// 델리게이트 호출 - Update Mana
+void ACPlayerCharacter::UpdateMana(float& InMana, float& InMaxMana)
 {
-	Super::OnStaminaChanged(EventTags);
-	ACPlayerController* playerController = GetController<ACPlayerController>();
-	if(IsValid(playerController))
+	const ACPlayerController* controller = GetController<ACPlayerController>();
+	if(IsValid(controller) && controller->OnManaChanged.IsBound())
 	{
-		playerController->UpdateStamina(AttributeSet->GetStamina(),AttributeSet->GetMaxStamina());
+		controller->OnManaChanged.Broadcast(InMana,InMaxMana);
 	}
 }
-
-void ACPlayerCharacter::OnWalkSpeedChanged(const FGameplayTagContainer& EventTags)
+// 델리게이트 호출 - Updata Stamina
+void ACPlayerCharacter::UpdateStamina(float& InStamina, float& InMaxStamina)
 {
-	Super::OnWalkSpeedChanged(EventTags);
-	// MaxSpeed 값 변경
-	GetCharacterMovement()->MaxWalkSpeed = 200.0f;
+	const ACPlayerController* controller = GetController<ACPlayerController>();
+	if(IsValid(controller) && controller->OnStaminaChanged.IsBound())
+	{
+		controller->OnStaminaChanged.Broadcast(InStamina,InMaxStamina);
+	}
 }
-
-void ACPlayerCharacter::OnRunSpeedChanged(const FGameplayTagContainer& EventTags)
-{
-	Super::OnRunSpeedChanged(EventTags);
-	// MaxSpeed 값 변경
-	GetCharacterMovement()->MaxWalkSpeed = 600.0f;
-}
-
-

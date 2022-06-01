@@ -5,6 +5,11 @@
 #include "GameFramework/PlayerController.h"
 #include "CPlayerController.generated.h"
 
+// 델리 게이트 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FHealthChanged, float&, InValue, float&, InMaxValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FManaChanged, float&, InValue, float&, InMaxValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FStaminaChanged, float&, InValue, float&, InMaxValue);
+
 // 전방 선언
 class UCUserWidget_HUD;
 
@@ -15,21 +20,20 @@ class ACTIONRPGGAME_API ACPlayerController : public APlayerController
 
 public:
 	ACPlayerController();
-
 	// Tick
 	virtual void Tick(float DeltaSeconds) override;
 
-	UPROPERTY(EditAnywhere, Category = "UserWidget")
+	UPROPERTY()
+	FHealthChanged OnHealthChanged;
+
+	UPROPERTY()
+	FManaChanged OnManaChanged;
+
+	UPROPERTY()
+	FStaminaChanged OnStaminaChanged;
+
+	UPROPERTY(VisibleDefaultsOnly, Category = "UserWidget")
 	TSubclassOf<UCUserWidget_HUD> UserWidgetHUDClass; // UserWidgetHUD 클래스
-
-	UFUNCTION()
-	void UpdateHealth(float InHealth, float InMaxHealth);
-
-	UFUNCTION()
-	void UpdateMana(float InMana, float InMaxMana);
-
-	UFUNCTION()
-	void UpdateStamina(float InStamina, float InMaxStamina);
 
 protected:
 	// Begin Play
