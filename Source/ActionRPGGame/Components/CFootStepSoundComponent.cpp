@@ -1,8 +1,10 @@
 #include "Components/CFootStepSoundComponent.h"
 #include "ActionRPGGame.h"
+#include "Charactets/CBaseCharacter.h"
 #include "GameFramework/Character.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 
+// 생성자
 UCFootStepSoundComponent::UCFootStepSoundComponent()
 {
 	// 데이터 테이블 에셋을 가져와 저장
@@ -20,6 +22,7 @@ UCFootStepSoundComponent::UCFootStepSoundComponent()
 	DrawDebugType = EDrawDebugTrace::ForDuration;
 }
 
+// BeginPlay
 void UCFootStepSoundComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -30,26 +33,26 @@ void UCFootStepSoundComponent::BeginPlay()
 		FootStepSoundTable->GetAllRows<FFootStepSoundData>("", FootStepSoundData);
 	}
 }
-
-void UCFootStepSoundComponent::NotifyLeftFootStep(const ESpeedType InType)
+// 왼발 발자국 
+void UCFootStepSoundComponent::NotifyLeftFootStep(const ESpeedType InSpeed)
 {
 	const bool isRight = false;
-	PlayFootStepSound(InType, isRight);
+	PlayFootStepSound(InSpeed, isRight);
 }
-
-void UCFootStepSoundComponent::NotifyRightFootStep(const ESpeedType InType)
+// 오른발 발자국
+void UCFootStepSoundComponent::NotifyRightFootStep(const ESpeedType InSpeed)
 {
 	const bool isRight = true;
-	PlayFootStepSound(InType, isRight);
+	PlayFootStepSound(InSpeed, isRight);
 }
 
 // 입력으로 SpeedType과 좌/우 판단 여부를 받는다.
 // 트레이스를 통해 PhysicalSurface를 검사한 후 그에 맞는 사운드를 Play
-void UCFootStepSoundComponent::PlayFootStepSound(const ESpeedType InType, const  bool IsRight)
+void UCFootStepSoundComponent::PlayFootStepSound(const ESpeedType InSpeed, const  bool IsRight)
 {
 	//CLog::Log("PlayFootStepSound");
-	ACharacter* OwnerCharacter = Cast<ACharacter>(GetOwner()); // Owner 가져오기
-	if (IsValid(OwnerCharacter))
+	ACBaseCharacter* ownerCharacter = GetOwner<ACBaseCharacter>();
+	if (IsValid(ownerCharacter))
 	{
 		// Line Trace 매개 변수 선언
 		FVector socketLocation; // 소켓 위치
@@ -57,16 +60,16 @@ void UCFootStepSoundComponent::PlayFootStepSound(const ESpeedType InType, const 
 		FVector end; // Trace 끝
 		FHitResult hit; // Hit 구조체
 		TArray<AActor*> actorToIgnore; // Ignore Actor
-		actorToIgnore.Add(OwnerCharacter); // 소유하고 있는 캐릭터 추가
+		actorToIgnore.Add(ownerCharacter); // 소유하고 있는 캐릭터 추가
 
 		// 위치 값 저장
 		if (IsRight)
 		{
-			socketLocation = OwnerCharacter->GetMesh()->GetSocketLocation(RightFoot);
+			socketLocation = ownerCharacter->GetMesh()->GetSocketLocation(RightFoot);
 		}
 		else
 		{
-			socketLocation = OwnerCharacter->GetMesh()->GetSocketLocation(LeftFoot);
+			socketLocation = ownerCharacter->GetMesh()->GetSocketLocation(LeftFoot);
 		}
 
 		start = FVector(socketLocation.X, socketLocation.Y, socketLocation.Z + 50);
@@ -86,18 +89,16 @@ void UCFootStepSoundComponent::PlayFootStepSound(const ESpeedType InType, const 
 
 			// Play Sound
 			// 현재 위치에서 Sound Play
-			if (InType == ESpeedType::Walk)
+			if (InSpeed == ESpeedType::Walk)
 			{
-				UGameplayStatics::PlaySoundAtLocation(GetWorld(), FootStepSoundData[(int32)physicalSurfaceType]->WalkSound, OwnerCharacter->GetActorLocation(), OwnerCharacter->GetActorRotation());
+				UGameplayStatics::PlaySoundAtLocation(GetWorld(), FootStepSoundData[(int32)physicalSurfaceType]->WalkSound, ownerCharacter->GetActorLocation(), ownerCharacter->GetActorRotation());
 			}
-			else if (InType == ESpeedType::Run)
+			else if (InSpeed == ESpeedType::Run)
 			{
-				UGameplayStatics::PlaySoundAtLocation(GetWorld(), FootStepSoundData[(int32)physicalSurfaceType]->RunSound, OwnerCharacter->GetActorLocation(), OwnerCharacter->GetActorRotation());
+				UGameplayStatics::PlaySoundAtLocation(GetWorld(), FootStepSoundData[(int32)physicalSurfaceType]->RunSound, ownerCharacter->GetActorLocation(), ownerCharacter->GetActorRotation());
 			}
-		}
-		else
-		{
-			CLog::Log("Trace HitResult False");
+
+			// TODO : Effect Spawn
 		}
 	}
 	else

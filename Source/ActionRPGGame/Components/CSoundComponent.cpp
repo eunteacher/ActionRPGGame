@@ -13,8 +13,6 @@ UCSoundComponent::UCSoundComponent()
 	{
 		SoundTable = SoundTableAsset.Object;
 	}
-
-	OwnerCharacter = GetOwner<ACBaseCharacter>();
 }
 
 // BeginPlay
@@ -23,7 +21,7 @@ void UCSoundComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// 데이터 테이블 값을 가져온다.
-	if (IsValid(SoundTable))
+	if (IsValid(SoundTable) && IsValid(GetOwner<ACBaseCharacter>()))
 	{
 		TArray<FSoundData*> soundDatas;
 		SoundTable->GetAllRows<FSoundData>("", soundDatas);
@@ -31,9 +29,10 @@ void UCSoundComponent::BeginPlay()
 		for (FSoundData* data : soundDatas)
 		{
 			// ModelType과 맞는 사운드 데이터를 가져와 저장
-			if (OwnerCharacter->GetCurrentModelType() == data->Type) // 모델 타입과 데이터의 타입이 같다면
+			if (GetOwner<ACBaseCharacter>()->GetModel() == data->Type) // 모델 타입과 데이터의 타입이 같다면
 			{
 				SoundData = data;
+				break;
 			}
 		}
 	}
@@ -43,30 +42,36 @@ void UCSoundComponent::BeginPlay()
 // OwnerCharacter의 위치에서 JumpSound를 Play
 void UCSoundComponent::PlayJumpSound()
 {
-	if (SoundData->Jump != nullptr && IsValid(OwnerCharacter))
+	if (SoundData->Jump != nullptr && IsValid(GetOwner<ACBaseCharacter>()))
 	{
 		CLog::Log("Play Jump Sound");
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundData->Jump, OwnerCharacter->GetActorLocation(), OwnerCharacter->GetActorRotation());
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundData->Jump, GetOwner<ACBaseCharacter>()->GetActorLocation(), GetOwner<ACBaseCharacter>()->GetActorRotation());
 	}
 }
 // Play Land Sound
 // OwnerCharacter의 위치에서 LandSound를 Play
 void UCSoundComponent::PlayLandSound()
 {
-	if (SoundData->Land != nullptr && IsValid(OwnerCharacter))
+	if (SoundData->Land != nullptr && IsValid(GetOwner<ACBaseCharacter>()))
 	{
-		CLog::Log("Play Land Sound");
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundData->Land, OwnerCharacter->GetActorLocation(), OwnerCharacter->GetActorRotation());
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundData->Land, GetOwner<ACBaseCharacter>()->GetActorLocation(), GetOwner<ACBaseCharacter>()->GetActorRotation());
 	}
 }
 // Play Evade Sound
 // OwnerCharacter의 위치에서 EvadeSound를 Play
 void UCSoundComponent::PlayEvadeSound()
 {
-	if (SoundData->Evade != nullptr && IsValid(OwnerCharacter))
+	if (SoundData->Evade != nullptr && IsValid(GetOwner<ACBaseCharacter>()))
 	{
-		CLog::Log("Play Evade Sound");
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundData->Evade, OwnerCharacter->GetActorLocation(), OwnerCharacter->GetActorRotation());
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundData->Evade, GetOwner<ACBaseCharacter>()->GetActorLocation(), GetOwner<ACBaseCharacter>()->GetActorRotation());
+	}
+}
+
+void UCSoundComponent::PlayEquipAndUnequipSound()
+{
+	if (SoundData->Evade != nullptr && IsValid(GetOwner<ACBaseCharacter>()))
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundData->EquipAndUnequip, GetOwner<ACBaseCharacter>()->GetActorLocation(), GetOwner<ACBaseCharacter>()->GetActorRotation());
 	}
 }
 

@@ -26,6 +26,9 @@ public:
 	// Evade Sound Play
 	UFUNCTION(Category = "PlaySound")
 	void PlayEvadeSound();
+	// Equip And Unequip Sound Play
+	UFUNCTION(Category = "PlaySound")
+	void PlayEquipAndUnequipSound();
 
 protected:
 	// BeginPlay
@@ -34,7 +37,5 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly, Category = "DataTable")
 	UDataTable* SoundTable; // 데이터 테이블
 private:
-	UPROPERTY()
-	class ACBaseCharacter* OwnerCharacter; // Owner Character
 	struct FSoundData* SoundData; // 사운드 데이터
 };

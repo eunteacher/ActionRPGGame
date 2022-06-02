@@ -1,13 +1,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Engine/DataTable.h"
 #include "GameFramework/Character.h"
+#include "Types/CDataTableType.h"
+#include "Types/CEnumTypes.h"
+#include "Types/CTypes.h"
 #include "CBaseCharacter.generated.h"
-
-// 전방 선언
-enum class EModelType : uint8;
-enum class ESpeedType : uint8;
-enum class EStateType : uint8;
 
 // 기본 캐릭터 클래스
 // Player와 Monster 모두 이 클래스를 상속 받는다.
@@ -24,29 +23,32 @@ public:
 	// SetupPlayerInputComponent 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	// 캐릭터의 StateType 설정
-	UFUNCTION(Category = "Character Speed")
-	void SetState(EStateType InType);
 	// 캐릭터의 최대 스피드 값을 설정
-	UFUNCTION(Category = "Character Speed")
+	UFUNCTION(Category = "Setter")
 	void SetMaxSpeed(ESpeedType InSpeed);
-	
-	// 현재 StateType을 반환
-	UFUNCTION(Category = "Character State")
-	EStateType GetCurrentStateType() const { return StateType; }
-	// 현재 SpeedType을 반환
-	UFUNCTION(Category = "Character Speed")
-	ESpeedType GetCurrentSpeedType() const { return SpeedType; }
-	// ModelType을 반환
-	UFUNCTION(Category = "Character Speed")
-	EModelType GetCurrentModelType() const { return ModelType; }
 
+	// 현재 SpeedType을 반환
+	UFUNCTION(Category = "Getter")
+	ESpeedType GetSpeed() const { return Speed; }
+
+	// ModelType을 반환
+	UFUNCTION(Category = "Getter")
+	EModelType GetModel() const { return Model; }
+
+	UFUNCTION(Category = "Getter")
+	EWeaponType GetWeapon() const { return Weapon; }
+
+	UFUNCTION(Category = "Getter")
+	TMap<EWeaponType, FOwningWeapon> GetOwningWeaponDataMaps() { return OwningWeaponDataMaps; }
+	
 protected:
 	// BeginPlay 함수
 	virtual void BeginPlay() override;
 	// Land 함수
 	virtual void Landed(const FHitResult& Hit) override;
-
+	// State 컴포넌트의 델리게이트에 바인딩된 함수
+	virtual void OnChangedState(EStateType InPrev, EStateType InNew);
+	
 	// 왼발, 오른발 표면을 검사하여 표면에 맞는 사운드를 Play
 	UPROPERTY(VisibleDefaultsOnly, Category = "Component")
 	class UCFootStepSoundComponent* FootStepSound; // FootStep 컴포넌트
@@ -59,13 +61,22 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly, Category = "Component")
 	class UCMontageComponent* Montage; // Montage 컴포넌트
 
-	// Speed Type
+	// StateType을 변경 및 조건을 확인
+	UPROPERTY(VisibleDefaultsOnly, Category = "Component")
+	class UCStateComponent* State; // State 컴포넌트
+
+	// 캐릭터의 SpeedType
 	UPROPERTY(VisibleDefaultsOnly, Category = "Type")
-	ESpeedType SpeedType;
-	// StateType
+	ESpeedType Speed;
+	// 캐릭터의 ModelType
 	UPROPERTY(VisibleDefaultsOnly, Category = "Type")
-	EStateType StateType;
-	// ModelType
+	EModelType Model;
+	// 캐릭터의 WeaponType
 	UPROPERTY(VisibleDefaultsOnly, Category = "Type")
-	EModelType ModelType;
+	EWeaponType Weapon;
+
+	UPROPERTY(VisibleDefaultsOnly, Category = "DataTable")
+	UDataTable* OwningWeaponDataTable; // 소유 중인 무기 데이터 테이블
+
+	TMap<EWeaponType, FOwningWeapon> OwningWeaponDataMaps; // 소유 중인 무기 데이터 Map
 };

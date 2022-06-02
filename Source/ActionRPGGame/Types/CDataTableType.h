@@ -5,8 +5,32 @@
 #include "Engine/DataTable.h"
 #include "NiagaraSystem.h"
 #include "MatineeCameraShake.h"
+#include "Weapon/CWeapon_Sword.h"
 #include "CDataTableType.generated.h"
 
+// 캐릭터가 소유중인 무기 데이터 테이블
+USTRUCT()
+struct FOwningWeaponData : public FTableRowBase
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(EditAnywhere, Category = "Weapon")
+	EWeaponType Type;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon")
+	TSubclassOf<ACWeapon_Base> WeaponClass;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon")
+	bool bOwning;
+
+	UPROPERTY(EditAnywhere, Category = "Socket")
+	FName WeaponSocketName;
+
+	UPROPERTY(EditAnywhere, Category = "Socket")
+	FName WeaponHolsterSocketName;
+};
+
+// Weapon 클래스에서 사용될 무기 데이터 테이블
 USTRUCT()
 struct FWeaponData : public FTableRowBase
 {
@@ -30,11 +54,11 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Effect")
 	UParticleSystem* HitParticle = nullptr;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "CameraShake")
 	TSubclassOf<UMatineeCameraShake> ShakeClass;
 };
 
-// MontageTable
+// MontageComponent에서 사용, 사용할 모든 몽타주 데이터 테이블
 USTRUCT(BlueprintType)
 struct FMontageData : public FTableRowBase
 {
@@ -67,7 +91,7 @@ public:
 	EModelType ModelType;
 };
 
-// Character SoundDataTable
+// SoundComponent에서 사용, 사용한 모든 Sound 데이터 테이블
 USTRUCT(BlueprintType)
 struct FSoundData : public FTableRowBase
 {
@@ -85,7 +109,7 @@ public:
 	USoundBase* Land;
 	// 높은 착지
 	UPROPERTY(EditAnywhere, Category = "Sound")
-	USoundBase* HeavyLand;
+	USoundBase* EquipAndUnequip;
 	// 피하기
 	UPROPERTY(EditAnywhere, Category = "Sound")
 	USoundBase* Evade;
@@ -106,7 +130,7 @@ public:
 	USoundBase* Ability4;
 };
 
-// Character StatusTable
+// Character 클래스에서 사용, Player와 Monster의 Status 데이터 테이블
 USTRUCT(BlueprintType)
 struct FStatusData : public FTableRowBase
 {
@@ -136,7 +160,7 @@ public:
 	float MaxStamina;
 };
 
-// FootStep TableData 
+// FootStepComponent에서 사용, 발자국에 관련된 소리와 파티클 데이터 테이블
 USTRUCT(BlueprintType)
 struct FFootStepSoundData : public FTableRowBase
 {
@@ -151,4 +175,7 @@ public:
 	// 뛰기 사운드
 	UPROPERTY(EditAnywhere, Category = "Sound")
 	USoundBase* RunSound;
+	// Effect
+	UPROPERTY(EditAnywhere, Category = "Effect")
+	UNiagaraSystem* HitNiagaraEffect = nullptr;
 };

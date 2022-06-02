@@ -3,6 +3,7 @@
 #include "Components/CFootStepSoundComponent.h"
 #include "Components/CSoundComponent.h"
 #include "Components/CMontageComponent.h"
+#include "Components/CStateComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 // 생성자
 ACBaseCharacter::ACBaseCharacter()
@@ -13,8 +14,10 @@ ACBaseCharacter::ACBaseCharacter()
 	Sound = CreateDefaultSubobject<UCSoundComponent>("Sound");
 	FootStepSound = CreateDefaultSubobject<UCFootStepSoundComponent>("FootStepSound");
 	Montage = CreateDefaultSubobject<UCMontageComponent>("Montage");
+	State = CreateDefaultSubobject<UCStateComponent>("State");
 	// 멤버변수 초기화
-	SpeedType = ESpeedType::Walk;
+	Speed = ESpeedType::Walk;
+	Weapon = EWeaponType::Default;
 }
 
 // BeginPlay
@@ -22,6 +25,8 @@ void ACBaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// State 컴포넌트의 델리게이트를 바인딩
+	State->OnChangedState.AddDynamic(this, &ACBaseCharacter::OnChangedState);
 }
 
 // Tick
@@ -45,13 +50,12 @@ void ACBaseCharacter::Landed(const FHitResult& Hit)
 	if (IsValid(Sound))
 	{
 		Sound->PlayLandSound();
-		StateType = EStateType::Idle_Walk_Run;
+		State->SetState(EStateType::Idle_Walk_Run);
 	}
 }
-// 입력받은 InType을 StateTpye에 저장
-void ACBaseCharacter::SetState(EStateType InType)
+
+void ACBaseCharacter::OnChangedState(EStateType InPrev, EStateType InNew)
 {
-	StateType = InType;
 }
 
 void ACBaseCharacter::SetMaxSpeed(ESpeedType InSpeed)
@@ -59,12 +63,12 @@ void ACBaseCharacter::SetMaxSpeed(ESpeedType InSpeed)
 	// InSpeed 값에 따라 MaxWalkSpeed 값과 SpeedType을 변경
 	if (InSpeed == ESpeedType::Walk)
 	{
-		SpeedType = ESpeedType::Walk;
+		Speed = ESpeedType::Walk;
 		GetCharacterMovement()->MaxWalkSpeed = 200.0f;
 	}
 	else if (InSpeed == ESpeedType::Run)
 	{
-		SpeedType = ESpeedType::Run;
+		Speed = ESpeedType::Run;
 		GetCharacterMovement()->MaxWalkSpeed = 600.0f;
 	}
 }

@@ -1,13 +1,11 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Animation/AnimNotifies/AnimNotify.h"
-#include "CAnimNotify_WeaponAttach.generated.h"
+#include "CAnimNotify_Equip.generated.h"
 
 UCLASS()
-class ACTIONRPGGAME_API UCAnimNotify_WeaponAttach : public UAnimNotify
+class ACTIONRPGGAME_API UCAnimNotify_Equip : public UAnimNotify
 {
 	GENERATED_BODY()
 public:

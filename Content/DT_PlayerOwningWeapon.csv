@@ -1,0 +1,4 @@
+---,Type,WeaponClass,bOwning,WeaponSocketName,WeaponHolsterSocketName
+1,Default,,TRUE,,
+2,Sword,Blueprint'/Game/Weapons/Blueprints/BP_CWeapon_Sword.BP_CWeapon_Sword_C',TRUE,Sword,SwordHolster
+3,Bow,,FALSE,,

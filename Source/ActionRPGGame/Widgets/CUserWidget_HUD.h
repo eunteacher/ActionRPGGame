@@ -14,6 +14,7 @@ class ACTIONRPGGAME_API UCUserWidget_HUD : public UUserWidget
 	GENERATED_BODY()
 
 public:
+	// PlayerController의 델리게이트 바인딩
 	void Bind();
 	
 protected:
@@ -41,12 +42,13 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	class UCUserWidget_Ability* Ability;
 
+	// 변경된 Stamina 값을 Update
 	UFUNCTION()
 	void UpdateStamina(float& InStamina, float& InMaxStamina);
-
+	// 변경된 Health 값을 Update
 	UFUNCTION()
 	void UpdateHealth(float& InValue, float& InMaxValue);
-
+	// 변경된 Mana 값을 Update
 	UFUNCTION()
 	void UpdateMana(float& InMana, float& InMaxMana);
 

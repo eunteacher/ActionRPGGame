@@ -10,8 +10,9 @@
 #include "Components/WidgetComponent.h"
 #include "Components/CSoundComponent.h"
 #include "Components/CMontageComponent.h"
-#include "Weapon/CWeapon_Sword.h"
+#include "Components/CStateComponent.h"
 
+// 생성자 멤버 변수 생성 및 초기화
 ACPlayerCharacter::ACPlayerCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -73,7 +74,7 @@ ACPlayerCharacter::ACPlayerCharacter()
 	 	GetMesh()->SetAnimInstanceClass(animInstance);
 	 }
 
-	// 데이터 테이블 에셋을 가져와 저장
+	// Status 데이터 테이블 에셋을 가져와 저장
 	// DataTable'/Game/DataTables/DT_Status.DT_Status'
 	static ConstructorHelpers::FObjectFinder<UDataTable> statusTableAsset(TEXT("DataTable'/Game/DataTables/DT_Status.DT_Status'"));
 	if (statusTableAsset.Succeeded())
@@ -81,21 +82,15 @@ ACPlayerCharacter::ACPlayerCharacter()
 		StatusTable = statusTableAsset.Object;
 	}
 
-	// Weapon 클래스를 가져와 WepaonClass에 저장
-	// Blueprint'/Game/Weapons/Blueprints/BP_CWeapon_Sword.BP_CWeapon_Sword'
-	ConstructorHelpers::FClassFinder<ACWeapon_Base> nearWeaponBlueprintClass(TEXT("Blueprint'/Game/Weapons/Blueprints/BP_CWeapon_Sword.BP_CWeapon_Sword_C'"));
-	if (nearWeaponBlueprintClass.Succeeded())
+	// OwningWeapon 데이터 테이블 에셋을 가져와 저장
+	// DataTable'/Game/DataTables/DT_PlayerOwningWeapon.DT_PlayerOwningWeapon'
+	static ConstructorHelpers::FObjectFinder<UDataTable> owningWeaponDataTableAsset(TEXT("DataTable'/Game/DataTables/DT_PlayerOwningWeapon.DT_PlayerOwningWeapon'"));
+	if (owningWeaponDataTableAsset.Succeeded())
 	{
-		NearWeaponClass = nearWeaponBlueprintClass.Class;
+		OwningWeaponDataTable = owningWeaponDataTableAsset.Object;
 	}
-
-	// Weapon 클래스를 가져와 WepaonClass에 저장
-	// ConstructorHelpers::FClassFinder<ACWeapon_Base> farWeaponBlueprintClass(TEXT(""));
-	// if (farWeaponBlueprintClass.Succeeded())
-	// {
-	// 	FarWeaponClass = farWeaponBlueprintClass.Class;
-	// }
 }
+
 // BeginPlay
 void ACPlayerCharacter::BeginPlay()
 {
@@ -103,34 +98,84 @@ void ACPlayerCharacter::BeginPlay()
 
 	if (IsValid(StatusTable))
 	{
-		// 데이터 테이블 읽기
+		// Status 데이터 테이블 값을 저장
 		TArray<FStatusData*> statusDatas;
 		StatusTable->GetAllRows<FStatusData>("", statusDatas);
 		for (FStatusData* data : statusDatas)
 		{
-			if (data->Type == EStatusType::Player)
+			if (data->Type == EStatusType::Player) // Type이 Player일 경우
 			{
 				StatusData = data;
+				break;
 			}
 		}
 	}
 
-	if (IsValid(NearWeaponClass))
+	// 소유 중인 무기 데이터 테이블 값을 저장
+	if(IsValid(OwningWeaponDataTable))
 	{
-		FTransform transform;
-		NearWeapon = GetWorld()->SpawnActorDeferred<ACWeapon_Sword>
-		(
-			NearWeaponClass,
-			transform,
-			this,
-			nullptr,
-			ESpawnActorCollisionHandlingMethod::AlwaysSpawn
-		);
-		NearWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, false), FName("Sword"));
-		UGameplayStatics::FinishSpawningActor(NearWeapon, transform);
+		// 데이터 테이블의 Data를 가져와 owningWeaponDatas에 저장
+		TArray<FOwningWeaponData*> owningWeaponDatas;
+		OwningWeaponDataTable->GetAllRows<FOwningWeaponData>("", owningWeaponDatas);
+
+		// WeaponType에 맞게 데이터를 저장
+		for (int32 i = 0; i < (int32)EWeaponType::Max; i++)
+		{
+			for (FOwningWeaponData* data : owningWeaponDatas)
+			{
+				// WeaponType이 같고, bOwning이 true인 경우
+				if(data->Type == (EWeaponType)i && data->bOwning == true)
+				{
+					ACWeapon_Base* weapon = nullptr;
+					// WeaponClass가 존재한다면 Actor Spawn
+					if(IsValid(data->WeaponClass))
+					{
+						FTransform transform;
+						weapon = GetWorld()->SpawnActorDeferred<ACWeapon_Base>(data->WeaponClass, transform, this);
+						weapon->AttachToComponent(GetMesh(),FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), data->WeaponHolsterSocketName);
+						UGameplayStatics::FinishSpawningActor(weapon,transform);
+					}
+					// owningWeapon 구조체 값 설정 
+					FOwningWeapon owningWeapon;
+					owningWeapon.Weapon = weapon;
+					owningWeapon.WeaponSocketName = data->WeaponSocketName;
+					owningWeapon.WeaponHolsterSocketName = data->WeaponHolsterSocketName;
+					
+					OwningWeaponDataMaps.Add((EWeaponType)i, owningWeapon); // Map에 추가
+				} // if 웨폰 타입 && bOwning
+			} // for owningWeaponDatas
+		} // for EWeaponType
 	}
-	
 }
+
+void ACPlayerCharacter::OnChangedState(EStateType InPrev, EStateType InNew)
+{
+	Super::OnChangedState(InPrev, InNew);
+
+	switch(InNew)
+	{
+	case EStateType::Idle_Walk_Run:
+		if(InPrev == EStateType::Unequip)
+		{
+			// 이전 State가 Unequip이었다면 WeaponType을 Default로 변경
+			Weapon = EWeaponType::Default;
+		}
+		break;
+	case EStateType::Jump:
+		break;
+	case EStateType::Evade:
+		break;
+	case EStateType::Equip:
+		break;
+	case EStateType::Unequip:
+		break;
+	case EStateType::Max:
+		break;
+	default:
+		break;
+	}
+}
+
 // Tick
 void ACPlayerCharacter::Tick(float DeltaTime)
 {
@@ -139,7 +184,7 @@ void ACPlayerCharacter::Tick(float DeltaTime)
 	if(StatusData != nullptr)
 	{
 		// 뛰기 상태일 경우 
-		if(SpeedType == ESpeedType::Run)
+		if(Speed == ESpeedType::Run)
 		{
 			// MaxStamina의 10%보다 작을 경우 OnWalk()
 			if(StatusData->Stamina < StatusData->MaxStamina * 0.1f)
@@ -183,6 +228,10 @@ void ACPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAction("Crouch", IE_Released, this, &ACPlayerCharacter::OffCrouch);
 
 	PlayerInputComponent->BindAction("Evade", IE_Pressed, this, &ACPlayerCharacter::OnEvade);
+
+	PlayerInputComponent->BindAction("Equip", IE_Pressed, this, &ACPlayerCharacter::OnEquip);
+	PlayerInputComponent->BindAction("Unequip", IE_Pressed, this, &ACPlayerCharacter::OnUnequip);
+
 }
 
 void ACPlayerCharacter::MoveForward(float InValue)
@@ -220,12 +269,15 @@ void ACPlayerCharacter::LookUpAtRate(float InRate)
 {
 	AddControllerPitchInput(InRate * TurnRate * GetWorld()->GetDeltaSeconds());
 }
+
 // Jump() 호출
 void ACPlayerCharacter::OnJump()
 {
 	if(IsValid(Sound) && !GetCharacterMovement()->IsFalling())
 	{
-		StateType = EStateType::Jump;
+		// State 설정
+		State->SetState(EStateType::Jump);
+		// PlaySound
 		Sound->PlayJumpSound();
 		Jump();
 	}
@@ -236,37 +288,43 @@ void ACPlayerCharacter::OffJump()
 {
 	StopJumping();
 }
+
 // CBaseCharacter 클래스에 있는 SetMaxSpeed() 호출
 void ACPlayerCharacter::OnWalk()
 {
 	CLog::Log("OnWalk()");
 	SetMaxSpeed(ESpeedType::Walk);
 }
+
 // CBaseCharacter 클래스에 있는 SetMaxSpeed() 호출
 void ACPlayerCharacter::OnRun()
 {
 	CLog::Log("OnRun()");
 	SetMaxSpeed(ESpeedType::Run);
 }
+
 // Crouch() 호출
 void ACPlayerCharacter::OnCrouch()
 {
 	CLog::Log("OnCrouch");
 	Crouch();
 }
+
 // UnCrouch() 호출
 void ACPlayerCharacter::OffCrouch()
 {
 	CLog::Log("OffCrouch");
 	UnCrouch();
 }
+
 // 캐릭터의 마지막 입력 방향으로 구르기를 실행한다.
 void ACPlayerCharacter::OnEvade()
 {
 	CLog::Log("OnEvade");
 	if(!GetCharacterMovement()->IsFalling()) // 공중 상태가 아닐 경우 
 	{
-		StateType = EStateType::Evade; // StateType 설정
+		// StateType 설정
+		State->SetState(EStateType::Evade);
 		// 마지막 입력 값을 가져온다.
 		FVector inputDirection = GetLastMovementInputVector();
 		// 캐릭터의 Forward 벡터와 내적
@@ -301,7 +359,7 @@ void ACPlayerCharacter::OnEvade()
 
 		if(IsValid(Montage) && IsValid(Sound) && montageType != EMontageType::Max)
 		{
-			Montage->PlayMontage(ModelType, montageType); // 몽타주 실행
+			Montage->PlayMontage(Model, montageType); // 몽타주 실행
 			Sound->PlayEvadeSound(); // 사운드 실행
 
 			FVector direction; // 구르기 방향
@@ -350,6 +408,52 @@ void ACPlayerCharacter::OnEvade()
 		} // if(IsValid(Montage) && IsValid(Sound))
 	}
 }
+
+void ACPlayerCharacter::OnEquip()
+{
+	CLog::Log("OnEquip");
+
+	State->SetState(EStateType::Equip);
+
+	// Weapon Type에 따라 Equip 순서
+	// Default -> Sword, Sword -> Bow, Bow -> Sword
+	if (Weapon == EWeaponType::Default)
+	{
+		Weapon = EWeaponType::Sword;
+	}
+	else if (Weapon == EWeaponType::Sword)
+	{
+		// WeaponType = EWeaponType::Bow;
+	}
+	// else if (WeaponType == EWeaponType::Bow)
+	// {
+	// 	WeaponType = EWeaponType::Sword;
+	// }
+
+	// 현재 WeaponType을 Map이 Key로 포함되어 있다면
+	if(OwningWeaponDataMaps.Contains(Weapon))
+	{
+		const FOwningWeapon owningWeapon = OwningWeaponDataMaps[Weapon];
+		// Weapon의 OnEquip() 호출
+		owningWeapon.Weapon->OnEquip();
+	}
+}
+
+void ACPlayerCharacter::OnUnequip()
+{
+	CLog::Log("OnUnequip");
+	
+	State->SetState(EStateType::Unequip);
+
+	// 현재 WeaponType을 Map이 Key로 포함되어 있다면
+	if(OwningWeaponDataMaps.Contains(Weapon))
+	{
+		const FOwningWeapon owningWeapon = OwningWeaponDataMaps[Weapon];
+		// Weapon의 OnEquip() 호출
+		owningWeapon.Weapon->OnUnequip();
+	}
+}
+
 // 델리게이트 호출 - Update Health
 void ACPlayerCharacter::UpdateHealth(float& InHealth, float& InMaxHealth)
 {
@@ -359,6 +463,7 @@ void ACPlayerCharacter::UpdateHealth(float& InHealth, float& InMaxHealth)
 		controller->OnHealthChanged.Broadcast(InHealth,InMaxHealth);
 	}
 }
+
 // 델리게이트 호출 - Update Mana
 void ACPlayerCharacter::UpdateMana(float& InMana, float& InMaxMana)
 {
@@ -368,6 +473,7 @@ void ACPlayerCharacter::UpdateMana(float& InMana, float& InMaxMana)
 		controller->OnManaChanged.Broadcast(InMana,InMaxMana);
 	}
 }
+
 // 델리게이트 호출 - Updata Stamina
 void ACPlayerCharacter::UpdateStamina(float& InStamina, float& InMaxStamina)
 {

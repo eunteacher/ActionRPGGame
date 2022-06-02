@@ -19,16 +19,16 @@ class ACTIONRPGGAME_API ACPlayerController : public APlayerController
 	GENERATED_BODY()
 
 public:
+	// 생성자
 	ACPlayerController();
 	// Tick
 	virtual void Tick(float DeltaSeconds) override;
 
+	// 델리게이트
 	UPROPERTY()
 	FHealthChanged OnHealthChanged;
-
 	UPROPERTY()
 	FManaChanged OnManaChanged;
-
 	UPROPERTY()
 	FStaminaChanged OnStaminaChanged;
 

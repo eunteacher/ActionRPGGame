@@ -1,7 +1,0 @@
----,BaseValue,MinValue,MaxValue,DerivedAttributeInfo,bCanStack
-AttributeSet.Health,500,0,1000,,FALSE
-AttributeSet.MaxHealth,1000,0,1000,,FALSE
-AttributeSet.Mana,500,0,1000,,FALSE
-AttributeSet.MaxMana,1000,0,1000,,FALSE
-AttributeSet.Stamina,500,0,1000,,FALSE
-AttributeSet.MaxStamina,1000,0,1000,,FALSE

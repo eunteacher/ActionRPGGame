@@ -22,10 +22,11 @@ public:
 protected:
 	// BeginPlay()
 	virtual void BeginPlay() override;
-	
+
+	// StaticMesh 컴포넌트
 	UPROPERTY(VisibleDefaultsOnly, Category = "Collision")
 	UStaticMeshComponent* StaticMesh;
-
+	// Capsule 컴포넌트
 	UPROPERTY(VisibleDefaultsOnly, Category = "Collision")
 	UCapsuleComponent* Capsule;
 

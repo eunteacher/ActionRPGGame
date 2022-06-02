@@ -53,15 +53,15 @@ void UCMontageComponent::PlayMontage(const EModelType InModel, const EMontageTyp
 	// 찾은 TArray에서 InMontage에 해당하는 Data를 가져온다.
 	const FMontageData* data = montageDatas[(int32)InMontage];
 	ACBaseCharacter* ownerCharacter = GetOwner<ACBaseCharacter>(); // Owner 가져오기
-	if (data != nullptr && IsValid(ownerCharacter) && ownerCharacter->GetCurrentModelType() == InModel)
+	if (data != nullptr && IsValid(ownerCharacter) && ownerCharacter->GetModel() == InModel)
 	{
-		if (data->AnimMontage != nullptr)
+		if (IsValid(data->AnimMontage))
 		{
 			// 몽타주 실행
 			ownerCharacter->PlayAnimMontage(data->AnimMontage, data->PlayRatio, data->StartSection);
 		}
 
-		if (data->Particle != nullptr)
+		if (IsValid(data->Particle))
 		{
 			// 파티클 스폰
 			UGameplayStatics::SpawnEmitterAttached(data->Particle, ownerCharacter->GetMesh(), data->SocketName);

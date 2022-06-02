@@ -5,7 +5,7 @@
 ACWeapon_Sword::ACWeapon_Sword()
 {
 	// 멤버 변수 초기화
-	WeaponType = EWeaponType::Sword;
+	Weapon = EWeaponType::Sword;
 	ComboCount = 1;
 
 	// StaticMesh 컴포넌트 생성
@@ -17,6 +17,7 @@ ACWeapon_Sword::ACWeapon_Sword()
 	{
 		UStaticMesh* staticMesh = staticMeshAsset.Object;
 		StaticMesh->SetStaticMesh(staticMesh);
+		StaticMesh->SetCollisionProfileName("NoCollision");
 	}
 	
 	// Capsule 컴포넌트 생성
