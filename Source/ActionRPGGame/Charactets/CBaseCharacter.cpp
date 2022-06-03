@@ -16,17 +16,17 @@ ACBaseCharacter::ACBaseCharacter()
 	Montage = CreateDefaultSubobject<UCMontageComponent>("Montage");
 	State = CreateDefaultSubobject<UCStateComponent>("State");
 	// 멤버변수 초기화
-	Speed = ESpeedType::Walk;
-	Weapon = EWeaponType::Default;
+	SpeedType = ESpeedType::Walk;
+	WeaponType = EWeaponType::Default;
 }
 
 // BeginPlay
 void ACBaseCharacter::BeginPlay()
 {
-	Super::BeginPlay();
-
 	// State 컴포넌트의 델리게이트를 바인딩
-	State->OnChangedState.AddDynamic(this, &ACBaseCharacter::OnChangedState);
+	State->OnStateTypeChanged.AddDynamic(this, &ACBaseCharacter::OnStateTypeChanged);
+	
+	Super::BeginPlay();
 }
 
 // Tick
@@ -50,25 +50,50 @@ void ACBaseCharacter::Landed(const FHitResult& Hit)
 	if (IsValid(Sound))
 	{
 		Sound->PlayLandSound();
-		State->SetState(EStateType::Idle_Walk_Run);
+		State->SetStateType(EStateType::Idle_Walk_Run);
+	}
+}
+// State가 변경되었을 때 호출되는 함수
+// 이전 StateType과 변경된 StateType을 입력으로 받는다.
+void ACBaseCharacter::OnStateTypeChanged(EStateType InPrev, EStateType InNew)
+{
+	switch(InNew)
+	{
+	case EStateType::Idle_Walk_Run:
+		if(InPrev == EStateType::UnEquip)
+		{
+			// 이전 State가 Unequip이었다면 WeaponType을 Default로 변경
+			WeaponType = EWeaponType::Default;
+		}
+		else if(InPrev == EStateType::Attack)
+		{
+			// 공격이 종료되었기 때문에 모든 변수를 Reset
+			if(EquipedWeaponDataMaps.Contains(WeaponType))
+			{
+				const FEquipedWeaponData equipedWeapon = EquipedWeaponDataMaps[WeaponType];
+				// Weapon의 OnReset() 호출
+				equipedWeapon.Weapon->OnReset();
+			}
+		}
+		break;
+
+	default:
+		break;
 	}
 }
 
-void ACBaseCharacter::OnChangedState(EStateType InPrev, EStateType InNew)
-{
-}
-
+// 입력으로 SpeedType을 받고, 입력받은 SpeedType으로 변경하고 MaxWalkSpeed 값을 변경
 void ACBaseCharacter::SetMaxSpeed(ESpeedType InSpeed)
 {
 	// InSpeed 값에 따라 MaxWalkSpeed 값과 SpeedType을 변경
 	if (InSpeed == ESpeedType::Walk)
 	{
-		Speed = ESpeedType::Walk;
+		SpeedType = ESpeedType::Walk;
 		GetCharacterMovement()->MaxWalkSpeed = 200.0f;
 	}
 	else if (InSpeed == ESpeedType::Run)
 	{
-		Speed = ESpeedType::Run;
+		SpeedType = ESpeedType::Run;
 		GetCharacterMovement()->MaxWalkSpeed = 600.0f;
 	}
 }

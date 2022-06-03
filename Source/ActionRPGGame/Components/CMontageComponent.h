@@ -18,7 +18,7 @@ public:
 	// 생성자
 	UCMontageComponent();
 	// 몽타주 실행
-	void PlayMontage(const EModelType InModel, const EMontageType InMontage);
+	void PlayMontage(const EModelType InModelType, const EMontageType InMontageType);
 
 protected:
 	// BeingPlay
@@ -28,5 +28,5 @@ protected:
 	UDataTable* MontageTable; // 데이터 테이블
 
 private:
-	TMap<EModelType, TArray<FMontageData*>> MontageDataMaps; // 몽타주 데이터 Map
+	TArray<FMontageData*> MontageData; // 몽타주 데이터 Map
 };

@@ -11,23 +11,23 @@ void UCStateComponent::BeginPlay()
 	Super::BeginPlay();
 }
 
-bool UCStateComponent::CheckChangedState(EStateType InNew, EStateType InPrev)
+bool UCStateComponent::CheckStateTypeChanged(EStateType InNew, EStateType InPrev)
 {
 	// TODO : State 별 조건 체크
 	return true;
 }
 
 // StatTpye을 변경, 델리게이트에 바인딩되어 있는 함수 호출
-void UCStateComponent::SetState(EStateType InNew)
+void UCStateComponent::SetStateType(EStateType InNew)
 {
-	const EStateType prevState = State; // 이전 State Type
-	if(CheckChangedState(InNew, prevState)) // 변경 가능한지 확인
+	const EStateType prev = StateType; // 이전 State Type
+	if(CheckStateTypeChanged(InNew, prev)) // 변경 가능한지 확인
 	{
-		State = InNew;
+		StateType = InNew;
 		// 델리게이트 호출
-		if(OnChangedState.IsBound())
+		if(OnStateTypeChanged.IsBound())
 		{
-			OnChangedState.Broadcast(prevState, State);
+			OnStateTypeChanged.Broadcast(prev, StateType);
 		}
 	}
 }

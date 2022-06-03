@@ -87,7 +87,7 @@ ACPlayerCharacter::ACPlayerCharacter()
 	static ConstructorHelpers::FObjectFinder<UDataTable> owningWeaponDataTableAsset(TEXT("DataTable'/Game/DataTables/DT_PlayerOwningWeapon.DT_PlayerOwningWeapon'"));
 	if (owningWeaponDataTableAsset.Succeeded())
 	{
-		OwningWeaponDataTable = owningWeaponDataTableAsset.Object;
+		WeaponDataTable = owningWeaponDataTableAsset.Object;
 	}
 }
 
@@ -112,11 +112,11 @@ void ACPlayerCharacter::BeginPlay()
 	}
 
 	// 소유 중인 무기 데이터 테이블 값을 저장
-	if(IsValid(OwningWeaponDataTable))
+	if(IsValid(WeaponDataTable))
 	{
 		// 데이터 테이블의 Data를 가져와 owningWeaponDatas에 저장
 		TArray<FOwningWeaponData*> owningWeaponDatas;
-		OwningWeaponDataTable->GetAllRows<FOwningWeaponData>("", owningWeaponDatas);
+		WeaponDataTable->GetAllRows<FOwningWeaponData>("", owningWeaponDatas);
 
 		// WeaponType에 맞게 데이터를 저장
 		for (int32 i = 0; i < (int32)EWeaponType::Max; i++)
@@ -136,43 +136,15 @@ void ACPlayerCharacter::BeginPlay()
 						UGameplayStatics::FinishSpawningActor(weapon,transform);
 					}
 					// owningWeapon 구조체 값 설정 
-					FOwningWeapon owningWeapon;
-					owningWeapon.Weapon = weapon;
-					owningWeapon.WeaponSocketName = data->WeaponSocketName;
-					owningWeapon.WeaponHolsterSocketName = data->WeaponHolsterSocketName;
+					FEquipedWeaponData equipedWeapon;
+					equipedWeapon.Weapon = weapon;
+					equipedWeapon.WeaponSocketName = data->WeaponSocketName;
+					equipedWeapon.WeaponHolsterSocketName = data->WeaponHolsterSocketName;
 					
-					OwningWeaponDataMaps.Add((EWeaponType)i, owningWeapon); // Map에 추가
+					EquipedWeaponDataMaps.Add((EWeaponType)i, equipedWeapon); // Map에 추가
 				} // if 웨폰 타입 && bOwning
 			} // for owningWeaponDatas
 		} // for EWeaponType
-	}
-}
-
-void ACPlayerCharacter::OnChangedState(EStateType InPrev, EStateType InNew)
-{
-	Super::OnChangedState(InPrev, InNew);
-
-	switch(InNew)
-	{
-	case EStateType::Idle_Walk_Run:
-		if(InPrev == EStateType::Unequip)
-		{
-			// 이전 State가 Unequip이었다면 WeaponType을 Default로 변경
-			Weapon = EWeaponType::Default;
-		}
-		break;
-	case EStateType::Jump:
-		break;
-	case EStateType::Evade:
-		break;
-	case EStateType::Equip:
-		break;
-	case EStateType::Unequip:
-		break;
-	case EStateType::Max:
-		break;
-	default:
-		break;
 	}
 }
 
@@ -184,7 +156,7 @@ void ACPlayerCharacter::Tick(float DeltaTime)
 	if(StatusData != nullptr)
 	{
 		// 뛰기 상태일 경우 
-		if(Speed == ESpeedType::Run)
+		if(SpeedType == ESpeedType::Run)
 		{
 			// MaxStamina의 10%보다 작을 경우 OnWalk()
 			if(StatusData->Stamina < StatusData->MaxStamina * 0.1f)
@@ -230,8 +202,9 @@ void ACPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAction("Evade", IE_Pressed, this, &ACPlayerCharacter::OnEvade);
 
 	PlayerInputComponent->BindAction("Equip", IE_Pressed, this, &ACPlayerCharacter::OnEquip);
-	PlayerInputComponent->BindAction("Unequip", IE_Pressed, this, &ACPlayerCharacter::OnUnequip);
+	PlayerInputComponent->BindAction("UnEquip", IE_Pressed, this, &ACPlayerCharacter::OnUnEquip);
 
+	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ACPlayerCharacter::OnAttack);
 }
 
 void ACPlayerCharacter::MoveForward(float InValue)
@@ -276,7 +249,7 @@ void ACPlayerCharacter::OnJump()
 	if(IsValid(Sound) && !GetCharacterMovement()->IsFalling())
 	{
 		// State 설정
-		State->SetState(EStateType::Jump);
+		State->SetStateType(EStateType::Jump);
 		// PlaySound
 		Sound->PlayJumpSound();
 		Jump();
@@ -324,7 +297,7 @@ void ACPlayerCharacter::OnEvade()
 	if(!GetCharacterMovement()->IsFalling()) // 공중 상태가 아닐 경우 
 	{
 		// StateType 설정
-		State->SetState(EStateType::Evade);
+		State->SetStateType(EStateType::Evade);
 		// 마지막 입력 값을 가져온다.
 		FVector inputDirection = GetLastMovementInputVector();
 		// 캐릭터의 Forward 벡터와 내적
@@ -359,10 +332,11 @@ void ACPlayerCharacter::OnEvade()
 
 		if(IsValid(Montage) && IsValid(Sound) && montageType != EMontageType::Max)
 		{
-			Montage->PlayMontage(Model, montageType); // 몽타주 실행
+			Montage->PlayMontage(ModelType, montageType); // 몽타주 실행
 			Sound->PlayEvadeSound(); // 사운드 실행
 
 			FVector direction; // 구르기 방향
+			// MontageType에 따라 방향 결정
 			switch (montageType)
 			{
 			case EMontageType::EvadeForward:
@@ -413,15 +387,15 @@ void ACPlayerCharacter::OnEquip()
 {
 	CLog::Log("OnEquip");
 
-	State->SetState(EStateType::Equip);
+	State->SetStateType(EStateType::Equip);
 
 	// Weapon Type에 따라 Equip 순서
 	// Default -> Sword, Sword -> Bow, Bow -> Sword
-	if (Weapon == EWeaponType::Default)
+	if (WeaponType == EWeaponType::Default)
 	{
-		Weapon = EWeaponType::Sword;
+		WeaponType = EWeaponType::Sword;
 	}
-	else if (Weapon == EWeaponType::Sword)
+	else if (WeaponType == EWeaponType::Sword)
 	{
 		// WeaponType = EWeaponType::Bow;
 	}
@@ -431,26 +405,45 @@ void ACPlayerCharacter::OnEquip()
 	// }
 
 	// 현재 WeaponType을 Map이 Key로 포함되어 있다면
-	if(OwningWeaponDataMaps.Contains(Weapon))
+	if(EquipedWeaponDataMaps.Contains(WeaponType))
 	{
-		const FOwningWeapon owningWeapon = OwningWeaponDataMaps[Weapon];
+		const FEquipedWeaponData equipedWeapon = EquipedWeaponDataMaps[WeaponType];
 		// Weapon의 OnEquip() 호출
-		owningWeapon.Weapon->OnEquip();
+		equipedWeapon.Weapon->OnEquip();
 	}
 }
 
-void ACPlayerCharacter::OnUnequip()
+// WeaponType을 Default로 변경
+void ACPlayerCharacter::OnUnEquip()
 {
 	CLog::Log("OnUnequip");
 	
-	State->SetState(EStateType::Unequip);
+	State->SetStateType(EStateType::UnEquip);
 
 	// 현재 WeaponType을 Map이 Key로 포함되어 있다면
-	if(OwningWeaponDataMaps.Contains(Weapon))
+	if(EquipedWeaponDataMaps.Contains(WeaponType))
 	{
-		const FOwningWeapon owningWeapon = OwningWeaponDataMaps[Weapon];
+		const FEquipedWeaponData equipedWeapon = EquipedWeaponDataMaps[WeaponType];
 		// Weapon의 OnEquip() 호출
-		owningWeapon.Weapon->OnUnequip();
+		equipedWeapon.Weapon->OnUnEquip();
+	}
+}
+
+void ACPlayerCharacter::OnAttack()
+{
+	// WeaponType이 Default일 때는 공격 함수가 실행되지 않는다.
+	if(WeaponType != EWeaponType::Default)
+	{
+		// State 설정
+		State->SetStateType(EStateType::Attack);
+
+		// 현재 WeaponType을 Map이 Key로 포함되어 있다면
+		if(EquipedWeaponDataMaps.Contains(WeaponType))
+		{
+			const FEquipedWeaponData equipedWeapon = EquipedWeaponDataMaps[WeaponType];
+			// Weapon의 OnAttack() 호출
+			equipedWeapon.Weapon->OnAttack();
+		}		
 	}
 }
 

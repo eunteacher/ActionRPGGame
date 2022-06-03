@@ -22,7 +22,7 @@ void UCAnimNotify_RightFootStep::Notify(USkeletalMeshComponent* MeshComp, UAnimS
 		if(IsValid(footStepSound))			
 		{
 			// 현재 SpeedType를 캐릭터를 통해서 가져온다.
-			footStepSound->NotifyRightFootStep(MeshComp->GetOwner<ACBaseCharacter>()->GetSpeed());
+			footStepSound->NotifyRightFootStep(MeshComp->GetOwner<ACBaseCharacter>()->GetSpeedType());
 		}
 	}
 }

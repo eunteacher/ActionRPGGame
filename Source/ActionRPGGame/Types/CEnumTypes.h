@@ -2,6 +2,16 @@
 
 #include "CoreMinimal.h"
 
+UENUM(BlueprintType)
+enum class EAttackType : uint8
+{
+	Sword_Combo1,
+	Sword_Combo2,
+	Sword_Combo3,
+	Bow_Attack,
+	Max
+};
+
 // 무기 타입
 UENUM(BlueprintType)
 enum class EWeaponType : uint8
@@ -22,8 +32,8 @@ enum class EMontageType : uint8
 	EvadeRight,
 	Equip_Sword,
 	Equip_Bow,
-	Unequip_Sword,
-	Unequip_Bow,
+	UnEquip_Sword,
+	UnEquip_Bow,
 	Sword_Combo1,
 	Sword_Combo2,
 	Sword_Combo3,
@@ -64,6 +74,7 @@ enum class EStateType : uint8
 	Jump,
 	Evade,
 	Equip,
-	Unequip,
+	UnEquip,
+	Attack,
 	Max
 };

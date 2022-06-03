@@ -29,7 +29,7 @@ void UCSoundComponent::BeginPlay()
 		for (FSoundData* data : soundDatas)
 		{
 			// ModelType과 맞는 사운드 데이터를 가져와 저장
-			if (GetOwner<ACBaseCharacter>()->GetModel() == data->Type) // 모델 타입과 데이터의 타입이 같다면
+			if (GetOwner<ACBaseCharacter>()->GetModelType() == data->Type) // 모델 타입과 데이터의 타입이 같다면
 			{
 				SoundData = data;
 				break;
@@ -67,11 +67,19 @@ void UCSoundComponent::PlayEvadeSound()
 	}
 }
 
-void UCSoundComponent::PlayEquipAndUnequipSound()
+void UCSoundComponent::PlayEquipSound()
 {
-	if (SoundData->Evade != nullptr && IsValid(GetOwner<ACBaseCharacter>()))
+	if (SoundData->Equip != nullptr && IsValid(GetOwner<ACBaseCharacter>()))
 	{
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundData->EquipAndUnequip, GetOwner<ACBaseCharacter>()->GetActorLocation(), GetOwner<ACBaseCharacter>()->GetActorRotation());
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundData->Equip, GetOwner<ACBaseCharacter>()->GetActorLocation(), GetOwner<ACBaseCharacter>()->GetActorRotation());
+	}
+}
+
+void UCSoundComponent::PlayAttackSound()
+{
+	if (SoundData->Attack != nullptr && IsValid(GetOwner<ACBaseCharacter>()))
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SoundData->Attack, GetOwner<ACBaseCharacter>()->GetActorLocation(), GetOwner<ACBaseCharacter>()->GetActorRotation());
 	}
 }
 

@@ -28,7 +28,10 @@ public:
 	void PlayEvadeSound();
 	// Equip And Unequip Sound Play
 	UFUNCTION(Category = "PlaySound")
-	void PlayEquipAndUnequipSound();
+	void PlayEquipSound();
+
+	UFUNCTION(Category = "PlaySound")
+	void PlayAttackSound();
 
 protected:
 	// BeginPlay

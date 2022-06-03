@@ -5,7 +5,7 @@
 #include "GameFramework/Character.h"
 #include "Types/CDataTableType.h"
 #include "Types/CEnumTypes.h"
-#include "Types/CTypes.h"
+#include "Types/CStructTypes.h"
 #include "CBaseCharacter.generated.h"
 
 // 기본 캐릭터 클래스
@@ -29,25 +29,29 @@ public:
 
 	// 현재 SpeedType을 반환
 	UFUNCTION(Category = "Getter")
-	ESpeedType GetSpeed() const { return Speed; }
+	ESpeedType GetSpeedType() const { return SpeedType; }
 
 	// ModelType을 반환
 	UFUNCTION(Category = "Getter")
-	EModelType GetModel() const { return Model; }
+	EModelType GetModelType() const { return ModelType; }
 
+	// Weapon Type을 반환
 	UFUNCTION(Category = "Getter")
-	EWeaponType GetWeapon() const { return Weapon; }
+	EWeaponType GetWeaponType() const { return WeaponType; }
 
+	// EquipedWeaponDataMaps을 반환
 	UFUNCTION(Category = "Getter")
-	TMap<EWeaponType, FOwningWeapon> GetOwningWeaponDataMaps() { return OwningWeaponDataMaps; }
+	TMap<EWeaponType, FEquipedWeaponData>& GetEquipedWeaponDataMaps() { return EquipedWeaponDataMaps; }
 	
 protected:
 	// BeginPlay 함수
 	virtual void BeginPlay() override;
 	// Land 함수
 	virtual void Landed(const FHitResult& Hit) override;
-	// State 컴포넌트의 델리게이트에 바인딩된 함수
-	virtual void OnChangedState(EStateType InPrev, EStateType InNew);
+	// State 변경 시 호출
+	// 이전 Type에서 현재 Type으로 변경될 때, 해야할 행동을 정의
+	UFUNCTION()
+	void OnStateTypeChanged(EStateType InPrev, EStateType InNew);
 	
 	// 왼발, 오른발 표면을 검사하여 표면에 맞는 사운드를 Play
 	UPROPERTY(VisibleDefaultsOnly, Category = "Component")
@@ -67,16 +71,18 @@ protected:
 
 	// 캐릭터의 SpeedType
 	UPROPERTY(VisibleDefaultsOnly, Category = "Type")
-	ESpeedType Speed;
+	ESpeedType SpeedType;
 	// 캐릭터의 ModelType
 	UPROPERTY(VisibleDefaultsOnly, Category = "Type")
-	EModelType Model;
+	EModelType ModelType;
 	// 캐릭터의 WeaponType
 	UPROPERTY(VisibleDefaultsOnly, Category = "Type")
-	EWeaponType Weapon;
+	EWeaponType WeaponType;
 
+	// 소유 중인 무기 데이터 테이블
 	UPROPERTY(VisibleDefaultsOnly, Category = "DataTable")
-	UDataTable* OwningWeaponDataTable; // 소유 중인 무기 데이터 테이블
+	UDataTable* WeaponDataTable; 
 
-	TMap<EWeaponType, FOwningWeapon> OwningWeaponDataMaps; // 소유 중인 무기 데이터 Map
+	// 장착 무기 데이터 Map
+	TMap<EWeaponType, FEquipedWeaponData> EquipedWeaponDataMaps; 
 };

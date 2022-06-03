@@ -6,7 +6,7 @@
 #include "CStateComponent.generated.h"
 
 // 델리게이트
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnChangedState, EStateType, InPrevType, EStateType, InNewType);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnStateTypeChanged, EStateType, InPrevType, EStateType, InNewType);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ACTIONRPGGAME_API UCStateComponent : public UActorComponent
@@ -16,21 +16,26 @@ class ACTIONRPGGAME_API UCStateComponent : public UActorComponent
 public:
 	// 생성자
 	UCStateComponent();
+
 	// 현재 StateType을 반환
 	UFUNCTION(Category = "Getter")
-	EStateType GetState() const { return State; }
+	EStateType GetStateType() const { return StateType; }
+
 	// StateType을 변경
 	UFUNCTION(Category = "Setter")
-	void SetState(EStateType InNew);
-	// 델리게이트
-	FOnChangedState OnChangedState;
+	void SetStateType(EStateType InNew);
+
+	// 델리게이트, State가 변경될 경우 호출
+	UPROPERTY()
+	FOnStateTypeChanged OnStateTypeChanged;
 protected:
 	// BeginPlay
 	virtual void BeginPlay() override;
 
 	// 새로운 StateTpye과 이전 StateType을 비교하여 변경 가능 여부를 판단
-	bool CheckChangedState(EStateType InNew, EStateType InPrev);
+	bool CheckStateTypeChanged(EStateType InNew, EStateType InPrev);
 
+	// State Type
 	UPROPERTY(VisibleDefaultsOnly, Category = "Type")
-	EStateType State;
+	EStateType StateType;
 };

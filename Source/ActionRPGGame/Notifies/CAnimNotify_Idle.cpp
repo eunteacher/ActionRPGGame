@@ -14,6 +14,6 @@ void UCAnimNotify_Idle::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBa
 	if (IsValid(MeshComp->GetOwner<ACBaseCharacter>()))
 	{
 		UCStateComponent* state = Cast<UCStateComponent>(MeshComp->GetOwner<ACBaseCharacter>()->GetComponentByClass(UCStateComponent::StaticClass()));
-		state->SetState(EStateType::Idle_Walk_Run);
+		state->SetStateType(EStateType::Idle_Walk_Run);
 	}
 }

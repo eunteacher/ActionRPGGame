@@ -21,23 +21,8 @@ void UCMontageComponent::BeginPlay()
 	// 데이터 테이블 값을 가져온다.
 	if(IsValid(MontageTable))
 	{
-		// 데이터 테이블의 Data를 가져와 montageDatas에 저장
-		TArray<FMontageData*> montageDatas;
-		MontageTable->GetAllRows<FMontageData>("", montageDatas);
-
-		// ModelType에 맞게 몽타주를 저장
-		for (int32 i = 0; i < (int32)EModelType::Max; i++)
-		{
-			TArray<FMontageData*> temp; // 임시 TArray
-			for (FMontageData* data : montageDatas)
-			{
-				if(data->ModelType == (EModelType)i)
-				{
-					temp.Add(data);
-				}
-			}
-			MontageDataMaps.Add((EModelType)i, temp);
-		}
+		// 데이터 테이블의 Data를 가져와 MontageData에 저장
+		MontageTable->GetAllRows<FMontageData>("", MontageData);
 	}
 	else
 	{
@@ -46,19 +31,18 @@ void UCMontageComponent::BeginPlay()
 	
 }
 
-void UCMontageComponent::PlayMontage(const EModelType InModel, const EMontageType InMontage)
+void UCMontageComponent::PlayMontage(const EModelType InModelType, const EMontageType InMontageType)
 {
-	// MontageDataMaps에서 InModel에 해당하는 TArray를 찾는다.
-	TArray<FMontageData*> montageDatas = MontageDataMaps[InModel];
-	// 찾은 TArray에서 InMontage에 해당하는 Data를 가져온다.
-	const FMontageData* data = montageDatas[(int32)InMontage];
+	// MontageData InMontageType 해당하는 데이터를 찾는다.
+	const FMontageData* data = MontageData[(int32)InMontageType];
 	ACBaseCharacter* ownerCharacter = GetOwner<ACBaseCharacter>(); // Owner 가져오기
-	if (data != nullptr && IsValid(ownerCharacter) && ownerCharacter->GetModel() == InModel)
+	// data가 존재하고, ownerCharacter가 존재하고, 캐릭터의 ModelType과 입력받은 ModelType이 같다면
+	if (data != nullptr && IsValid(ownerCharacter) && ownerCharacter->GetModelType() == InModelType)
 	{
-		if (IsValid(data->AnimMontage))
+		if (IsValid(data->AnimMontageMaps[InModelType]))
 		{
 			// 몽타주 실행
-			ownerCharacter->PlayAnimMontage(data->AnimMontage, data->PlayRatio, data->StartSection);
+			ownerCharacter->PlayAnimMontage(data->AnimMontageMaps[InModelType], data->PlayRatio, data->StartSection);
 		}
 
 		if (IsValid(data->Particle))

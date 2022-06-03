@@ -5,10 +5,12 @@
 #include "Engine/DataTable.h"
 #include "NiagaraSystem.h"
 #include "MatineeCameraShake.h"
-#include "Weapon/CWeapon_Sword.h"
 #include "CDataTableType.generated.h"
 
-// 캐릭터가 소유중인 무기 데이터 테이블
+// 전방 선언
+class ACWeapon_Base;
+
+// Character의 Weapon 데이터 테이블
 USTRUCT()
 struct FOwningWeaponData : public FTableRowBase
 {
@@ -37,10 +39,7 @@ struct FWeaponData : public FTableRowBase
 	GENERATED_BODY()
 public:
 	UPROPERTY(EditAnywhere, Category = "Type")
-	EWeaponType Type;
-
-	UPROPERTY(EditAnywhere, Category = "Value")
-	int32 ComboCount;
+	TMap<EAttackType, EMontageType> Type;
 
 	UPROPERTY(EditAnywhere, Category = "Value")
 	float Damage;
@@ -67,28 +66,26 @@ struct FMontageData : public FTableRowBase
 public:
 	// 몽타주 타입
 	UPROPERTY(EditAnywhere, Category = "Type")
-	EMontageType MontageType;
+	EMontageType Type;
 	// 몽타주
 	UPROPERTY(EditAnywhere, Category = "Montage")
-	UAnimMontage* AnimMontage;
+	TMap<EModelType, UAnimMontage*> AnimMontageMaps;
 	// PlayRatio
 	UPROPERTY(EditAnywhere, Category = "Montage")
 	float PlayRatio = 1.0f;
 	// 몽타주 시작 지점
 	UPROPERTY(EditAnywhere, Category = "Montage")
 	FName StartSection;
-	// Effect
+	// ParticleSystem
 	UPROPERTY(EditAnywhere, Category = "Effect")
 	UParticleSystem* Particle = nullptr;
-	// Effect
+	// NiagaraSystem Effect
 	UPROPERTY(EditAnywhere, Category = "Effect")
 	UNiagaraSystem* HitNiagaraEffect = nullptr;
 	// 소켓 이름
 	UPROPERTY(EditAnywhere, Category= "Socket")
 	FName SocketName;
-	// 해당하는 몽타주의 모델 타입
-	UPROPERTY(EditAnywhere, Category = "Type")
-	EModelType ModelType;
+
 };
 
 // SoundComponent에서 사용, 사용한 모든 Sound 데이터 테이블
@@ -109,13 +106,13 @@ public:
 	USoundBase* Land;
 	// 높은 착지
 	UPROPERTY(EditAnywhere, Category = "Sound")
-	USoundBase* EquipAndUnequip;
+	USoundBase* Equip;
 	// 피하기
 	UPROPERTY(EditAnywhere, Category = "Sound")
 	USoundBase* Evade;
 	// 전투
 	UPROPERTY(EditAnywhere, Category = "Sound")
-	USoundBase* Battle;
+	USoundBase* Attack;
 	// 어빌리티 1
 	UPROPERTY(EditAnywhere, Category = "Sound")
 	USoundBase* Ability1;

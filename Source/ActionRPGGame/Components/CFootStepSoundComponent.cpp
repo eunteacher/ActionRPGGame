@@ -34,21 +34,21 @@ void UCFootStepSoundComponent::BeginPlay()
 	}
 }
 // 왼발 발자국 
-void UCFootStepSoundComponent::NotifyLeftFootStep(const ESpeedType InSpeed)
+void UCFootStepSoundComponent::NotifyLeftFootStep(const ESpeedType InType)
 {
 	const bool isRight = false;
-	PlayFootStepSound(InSpeed, isRight);
+	PlayFootStepSound(InType, isRight);
 }
 // 오른발 발자국
-void UCFootStepSoundComponent::NotifyRightFootStep(const ESpeedType InSpeed)
+void UCFootStepSoundComponent::NotifyRightFootStep(const ESpeedType InType)
 {
 	const bool isRight = true;
-	PlayFootStepSound(InSpeed, isRight);
+	PlayFootStepSound(InType, isRight);
 }
 
 // 입력으로 SpeedType과 좌/우 판단 여부를 받는다.
 // 트레이스를 통해 PhysicalSurface를 검사한 후 그에 맞는 사운드를 Play
-void UCFootStepSoundComponent::PlayFootStepSound(const ESpeedType InSpeed, const  bool IsRight)
+void UCFootStepSoundComponent::PlayFootStepSound(const ESpeedType InType, const  bool IsRight)
 {
 	//CLog::Log("PlayFootStepSound");
 	ACBaseCharacter* ownerCharacter = GetOwner<ACBaseCharacter>();
@@ -89,11 +89,11 @@ void UCFootStepSoundComponent::PlayFootStepSound(const ESpeedType InSpeed, const
 
 			// Play Sound
 			// 현재 위치에서 Sound Play
-			if (InSpeed == ESpeedType::Walk)
+			if (InType == ESpeedType::Walk)
 			{
 				UGameplayStatics::PlaySoundAtLocation(GetWorld(), FootStepSoundData[(int32)physicalSurfaceType]->WalkSound, ownerCharacter->GetActorLocation(), ownerCharacter->GetActorRotation());
 			}
-			else if (InSpeed == ESpeedType::Run)
+			else if (InType == ESpeedType::Run)
 			{
 				UGameplayStatics::PlaySoundAtLocation(GetWorld(), FootStepSoundData[(int32)physicalSurfaceType]->RunSound, ownerCharacter->GetActorLocation(), ownerCharacter->GetActorRotation());
 			}

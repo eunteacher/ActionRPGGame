@@ -33,8 +33,6 @@ protected:
 	// BeginPlay
 	virtual void BeginPlay() override;
 
-	// State 변경 시 호출
-	virtual void OnChangedState(EStateType InPrev, EStateType InNew) override;
 	// Bind Axis
 	UFUNCTION()
 	void MoveForward(float InValue); // 앞 뒤 입력
@@ -50,31 +48,34 @@ protected:
 
 	// Bind Action
 	UFUNCTION()
-	void OnJump();
+	void OnJump(); // 점프
 
 	UFUNCTION()
-	void OffJump();
+	void OffJump(); // StopJump
 
 	UFUNCTION()
-	void OnWalk();
+	void OnWalk(); // 걷기
 
 	UFUNCTION()
-	void OnRun();
+	void OnRun(); // 뛰기
 
 	UFUNCTION()
-	void OnCrouch();
+	void OnCrouch(); // 앉기
 
 	UFUNCTION()
-	void OffCrouch();
+	void OffCrouch(); // 일어서기
 
 	UFUNCTION()
-	void OnEvade();
+	void OnEvade(); // 피하기
 
 	UFUNCTION()
-	void OnEquip();
+	void OnEquip(); // 무기 장착
 
 	UFUNCTION()
-	void OnUnequip();
+	void OnUnEquip(); // 무기 해제
+
+	UFUNCTION()
+	void OnAttack(); // 공격
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "Camera")
 	class USpringArmComponent* SpringArm; // SpringArm 컴포넌트
@@ -88,7 +89,6 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly, Category = "DataTable")
 	UDataTable* StatusTable; // 데이터 테이블
 
-private:
 	// Status 데이터
-	struct FStatusData* StatusData;
+	FStatusData* StatusData;
 };
