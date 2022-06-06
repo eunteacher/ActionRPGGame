@@ -20,7 +20,7 @@ bool UCStateComponent::CheckStateTypeChanged(EStateType InNew, EStateType InPrev
 // StatTpye을 변경, 델리게이트에 바인딩되어 있는 함수 호출
 void UCStateComponent::SetStateType(EStateType InNew)
 {
-	const EStateType prev = StateType; // 이전 State Type
+	EStateType prev = StateType; // 이전 State Type
 	if(CheckStateTypeChanged(InNew, prev)) // 변경 가능한지 확인
 	{
 		StateType = InNew;

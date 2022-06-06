@@ -1,11 +1,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Engine/DataTable.h"
-#include "GameFramework/Character.h"
-#include "Types/CDataTableType.h"
 #include "Types/CEnumTypes.h"
 #include "Types/CStructTypes.h"
+#include "Types/CDataTableType.h"
+#include "Engine/DataTable.h"
+#include "GameFramework/Character.h"
 #include "CBaseCharacter.generated.h"
 
 // 기본 캐릭터 클래스
@@ -22,6 +22,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	// SetupPlayerInputComponent 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	// Take Damage
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 
 	// 캐릭터의 최대 스피드 값을 설정
 	UFUNCTION(Category = "Setter")
@@ -51,8 +54,8 @@ protected:
 	// State 변경 시 호출
 	// 이전 Type에서 현재 Type으로 변경될 때, 해야할 행동을 정의
 	UFUNCTION()
-	void OnStateTypeChanged(EStateType InPrev, EStateType InNew);
-	
+	void OnStateTypeChanged(EStateType& InPrev, EStateType& InNew);
+
 	// 왼발, 오른발 표면을 검사하여 표면에 맞는 사운드를 Play
 	UPROPERTY(VisibleDefaultsOnly, Category = "Component")
 	class UCFootStepSoundComponent* FootStepSound; // FootStep 컴포넌트
@@ -79,9 +82,16 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly, Category = "Type")
 	EWeaponType WeaponType;
 
+	// Status Data Table
+	UPROPERTY(VisibleDefaultsOnly, Category = "DataTable")
+	UDataTable* StatusTable;
+	
 	// 소유 중인 무기 데이터 테이블
 	UPROPERTY(VisibleDefaultsOnly, Category = "DataTable")
 	UDataTable* WeaponDataTable; 
+
+	// Status 데이터
+	FStatusData* StatusData;
 
 	// 장착 무기 데이터 Map
 	TMap<EWeaponType, FEquipedWeaponData> EquipedWeaponDataMaps; 

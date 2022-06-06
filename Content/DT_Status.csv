@@ -1,2 +1,4 @@
 ---,Type,Health,MaxHealth,Mana,MaxMana,Stamina,MaxStamina
 1,Player,1000,1000,500,500,1000,1000
+2,Enemy_Normal,500,500,,,,
+3,Enemy_Boss,1000,1000,,,,

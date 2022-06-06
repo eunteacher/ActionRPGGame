@@ -9,31 +9,20 @@ ACWeapon_Base::ACWeapon_Base()
 {
 	// PrimaryActorTick.bCanEverTick = true;
 
-	// 루트 컴포넌트 생성
-	Root = CreateDefaultSubobject<USceneComponent>("Root");
-	SetRootComponent(Root);
-
 	// 멤버 변수 초기화
 	IsEquip = false;
 
-	// Weapon Data Table
-	// DataTable'/Game/DataTables/DT_Wepaon.DT_Wepaon'
-	static ConstructorHelpers::FObjectFinder<UDataTable> WeaponDataTableAsset(TEXT("DataTable'/Game/DataTables/DT_Wepaon.DT_Wepaon'"));
-	if (WeaponDataTableAsset.Succeeded())
-	{
-		WeaponTable = WeaponDataTableAsset.Object;
-	}
+	// 컴포넌트 생성 및 초기화
+	Root = CreateDefaultSubobject<USceneComponent>("Root");
+	SetRootComponent(Root);
+	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("StaticMesh");
+	StaticMesh->SetupAttachment(Root);
 }
 
 void ACWeapon_Base::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if(IsValid(WeaponTable))
-	{
-		// 데이터 테이블의 데이터를 읽어와서 저장
-		WeaponTable->GetAllRows<FWeaponData>("", WeaponData);
-	}
 }
 
 // 무기 장착 몽타주 실행 

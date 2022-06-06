@@ -9,8 +9,8 @@ public class ActionRPGGame : ModuleRules
 
 		PublicDependencyModuleNames.AddRange(new string[]
 		{
-			"Core", "CoreUObject", "Engine", "InputCore", "UMG", "GameplayAbilities", "GameplayTags", "GameplayTasks",
-			"PhysicsCore", "Niagara", "RD", "GameplayCameras"
+			"Core", "CoreUObject", "Engine", "InputCore", "UMG",
+			"PhysicsCore", "Niagara", "RD", "GameplayCameras", "AIModule"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore", "AnimGraphRuntime" });

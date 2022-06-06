@@ -1,5 +1,6 @@
 #include "Notifies/CAnimNotifyState_Collision.h"
 #include "Charactets/CBaseCharacter.h"
+#include "Weapon/CWeapon_Base.h"
 
 FString UCAnimNotifyState_Collision::GetNotifyName_Implementation() const
 {

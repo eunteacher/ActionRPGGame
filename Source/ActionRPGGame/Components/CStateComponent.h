@@ -6,7 +6,7 @@
 #include "CStateComponent.generated.h"
 
 // 델리게이트
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnStateTypeChanged, EStateType, InPrevType, EStateType, InNewType);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnStateTypeChanged, EStateType&, InPrevType, EStateType&, InNewType);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ACTIONRPGGAME_API UCStateComponent : public UActorComponent

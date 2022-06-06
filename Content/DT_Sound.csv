@@ -1,2 +1,3 @@
 ---,Type,Jump,Land,Equip,Evade,Attack,Ability1,Ability2,Ability3,Ability4
 1,Player,SoundCue'/Game/Sounds/Cue_Jump.Cue_Jump',SoundCue'/Game/Sounds/Cue_Land.Cue_Land',SoundCue'/Game/Sounds/Cue_HeavyLand.Cue_HeavyLand',SoundCue'/Game/Sounds/Cue_Evade.Cue_Evade',SoundCue'/Game/Sounds/Cue_Attack.Cue_Attack',,,,
+2,Enemy_Normal,,,,,,,,,

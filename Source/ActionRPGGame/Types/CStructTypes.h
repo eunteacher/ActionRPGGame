@@ -1,8 +1,10 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "Weapon/CWeapon_Base.h"
 #include "CStructTypes.generated.h"
+
+// 전방 선언
+class ACWeapon_Base;
 
 USTRUCT(BlueprintType)
 struct FEquipedWeaponData

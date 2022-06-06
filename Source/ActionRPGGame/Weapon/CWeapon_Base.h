@@ -1,14 +1,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Types/CEnumTypes.h"
+#include "Types/CDataTableType.h"
 #include "Engine/DataTable.h"
 #include "GameFramework/Actor.h"
-#include "Types/CEnumTypes.h"
 #include "CWeapon_Base.generated.h"
-
-// 전방 선언
-struct FWeaponData;
-enum class EWeaponType : uint8;
 
 UCLASS()
 class ACTIONRPGGAME_API ACWeapon_Base : public AActor
@@ -40,9 +37,14 @@ public:
 protected:
 	// BeginPlay
 	virtual void BeginPlay() override;
-	// 루트
+	// Scene 컴포넌트, 루트 컴포넌트
 	UPROPERTY(VisibleDefaultsOnly, Category = "Component")
 	USceneComponent* Root;
+
+	// StaticMesh 컴포넌트, 무기의 Mesh
+	UPROPERTY(VisibleDefaultsOnly, Category = "Collision")
+	UStaticMeshComponent* StaticMesh;
+	
 	// Weapon Type
 	UPROPERTY(VisibleDefaultsOnly, Category = "Type")
 	EWeaponType Weapon;

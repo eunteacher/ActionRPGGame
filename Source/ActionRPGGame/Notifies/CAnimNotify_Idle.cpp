@@ -1,7 +1,6 @@
 #include "Notifies/CAnimNotify_Idle.h"
 #include "Charactets/CBaseCharacter.h"
 #include "Components/CStateComponent.h"
-#include "Types/CEnumTypes.h"
 
 FString UCAnimNotify_Idle::GetNotifyName_Implementation() const
 {

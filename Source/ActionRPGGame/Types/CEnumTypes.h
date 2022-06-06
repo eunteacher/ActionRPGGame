@@ -5,10 +5,10 @@
 UENUM(BlueprintType)
 enum class EAttackType : uint8
 {
-	Sword_Combo1,
-	Sword_Combo2,
-	Sword_Combo3,
-	Bow_Attack,
+	Near_Combo1,
+	Near_Combo2,
+	Near_Combo3,
+	Far_Attack,
 	Max
 };
 
@@ -37,6 +37,8 @@ enum class EMontageType : uint8
 	Sword_Combo1,
 	Sword_Combo2,
 	Sword_Combo3,
+	Hit,
+	Hit_Knockback,
 	Max
 };
 
@@ -45,6 +47,7 @@ UENUM(BlueprintType)
 enum class EModelType : uint8
 {
 	GhostLady,
+	Gruntling,
 	Max
 };
 
@@ -53,7 +56,8 @@ UENUM(BlueprintType)
 enum class EStatusType : uint8
 {
 	Player,
-	Monster,
+	Enemy_Normal,
+	Enemy_Boss,
 	Max
 };
 
@@ -76,5 +80,6 @@ enum class EStateType : uint8
 	Equip,
 	UnEquip,
 	Attack,
+	Hit,
 	Max
 };

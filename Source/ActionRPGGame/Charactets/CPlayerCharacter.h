@@ -1,13 +1,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GenericTeamAgentInterface.h"
 #include "Charactets/CBaseCharacter.h"
-#include "Engine/DataTable.h"
 #include "CPlayerCharacter.generated.h"
 
 // Player Character
 UCLASS()
-class ACTIONRPGGAME_API ACPlayerCharacter : public ACBaseCharacter
+class ACTIONRPGGAME_API ACPlayerCharacter : public ACBaseCharacter, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
 
@@ -18,7 +18,10 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	// SetupPlayerInputComponent
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
+	// TakeDamage
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	// TeamID 반환 
+	virtual FGenericTeamId GetGenericTeamId() const override;
 	// 체력 위젯 업데이트
 	UFUNCTION()
 	void UpdateHealth(float& InHealth, float& InMaxHealth);
@@ -32,7 +35,6 @@ public:
 protected:
 	// BeginPlay
 	virtual void BeginPlay() override;
-
 	// Bind Axis
 	UFUNCTION()
 	void MoveForward(float InValue); // 앞 뒤 입력
@@ -86,9 +88,7 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly, Category = "Camera")
 	float TurnRate; // 회전 비율
 
-	UPROPERTY(VisibleDefaultsOnly, Category = "DataTable")
-	UDataTable* StatusTable; // 데이터 테이블
+	UPROPERTY(VisibleDefaultsOnly, Category = "Team")
+	uint8 TeamID = 0;
 
-	// Status 데이터
-	FStatusData* StatusData;
 };

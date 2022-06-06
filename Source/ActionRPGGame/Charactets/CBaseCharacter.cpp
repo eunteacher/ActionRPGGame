@@ -1,10 +1,12 @@
 #include "Charactets/CBaseCharacter.h"
 #include "ActionRPGGame.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CFootStepSoundComponent.h"
 #include "Components/CSoundComponent.h"
 #include "Components/CMontageComponent.h"
 #include "Components/CStateComponent.h"
-#include "GameFramework/CharacterMovementComponent.h"
+#include "Weapon/CWeapon_Base.h"
+
 // 생성자
 ACBaseCharacter::ACBaseCharacter()
 {
@@ -15,6 +17,7 @@ ACBaseCharacter::ACBaseCharacter()
 	FootStepSound = CreateDefaultSubobject<UCFootStepSoundComponent>("FootStepSound");
 	Montage = CreateDefaultSubobject<UCMontageComponent>("Montage");
 	State = CreateDefaultSubobject<UCStateComponent>("State");
+
 	// 멤버변수 초기화
 	SpeedType = ESpeedType::Walk;
 	WeaponType = EWeaponType::Default;
@@ -25,7 +28,7 @@ void ACBaseCharacter::BeginPlay()
 {
 	// State 컴포넌트의 델리게이트를 바인딩
 	State->OnStateTypeChanged.AddDynamic(this, &ACBaseCharacter::OnStateTypeChanged);
-	
+
 	Super::BeginPlay();
 }
 
@@ -53,9 +56,15 @@ void ACBaseCharacter::Landed(const FHitResult& Hit)
 		State->SetStateType(EStateType::Idle_Walk_Run);
 	}
 }
+
+float ACBaseCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+}
+
 // State가 변경되었을 때 호출되는 함수
 // 이전 StateType과 변경된 StateType을 입력으로 받는다.
-void ACBaseCharacter::OnStateTypeChanged(EStateType InPrev, EStateType InNew)
+void ACBaseCharacter::OnStateTypeChanged(EStateType& InPrev, EStateType& InNew)
 {
 	switch(InNew)
 	{
@@ -76,7 +85,6 @@ void ACBaseCharacter::OnStateTypeChanged(EStateType InPrev, EStateType InNew)
 			}
 		}
 		break;
-
 	default:
 		break;
 	}

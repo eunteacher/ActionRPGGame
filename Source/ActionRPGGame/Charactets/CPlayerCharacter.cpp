@@ -11,6 +11,7 @@
 #include "Components/CSoundComponent.h"
 #include "Components/CMontageComponent.h"
 #include "Components/CStateComponent.h"
+#include "Weapon/CWeapon_Base.h"
 
 // 생성자 멤버 변수 생성 및 초기화
 ACPlayerCharacter::ACPlayerCharacter()
@@ -19,13 +20,14 @@ ACPlayerCharacter::ACPlayerCharacter()
 
 	// 멤버 변수 초기화
 	TurnRate = 45.0f; // 회전 비율
+	ModelType = EModelType::GhostLady; // ModelType 정의
 
 	// UseControllerRotation 값 설정
 	bUseControllerRotationPitch = false;
 	// bUseControllerRotationYaw = false;
 	bUseControllerRotationYaw = true;
 	bUseControllerRotationRoll = false;
-
+	
 	// CharacterMovement 값 설정
 	// GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->bOrientRotationToMovement = false;
@@ -76,7 +78,7 @@ ACPlayerCharacter::ACPlayerCharacter()
 
 	// Status 데이터 테이블 에셋을 가져와 저장
 	// DataTable'/Game/DataTables/DT_Status.DT_Status'
-	static ConstructorHelpers::FObjectFinder<UDataTable> statusTableAsset(TEXT("DataTable'/Game/DataTables/DT_Status.DT_Status'"));
+	const ConstructorHelpers::FObjectFinder<UDataTable> statusTableAsset(TEXT("DataTable'/Game/DataTables/DT_Status.DT_Status'"));
 	if (statusTableAsset.Succeeded())
 	{
 		StatusTable = statusTableAsset.Object;
@@ -84,11 +86,12 @@ ACPlayerCharacter::ACPlayerCharacter()
 
 	// OwningWeapon 데이터 테이블 에셋을 가져와 저장
 	// DataTable'/Game/DataTables/DT_PlayerOwningWeapon.DT_PlayerOwningWeapon'
-	static ConstructorHelpers::FObjectFinder<UDataTable> owningWeaponDataTableAsset(TEXT("DataTable'/Game/DataTables/DT_PlayerOwningWeapon.DT_PlayerOwningWeapon'"));
+	const ConstructorHelpers::FObjectFinder<UDataTable> owningWeaponDataTableAsset(TEXT("DataTable'/Game/DataTables/DT_PlayerOwningWeapon.DT_PlayerOwningWeapon'"));
 	if (owningWeaponDataTableAsset.Succeeded())
 	{
 		WeaponDataTable = owningWeaponDataTableAsset.Object;
 	}
+
 }
 
 // BeginPlay
@@ -148,6 +151,15 @@ void ACPlayerCharacter::BeginPlay()
 	}
 }
 
+float ACPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	StatusData->Health -= damage;
+	UpdateHealth(StatusData->Health, StatusData->MaxHealth);
+	// TODO : Damage Widget 
+	return StatusData->Health;
+}
+
 // Tick
 void ACPlayerCharacter::Tick(float DeltaTime)
 {
@@ -205,6 +217,12 @@ void ACPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAction("UnEquip", IE_Pressed, this, &ACPlayerCharacter::OnUnEquip);
 
 	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ACPlayerCharacter::OnAttack);
+}
+
+// TeamID이 반환
+FGenericTeamId ACPlayerCharacter::GetGenericTeamId() const
+{
+	return FGenericTeamId(TeamID);
 }
 
 void ACPlayerCharacter::MoveForward(float InValue)

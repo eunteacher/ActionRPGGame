@@ -1,6 +1,8 @@
 #include "Notifies/CAnimNotify_Equip.h"
-#include "Charactets/CBaseCharacter.h"
 #include "ActionRPGGame.h"
+#include "Charactets/CBaseCharacter.h"
+#include "Weapon/CWeapon_Base.h"
+
 FString UCAnimNotify_Equip::GetNotifyName_Implementation() const
 {
 	return "Equip";

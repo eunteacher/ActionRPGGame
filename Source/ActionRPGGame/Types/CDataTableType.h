@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "Types/CEnumTypes.h"
 #include "Engine/DataTable.h"
 #include "NiagaraSystem.h"
 #include "MatineeCameraShake.h"
@@ -9,6 +8,11 @@
 
 // 전방 선언
 class ACWeapon_Base;
+enum class EStatusType : uint8;
+enum class EModelType : uint8;
+enum class EMontageType : uint8;
+enum class EAttackType : uint8;
+enum class EWeaponType : uint8;
 
 // Character의 Weapon 데이터 테이블
 USTRUCT()

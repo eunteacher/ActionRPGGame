@@ -1,7 +1,6 @@
 #include "Components/CSoundComponent.h"
 #include "ActionRPGGame.h"
 #include "Charactets/CBaseCharacter.h"
-#include "GameFramework/Character.h"
 
 // 생성자
 UCSoundComponent::UCSoundComponent()
