@@ -56,7 +56,7 @@ UENUM(BlueprintType)
 enum class EStatusType : uint8
 {
 	Player,
-	Enemy_Normal,
+	Enemy_Gruntling,
 	Enemy_Boss,
 	Max
 };

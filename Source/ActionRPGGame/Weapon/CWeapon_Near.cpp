@@ -38,7 +38,6 @@ void ACWeapon_Near::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedCompo
 	if(data->Type.Contains(AttackType))
 	{
 		CLog::Log("Hit Effect");
-		Cast<ACBaseCharacter>(OtherActor)->Take
 		
 	}
 }

@@ -6,6 +6,7 @@
 #include "CSoundComponent.generated.h"
 
 // 전방 선언
+enum class EWeaponType : uint8;
 enum class EModelType : uint8;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))

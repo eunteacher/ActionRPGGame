@@ -23,8 +23,8 @@ ACWeapon_Near_Sword::ACWeapon_Near_Sword()
 	Capsule->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	// Weapon Data Table
-	// DataTable'/Game/DataTables/DT_Wepaon.DT_Wepaon'
-	const ConstructorHelpers::FObjectFinder<UDataTable> WeaponDataTableAsset(TEXT("DataTable'/Game/DataTables/DT_Wepaon.DT_Wepaon'"));
+	// DataTable'/Game/DataTables/DT_Wepaon_Sword.DT_Wepaon_Sword'
+	const ConstructorHelpers::FObjectFinder<UDataTable> WeaponDataTableAsset(TEXT("DataTable'/Game/DataTables/DT_Wepaon_Sword.DT_Wepaon_Sword'"));
 	if (WeaponDataTableAsset.Succeeded())
 	{
 		WeaponTable = WeaponDataTableAsset.Object;

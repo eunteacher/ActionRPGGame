@@ -21,6 +21,7 @@ ACPlayerCharacter::ACPlayerCharacter()
 	// 멤버 변수 초기화
 	TurnRate = 45.0f; // 회전 비율
 	ModelType = EModelType::GhostLady; // ModelType 정의
+	WeaponType = EWeaponType::Default;
 
 	// UseControllerRotation 값 설정
 	bUseControllerRotationPitch = false;
@@ -143,11 +144,24 @@ void ACPlayerCharacter::BeginPlay()
 					equipedWeapon.Weapon = weapon;
 					equipedWeapon.WeaponSocketName = data->WeaponSocketName;
 					equipedWeapon.WeaponHolsterSocketName = data->WeaponHolsterSocketName;
-					
+					equipedWeapon.WeaponIconInfo.WeaponIcon = data->WeaponIcon;
+					equipedWeapon.WeaponIconInfo.Ability1_Icon = data->Ability1_Icon;
+					equipedWeapon.WeaponIconInfo.Ability2_Icon = data->Ability2_Icon;
+					equipedWeapon.WeaponIconInfo.Ability3_Icon = data->Ability3_Icon;
+					equipedWeapon.WeaponIconInfo.Ability4_Icon = data->Ability4_Icon;
 					EquipedWeaponDataMaps.Add((EWeaponType)i, equipedWeapon); // Map에 추가
 				} // if 웨폰 타입 && bOwning
 			} // for owningWeaponDatas
 		} // for EWeaponType
+	}
+
+	// Player가 시작할 때 WeaponType이 Default이기 때문에 아이콘 변경
+	FWeaponIconInfo weaponIconInfo;
+	const ACPlayerController* controller = GetController<ACPlayerController>();
+	if(IsValid(controller) && controller->OnSlotChanged.IsBound())
+	{
+		bool IsDefault = WeaponType == EWeaponType::Default ? true : false;
+		controller->OnSlotChanged.Broadcast(weaponIconInfo, IsDefault);
 	}
 }
 
@@ -415,12 +429,12 @@ void ACPlayerCharacter::OnEquip()
 	}
 	else if (WeaponType == EWeaponType::Sword)
 	{
-		// WeaponType = EWeaponType::Bow;
+		WeaponType = EWeaponType::Bow;
 	}
-	// else if (WeaponType == EWeaponType::Bow)
-	// {
-	// 	WeaponType = EWeaponType::Sword;
-	// }
+	else if (WeaponType == EWeaponType::Bow)
+	{
+		WeaponType = EWeaponType::Sword;
+	}
 
 	// 현재 WeaponType을 Map이 Key로 포함되어 있다면
 	if(EquipedWeaponDataMaps.Contains(WeaponType))
@@ -428,6 +442,13 @@ void ACPlayerCharacter::OnEquip()
 		const FEquipedWeaponData equipedWeapon = EquipedWeaponDataMaps[WeaponType];
 		// Weapon의 OnEquip() 호출
 		equipedWeapon.Weapon->OnEquip();
+
+		const ACPlayerController* controller = GetController<ACPlayerController>();
+		if(IsValid(controller) && controller->OnSlotChanged.IsBound())
+		{
+			bool IsDefault = WeaponType == EWeaponType::Default ? true : false;
+			controller->OnSlotChanged.Broadcast(equipedWeapon.WeaponIconInfo, IsDefault);
+		}
 	}
 }
 
@@ -462,6 +483,31 @@ void ACPlayerCharacter::OnAttack()
 			// Weapon의 OnAttack() 호출
 			equipedWeapon.Weapon->OnAttack();
 		}		
+	}
+}
+
+void ACPlayerCharacter::OnStateTypeChanged(EStateType& InPrev, EStateType& InNew)
+{
+	Super::OnStateTypeChanged(InPrev, InNew);
+
+	switch(InNew)
+	{
+	case EStateType::Idle_Walk_Run:
+		if(InPrev == EStateType::UnEquip)
+		{
+			// Icon 변경
+			FWeaponIconInfo weaponIconInfo;
+			const ACPlayerController* controller = GetController<ACPlayerController>();
+			if(IsValid(controller) && controller->OnSlotChanged.IsBound())
+			{
+				bool IsDefault = WeaponType == EWeaponType::Default ? true : false;
+				controller->OnSlotChanged.Broadcast(weaponIconInfo, IsDefault);
+			}
+		}
+
+		break;
+	default:
+		break;
 	}
 }
 

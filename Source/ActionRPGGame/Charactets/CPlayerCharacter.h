@@ -79,6 +79,7 @@ protected:
 	UFUNCTION()
 	void OnAttack(); // 공격
 
+	virtual void OnStateTypeChanged(EStateType& InPrev, EStateType& InNew) override;
 	UPROPERTY(VisibleDefaultsOnly, Category = "Camera")
 	class USpringArmComponent* SpringArm; // SpringArm 컴포넌트
 

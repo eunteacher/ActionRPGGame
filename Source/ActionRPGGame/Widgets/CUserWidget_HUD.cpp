@@ -1,4 +1,6 @@
 #include "Widgets/CUserWidget_HUD.h"
+
+#include "CUserWidget_Slots.h"
 #include "Widgets/CUserWidget_BaseProgressBar.h"
 #include "Charactets/CPlayerController.h"
 
@@ -9,6 +11,7 @@ void UCUserWidget_HUD::Bind()
 		GetOwningPlayer<ACPlayerController>()->OnHealthChanged.AddDynamic(this, &UCUserWidget_HUD::UpdateHealth);
 		GetOwningPlayer<ACPlayerController>()->OnManaChanged.AddDynamic(this, &UCUserWidget_HUD::UpdateMana);
 		GetOwningPlayer<ACPlayerController>()->OnStaminaChanged.AddDynamic(this, &UCUserWidget_HUD::UpdateStamina);
+		GetOwningPlayer<ACPlayerController>()->OnSlotChanged.AddDynamic(this,&UCUserWidget_HUD::UpdateSlot);
 	}
 }
 
@@ -28,4 +31,9 @@ void UCUserWidget_HUD::UpdateMana(float& InMana, float& InMaxMana)
 {
 	// Mana UpdateValue() 함수 호출
 	ManaBar->UpdateValue(InMana, InMaxMana);
+}
+
+void UCUserWidget_HUD::UpdateSlot(const FWeaponIconInfo& InIconInfo, bool IsDefault)
+{
+	Slots->SetIcon(InIconInfo.WeaponIcon, InIconInfo.Ability1_Icon, InIconInfo.Ability2_Icon, InIconInfo.Ability3_Icon, InIconInfo.Ability4_Icon, IsDefault);
 }

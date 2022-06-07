@@ -71,7 +71,7 @@ void ACEnemyCharacter_Grunting::BeginPlay()
 		StatusTable->GetAllRows<FStatusData>("", statusDatas);
 		for (FStatusData* data : statusDatas)
 		{
-			if (data->Type == EStatusType::Enemy_Normal) // Type이 Enemy_Normal 경우
+			if (data->Type == EStatusType::Enemy_Gruntling) // Type이 Enemy_Gruntling 경우
 			{
 				StatusData = data;
 				break;

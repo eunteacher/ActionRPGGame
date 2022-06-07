@@ -30,14 +30,14 @@ void ACWeapon_Base::OnEquip()
 {
 	if(IsValid(GetOwner<ACBaseCharacter>()))
 	{
+		// 무기를 소유한 캐릭터의 Montage 컴포넌트와 sound 컴포넌트를 가져온다.
 		UCMontageComponent* montage = Cast<UCMontageComponent>(GetOwner<ACBaseCharacter>()->GetComponentByClass(UCMontageComponent::StaticClass()));
 		UCSoundComponent* sound = Cast<UCSoundComponent>(GetOwner<ACBaseCharacter>()->GetComponentByClass(UCSoundComponent::StaticClass()));
 		// 무기가 장착되어 있지 않고, WeaponType이 캐릭터의 WeaponType과 같을 경우
-		if (!IsEquip && GetOwner<ACBaseCharacter>()->GetWeaponType() == Weapon) 
+		if (GetOwner<ACBaseCharacter>()->GetWeaponType() == Weapon) 
 		{
 			IsEquip = true; // 무기 장착 여부 true
 			
-			// 무기를 소유한 캐릭터의 Montage 컴포넌트를 가져온다.
 			if (IsValid(montage) && IsValid(sound))
 			{
 				// WeaponType에 맞게 몽타주 실행
@@ -77,7 +77,7 @@ void ACWeapon_Base::OnUnEquip()
 				}
 				else if (Weapon == EWeaponType::Bow)
 				{
-					montage->PlayMontage(GetOwner<ACBaseCharacter>()->GetModelType(), EMontageType::UnEquip_Sword);
+					montage->PlayMontage(GetOwner<ACBaseCharacter>()->GetModelType(), EMontageType::UnEquip_Bow);
 				}
 				// 사운드 플레이
 				sound->PlayEquipSound();

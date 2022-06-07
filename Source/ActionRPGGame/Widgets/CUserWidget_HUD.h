@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Types/CStructTypes.h"
 #include "CUserWidget_HUD.generated.h"
 
 // 전방 선언
@@ -37,10 +38,10 @@ protected:
 	UCUserWidget_BaseProgressBar* StaminaBar;
 
 	UPROPERTY(meta = (BindWidget))
-	UCanvasPanel* AbilityFrame;
+	UCanvasPanel* SlotFrame;
 
 	UPROPERTY(meta = (BindWidget))
-	class UCUserWidget_Ability* Ability;
+	class UCUserWidget_Slots* Slots;
 
 	// 변경된 Stamina 값을 Update
 	UFUNCTION()
@@ -52,4 +53,7 @@ protected:
 	UFUNCTION()
 	void UpdateMana(float& InMana, float& InMaxMana);
 
+	// Slots 변경
+	UFUNCTION()
+	void UpdateSlot(const FWeaponIconInfo& InIconInfo, bool IsDefault);
 };

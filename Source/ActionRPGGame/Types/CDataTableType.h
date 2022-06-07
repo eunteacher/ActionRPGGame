@@ -34,6 +34,21 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Socket")
 	FName WeaponHolsterSocketName;
+
+	UPROPERTY(EditAnywhere, Category = "Texture")
+	UTexture2D* WeaponIcon;
+
+	UPROPERTY(EditAnywhere, Category = "Texture")
+	UTexture2D* Ability1_Icon;
+
+	UPROPERTY(EditAnywhere, Category = "Texture")
+	UTexture2D* Ability2_Icon;
+
+	UPROPERTY(EditAnywhere, Category = "Texture")
+	UTexture2D* Ability3_Icon;
+
+	UPROPERTY(EditAnywhere, Category = "Texture")
+	UTexture2D* Ability4_Icon;
 };
 
 // Weapon 클래스에서 사용될 무기 데이터 테이블
@@ -108,7 +123,7 @@ public:
 	// 착지
 	UPROPERTY(EditAnywhere, Category = "Sound")
 	USoundBase* Land;
-	// 높은 착지
+	// 무기 장착
 	UPROPERTY(EditAnywhere, Category = "Sound")
 	USoundBase* Equip;
 	// 피하기

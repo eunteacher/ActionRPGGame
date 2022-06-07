@@ -54,7 +54,7 @@ protected:
 	// State 변경 시 호출
 	// 이전 Type에서 현재 Type으로 변경될 때, 해야할 행동을 정의
 	UFUNCTION()
-	void OnStateTypeChanged(EStateType& InPrev, EStateType& InNew);
+	virtual void OnStateTypeChanged(EStateType& InPrev, EStateType& InNew);
 
 	// 왼발, 오른발 표면을 검사하여 표면에 맞는 사운드를 Play
 	UPROPERTY(VisibleDefaultsOnly, Category = "Component")

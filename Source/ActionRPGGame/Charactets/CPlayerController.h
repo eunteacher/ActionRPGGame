@@ -3,12 +3,14 @@
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
 #include "GameFramework/PlayerController.h"
+#include "Types/CStructTypes.h"
 #include "CPlayerController.generated.h"
 
 // 델리 게이트 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FHealthChanged, float&, InValue, float&, InMaxValue);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FManaChanged, float&, InValue, float&, InMaxValue);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FStaminaChanged, float&, InValue, float&, InMaxValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FSlotChanged, const FWeaponIconInfo&, InInconInfo, bool, IsDefault);
 
 // 전방 선언
 class UCUserWidget_HUD;
@@ -31,6 +33,8 @@ public:
 	FManaChanged OnManaChanged;
 	UPROPERTY()
 	FStaminaChanged OnStaminaChanged;
+	UPROPERTY()
+	FSlotChanged OnSlotChanged;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "UserWidget")
 	TSubclassOf<UCUserWidget_HUD> UserWidgetHUDClass; // UserWidgetHUD 클래스

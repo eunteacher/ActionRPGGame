@@ -1,5 +1,6 @@
 #include "Charactets/CBaseCharacter.h"
 #include "ActionRPGGame.h"
+#include "CPlayerController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CFootStepSoundComponent.h"
 #include "Components/CSoundComponent.h"

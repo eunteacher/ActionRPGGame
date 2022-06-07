@@ -13,7 +13,7 @@ class ACTIONRPGGAME_API UCUserWidget_BaseProgressBar : public UUserWidget
 public:
 	// ProgressBar 업데이트 함수
 	UFUNCTION()
-		void UpdateValue(float InValue, float InMaxValue);
+	void UpdateValue(float InValue, float InMaxValue);
 
 protected:
 	UPROPERTY(meta = (BindWidget))
