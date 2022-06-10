@@ -22,7 +22,6 @@ protected:
 	// BeginPlay
 	virtual void BeginPlay() override;
 
-
 	// TeamID
 	UPROPERTY(VisibleDefaultsOnly, Category = "AI")
 	uint8 TeamID;

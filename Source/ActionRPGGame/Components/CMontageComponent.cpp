@@ -22,7 +22,19 @@ void UCMontageComponent::BeginPlay()
 	if(IsValid(MontageTable))
 	{
 		// 데이터 테이블의 Data를 가져와 MontageData에 저장
-		MontageTable->GetAllRows<FMontageData>("", MontageData);
+		TArray<FMontageData* > montageDatas;
+		MontageTable->GetAllRows<FMontageData>("", montageDatas);
+		for(FMontageData* data : montageDatas)
+		{
+			if (data->ModelType == GetOwner<ACBaseCharacter>()->GetModelType())
+			{
+				FUseMontageData useMontageData;
+				useMontageData.AnimMontage = data->AnimMontage;
+				useMontageData.PlayRatio = data->PlayRatio;
+				useMontageData.StartSection = data->StartSection;
+				UseMontageDataMaps.Add(data->MontageType, useMontageData);
+			}
+		}
 	}
 	else
 	{
@@ -31,24 +43,16 @@ void UCMontageComponent::BeginPlay()
 	
 }
 
-void UCMontageComponent::PlayMontage(const EModelType InModelType, const EMontageType InMontageType)
+void UCMontageComponent::PlayMontage(const EMontageType InMontageType)
 {
-	// MontageData InMontageType 해당하는 데이터를 찾는다.
-	const FMontageData* data = MontageData[(int32)InMontageType];
 	ACBaseCharacter* ownerCharacter = GetOwner<ACBaseCharacter>(); // Owner 가져오기
-	// data가 존재하고, ownerCharacter가 존재하고, 캐릭터의 ModelType과 입력받은 ModelType이 같다면
-	if (data != nullptr && IsValid(ownerCharacter) && ownerCharacter->GetModelType() == InModelType)
+	// ownerCharacter가 존재할 경우
+	if (IsValid(ownerCharacter))
 	{
-		if (IsValid(data->AnimMontageMaps[InModelType]))
+		if (UseMontageDataMaps.Contains(InMontageType))
 		{
 			// 몽타주 실행
-			ownerCharacter->PlayAnimMontage(data->AnimMontageMaps[InModelType], data->PlayRatio, data->StartSection);
-		}
-
-		if (IsValid(data->Particle))
-		{
-			// 파티클 스폰
-			UGameplayStatics::SpawnEmitterAttached(data->Particle, ownerCharacter->GetMesh(), data->SocketName);
+			ownerCharacter->PlayAnimMontage(UseMontageDataMaps.Find(InMontageType)->AnimMontage, UseMontageDataMaps.Find(InMontageType)->PlayRatio, UseMontageDataMaps.Find(InMontageType)->StartSection);
 		}
 	}
 	else

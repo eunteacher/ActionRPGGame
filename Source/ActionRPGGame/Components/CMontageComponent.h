@@ -4,6 +4,7 @@
 #include "Components/ActorComponent.h"
 #include "Engine/DataTable.h"
 #include "Types/CDataTableType.h"
+#include "Types/CStructTypes.h"
 #include "CMontageComponent.generated.h"
 
 // 전방 선언
@@ -18,7 +19,7 @@ public:
 	// 생성자
 	UCMontageComponent();
 	// 몽타주 실행
-	void PlayMontage(const EModelType InModelType, const EMontageType InMontageType);
+	void PlayMontage(const EMontageType InMontageType);
 
 protected:
 	// BeingPlay
@@ -28,5 +29,5 @@ protected:
 	UDataTable* MontageTable; // 데이터 테이블
 
 private:
-	TArray<FMontageData*> MontageData; // 몽타주 데이터 Map
+	TMap<EMontageType, FUseMontageData> UseMontageDataMaps; // Montage Data Maps
 };

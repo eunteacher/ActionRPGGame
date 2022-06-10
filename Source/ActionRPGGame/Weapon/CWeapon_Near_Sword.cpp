@@ -8,7 +8,11 @@ ACWeapon_Near_Sword::ACWeapon_Near_Sword()
 	// WeaponType 초기화
 	Weapon = EWeaponType::Sword;
 
-	// StaticMesh 컴포넌트 초기화
+	// 컴포넌트 생성
+	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("StaticMesh");
+	StaticMesh->SetupAttachment(Root);
+
+	// StaticMesh 초기화
 	// StaticMesh'/Game/Weapons/Meshes/SM_sword.SM_sword'
 	const ConstructorHelpers::FObjectFinder<UStaticMesh> staticMeshAsset(TEXT("StaticMesh'/Game/Weapons/Meshes/SM_sword.SM_sword'"));
 	if(staticMeshAsset.Succeeded())
@@ -18,10 +22,6 @@ ACWeapon_Near_Sword::ACWeapon_Near_Sword()
 		StaticMesh->SetCollisionProfileName("NoCollision");
 	}
 	
-	// Capsule 컴포넌트 초기화
-	Capsule->SetRelativeLocation(FVector(0.0f,0.0f,60.0f));
-	Capsule->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
 	// Weapon Data Table
 	// DataTable'/Game/DataTables/DT_Wepaon_Sword.DT_Wepaon_Sword'
 	const ConstructorHelpers::FObjectFinder<UDataTable> WeaponDataTableAsset(TEXT("DataTable'/Game/DataTables/DT_Wepaon_Sword.DT_Wepaon_Sword'"));
@@ -30,6 +30,7 @@ ACWeapon_Near_Sword::ACWeapon_Near_Sword()
 		WeaponTable = WeaponDataTableAsset.Object;
 	}
 }
+
 // BeginPlay
 void ACWeapon_Near_Sword::BeginPlay()
 {
@@ -38,6 +39,35 @@ void ACWeapon_Near_Sword::BeginPlay()
 	if(IsValid(WeaponTable))
 	{
 		// 데이터 테이블의 데이터를 읽어와서 저장
-		WeaponTable->GetAllRows<FWeaponData>("", WeaponData);
+		TArray<FWeaponData*> weaponDatas;
+		WeaponTable->GetAllRows<FWeaponData>("", weaponDatas);
+		for (FWeaponData* data : weaponDatas)
+		{
+			FUseWeaponData useWeaponData;
+			useWeaponData.MontageType = data->MontageType;
+			useWeaponData.Damage = data->Damage;
+			useWeaponData.LaunchValue = data->LaunchValue;
+			useWeaponData.HitStopTime = data->HitStopTime;
+			useWeaponData.HitParticle = data->HitParticle;
+			useWeaponData.ShakeClass = data->ShakeClass;
+			UseWeaponDataMaps.Add(data->AttackType, useWeaponData);
+		}
 	}
 }
+
+void ACWeapon_Near_Sword::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if(IsAttack)
+	{
+		
+	}
+}
+
+void ACWeapon_Near_Sword::OnSphereTrace()
+{
+	
+}
+
+

@@ -8,7 +8,8 @@ enum class EAttackType : uint8
 	Near_Combo1,
 	Near_Combo2,
 	Near_Combo3,
-	Far_Attack,
+	Far_OverDraw,
+	Far_Fire,
 	Max
 };
 
@@ -39,6 +40,8 @@ enum class EMontageType : uint8
 	Sword_Combo3,
 	Hit,
 	Hit_Knockback,
+	Bow_Fire,
+	Bow_OverDraw,
 	Max
 };
 
@@ -81,5 +84,6 @@ enum class EStateType : uint8
 	UnEquip,
 	Attack,
 	Hit,
+	Aim,
 	Max
 };

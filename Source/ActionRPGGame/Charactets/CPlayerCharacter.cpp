@@ -10,7 +10,6 @@
 #include "Components/WidgetComponent.h"
 #include "Components/CSoundComponent.h"
 #include "Components/CMontageComponent.h"
-#include "Components/CStateComponent.h"
 #include "Weapon/CWeapon_Base.h"
 
 // 생성자 멤버 변수 생성 및 초기화
@@ -20,6 +19,7 @@ ACPlayerCharacter::ACPlayerCharacter()
 
 	// 멤버 변수 초기화
 	TurnRate = 45.0f; // 회전 비율
+	TeamID = 0;
 	ModelType = EModelType::GhostLady; // ModelType 정의
 	WeaponType = EWeaponType::Default;
 
@@ -231,6 +231,10 @@ void ACPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAction("UnEquip", IE_Pressed, this, &ACPlayerCharacter::OnUnEquip);
 
 	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ACPlayerCharacter::OnAttack);
+
+	PlayerInputComponent->BindAction("Aim", IE_Pressed, this, &ACPlayerCharacter::OnAim);
+	PlayerInputComponent->BindAction("Aim", IE_Released, this, &ACPlayerCharacter::OffAim);
+
 }
 
 // TeamID이 반환
@@ -280,8 +284,6 @@ void ACPlayerCharacter::OnJump()
 {
 	if(IsValid(Sound) && !GetCharacterMovement()->IsFalling())
 	{
-		// State 설정
-		State->SetStateType(EStateType::Jump);
 		// PlaySound
 		Sound->PlayJumpSound();
 		Jump();
@@ -328,8 +330,6 @@ void ACPlayerCharacter::OnEvade()
 	CLog::Log("OnEvade");
 	if(!GetCharacterMovement()->IsFalling()) // 공중 상태가 아닐 경우 
 	{
-		// StateType 설정
-		State->SetStateType(EStateType::Evade);
 		// 마지막 입력 값을 가져온다.
 		FVector inputDirection = GetLastMovementInputVector();
 		// 캐릭터의 Forward 벡터와 내적
@@ -364,7 +364,7 @@ void ACPlayerCharacter::OnEvade()
 
 		if(IsValid(Montage) && IsValid(Sound) && montageType != EMontageType::Max)
 		{
-			Montage->PlayMontage(ModelType, montageType); // 몽타주 실행
+			Montage->PlayMontage(montageType); // 몽타주 실행
 			Sound->PlayEvadeSound(); // 사운드 실행
 
 			FVector direction; // 구르기 방향
@@ -419,35 +419,43 @@ void ACPlayerCharacter::OnEquip()
 {
 	CLog::Log("OnEquip");
 
-	State->SetStateType(EStateType::Equip);
-
 	// Weapon Type에 따라 Equip 순서
 	// Default -> Sword, Sword -> Bow, Bow -> Sword
 	if (WeaponType == EWeaponType::Default)
 	{
 		WeaponType = EWeaponType::Sword;
 	}
-	else if (WeaponType == EWeaponType::Sword)
+	else
 	{
-		WeaponType = EWeaponType::Bow;
-	}
-	else if (WeaponType == EWeaponType::Bow)
-	{
-		WeaponType = EWeaponType::Sword;
+		// 현재 WeaponType을 Map이 Key로 포함되어 있다면 현재 무기를 장착 해제한다.
+		if(EquipedWeaponDataMaps.Contains(WeaponType))
+		{
+			// 현재 무기를 Holster로 Attach한다.
+			EquipedWeaponDataMaps.Find(WeaponType)->Weapon->OnAttach(EquipedWeaponDataMaps.Find(WeaponType)->WeaponHolsterSocketName);
+		}
+		
+		// 현재 WeaponType을 변경한다.
+		if(WeaponType == EWeaponType::Sword)
+		{
+			WeaponType = EWeaponType::Bow;
+		}
+		else if(WeaponType == EWeaponType::Bow)
+		{
+			WeaponType = EWeaponType::Sword;
+		}
 	}
 
 	// 현재 WeaponType을 Map이 Key로 포함되어 있다면
 	if(EquipedWeaponDataMaps.Contains(WeaponType))
 	{
-		const FEquipedWeaponData equipedWeapon = EquipedWeaponDataMaps[WeaponType];
 		// Weapon의 OnEquip() 호출
-		equipedWeapon.Weapon->OnEquip();
-
+		EquipedWeaponDataMaps.Find(WeaponType)->Weapon->OnEquip();
+		// 아이콘 변경
 		const ACPlayerController* controller = GetController<ACPlayerController>();
-		if(IsValid(controller) && controller->OnSlotChanged.IsBound())
+		if (IsValid(controller) && controller->OnSlotChanged.IsBound())
 		{
-			bool IsDefault = WeaponType == EWeaponType::Default ? true : false;
-			controller->OnSlotChanged.Broadcast(equipedWeapon.WeaponIconInfo, IsDefault);
+			bool isDefault = WeaponType == EWeaponType::Default ? true : false;
+			controller->OnSlotChanged.Broadcast(EquipedWeaponDataMaps.Find(WeaponType)->WeaponIconInfo, isDefault);
 		}
 	}
 }
@@ -456,15 +464,16 @@ void ACPlayerCharacter::OnEquip()
 void ACPlayerCharacter::OnUnEquip()
 {
 	CLog::Log("OnUnequip");
-	
-	State->SetStateType(EStateType::UnEquip);
 
-	// 현재 WeaponType을 Map이 Key로 포함되어 있다면
-	if(EquipedWeaponDataMaps.Contains(WeaponType))
+	// WeaponType이 Default가 아닌 경우만
+	if (WeaponType != EWeaponType::Default)
 	{
-		const FEquipedWeaponData equipedWeapon = EquipedWeaponDataMaps[WeaponType];
-		// Weapon의 OnEquip() 호출
-		equipedWeapon.Weapon->OnUnEquip();
+		// 현재 WeaponType을 Map이 Key로 포함되어 있다면
+		if (EquipedWeaponDataMaps.Contains(WeaponType))
+		{
+			// Weapon의 OnEquip() 호출
+			EquipedWeaponDataMaps.Find(WeaponType)->Weapon->OnUnEquip();
+		}
 	}
 }
 
@@ -473,41 +482,42 @@ void ACPlayerCharacter::OnAttack()
 	// WeaponType이 Default일 때는 공격 함수가 실행되지 않는다.
 	if(WeaponType != EWeaponType::Default)
 	{
-		// State 설정
-		State->SetStateType(EStateType::Attack);
-
 		// 현재 WeaponType을 Map이 Key로 포함되어 있다면
 		if(EquipedWeaponDataMaps.Contains(WeaponType))
 		{
-			const FEquipedWeaponData equipedWeapon = EquipedWeaponDataMaps[WeaponType];
 			// Weapon의 OnAttack() 호출
-			equipedWeapon.Weapon->OnAttack();
+			EquipedWeaponDataMaps.Find(WeaponType)->Weapon->OnAttack();
 		}		
 	}
 }
 
-void ACPlayerCharacter::OnStateTypeChanged(EStateType& InPrev, EStateType& InNew)
+void ACPlayerCharacter::OnAim()
 {
-	Super::OnStateTypeChanged(InPrev, InNew);
-
-	switch(InNew)
+	CLog::Log("Player On Aim");
+	if(WeaponType == EWeaponType::Bow)
 	{
-	case EStateType::Idle_Walk_Run:
-		if(InPrev == EStateType::UnEquip)
+		// 현재 WeaponType을 Map이 Key로 포함되어 있다면
+		if(EquipedWeaponDataMaps.Contains(WeaponType))
 		{
-			// Icon 변경
-			FWeaponIconInfo weaponIconInfo;
-			const ACPlayerController* controller = GetController<ACPlayerController>();
-			if(IsValid(controller) && controller->OnSlotChanged.IsBound())
-			{
-				bool IsDefault = WeaponType == EWeaponType::Default ? true : false;
-				controller->OnSlotChanged.Broadcast(weaponIconInfo, IsDefault);
-			}
-		}
+			// Weapon의 OnEquip() 호출
+			EquipedWeaponDataMaps.Find(WeaponType)->IsAiming = true;
+			EquipedWeaponDataMaps.Find(WeaponType)->Weapon->OnAim();
+		}		
+	}
+}
 
-		break;
-	default:
-		break;
+void ACPlayerCharacter::OffAim()
+{
+	CLog::Log("Player Off Aim");
+	if(WeaponType == EWeaponType::Bow)
+	{
+		// 현재 WeaponType을 Map이 Key로 포함되어 있다면
+		if(EquipedWeaponDataMaps.Contains(WeaponType))
+		{
+			// Weapon의 OnEquip() 호출
+			EquipedWeaponDataMaps.Find(WeaponType)->IsAiming = false;
+			EquipedWeaponDataMaps.Find(WeaponType)->Weapon->OffAim();
+		}		
 	}
 }
 

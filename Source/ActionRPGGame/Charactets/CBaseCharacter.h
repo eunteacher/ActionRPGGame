@@ -30,6 +30,9 @@ public:
 	UFUNCTION(Category = "Setter")
 	void SetMaxSpeed(ESpeedType InSpeed);
 
+	UFUNCTION(Category = "Setter")
+	void SetDefaultWeapon();
+	
 	// 현재 SpeedType을 반환
 	UFUNCTION(Category = "Getter")
 	ESpeedType GetSpeedType() const { return SpeedType; }
@@ -45,16 +48,15 @@ public:
 	// EquipedWeaponDataMaps을 반환
 	UFUNCTION(Category = "Getter")
 	TMap<EWeaponType, FEquipedWeaponData>& GetEquipedWeaponDataMaps() { return EquipedWeaponDataMaps; }
+
+	UFUNCTION(Category = "Getter")
+	bool GetIsAiming();
 	
 protected:
 	// BeginPlay 함수
 	virtual void BeginPlay() override;
 	// Land 함수
 	virtual void Landed(const FHitResult& Hit) override;
-	// State 변경 시 호출
-	// 이전 Type에서 현재 Type으로 변경될 때, 해야할 행동을 정의
-	UFUNCTION()
-	virtual void OnStateTypeChanged(EStateType& InPrev, EStateType& InNew);
 
 	// 왼발, 오른발 표면을 검사하여 표면에 맞는 사운드를 Play
 	UPROPERTY(VisibleDefaultsOnly, Category = "Component")
@@ -67,10 +69,6 @@ protected:
 	// 몽타주 Play를 담당
 	UPROPERTY(VisibleDefaultsOnly, Category = "Component")
 	class UCMontageComponent* Montage; // Montage 컴포넌트
-
-	// StateType을 변경 및 조건을 확인
-	UPROPERTY(VisibleDefaultsOnly, Category = "Component")
-	class UCStateComponent* State; // State 컴포넌트
 
 	// 캐릭터의 SpeedType
 	UPROPERTY(VisibleDefaultsOnly, Category = "Type")
@@ -94,5 +92,5 @@ protected:
 	FStatusData* StatusData;
 
 	// 장착 무기 데이터 Map
-	TMap<EWeaponType, FEquipedWeaponData> EquipedWeaponDataMaps; 
+	TMap<EWeaponType, FEquipedWeaponData> EquipedWeaponDataMaps;
 };

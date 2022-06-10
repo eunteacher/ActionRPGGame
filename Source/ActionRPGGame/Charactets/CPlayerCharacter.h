@@ -31,7 +31,7 @@ public:
 	// 스테미나 위젯 업데이트
 	UFUNCTION()
 	void UpdateStamina(float& InStamina, float& InMaxStamina);
-	
+
 protected:
 	// BeginPlay
 	virtual void BeginPlay() override;
@@ -79,7 +79,12 @@ protected:
 	UFUNCTION()
 	void OnAttack(); // 공격
 
-	virtual void OnStateTypeChanged(EStateType& InPrev, EStateType& InNew) override;
+	UFUNCTION()
+	void OnAim(); // 에임
+
+	UFUNCTION()
+	void OffAim(); // 에임
+	
 	UPROPERTY(VisibleDefaultsOnly, Category = "Camera")
 	class USpringArmComponent* SpringArm; // SpringArm 컴포넌트
 
@@ -90,6 +95,5 @@ protected:
 	float TurnRate; // 회전 비율
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "Team")
-	uint8 TeamID = 0;
-
+	uint8 TeamID;
 };

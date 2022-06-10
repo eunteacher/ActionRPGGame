@@ -11,4 +11,17 @@ class ACTIONRPGGAME_API ACWeapon_Far_Bow : public ACWeapon_Far
 public:
 	ACWeapon_Far_Bow();
 	
+	virtual void Tick(float DeltaSeconds) override;
+
+	virtual void OnFire() override;
+protected:
+	virtual void BeginPlay() override;
+	
+	// 활
+	UPROPERTY(VisibleDefaultsOnly,Category="Component")
+	USkeletalMeshComponent* SkeletalMesh;
+
+	// 화살 
+	UPROPERTY(VisibleDefaultsOnly,Category="Component")
+	UStaticMeshComponent* StaticMesh;
 };

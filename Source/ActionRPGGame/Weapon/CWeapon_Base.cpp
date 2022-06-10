@@ -7,22 +7,26 @@
 
 ACWeapon_Base::ACWeapon_Base()
 {
-	// PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = true;
 
 	// 멤버 변수 초기화
 	IsEquip = false;
-
+	IsAttack = false;
+	
 	// 컴포넌트 생성 및 초기화
 	Root = CreateDefaultSubobject<USceneComponent>("Root");
 	SetRootComponent(Root);
-	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("StaticMesh");
-	StaticMesh->SetupAttachment(Root);
 }
 
 void ACWeapon_Base::BeginPlay()
 {
 	Super::BeginPlay();
 
+}
+
+void ACWeapon_Base::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
 }
 
 // 무기 장착 몽타주 실행 
@@ -43,11 +47,11 @@ void ACWeapon_Base::OnEquip()
 				// WeaponType에 맞게 몽타주 실행
 				if (Weapon == EWeaponType::Sword)
 				{
-					montage->PlayMontage(GetOwner<ACBaseCharacter>()->GetModelType(), EMontageType::Equip_Sword);
+					montage->PlayMontage(EMontageType::Equip_Sword);
 				}
 				else if (Weapon == EWeaponType::Bow)
 				{
-					montage->PlayMontage(GetOwner<ACBaseCharacter>()->GetModelType(), EMontageType::Equip_Bow);
+					montage->PlayMontage(EMontageType::Equip_Bow);
 				}
 				// 사운드 플레이
 				sound->PlayEquipSound();
@@ -73,11 +77,11 @@ void ACWeapon_Base::OnUnEquip()
 				// WeaponType에 맞게 몽타주 실행
 				if (Weapon == EWeaponType::Sword)
 				{
-					montage->PlayMontage(GetOwner<ACBaseCharacter>()->GetModelType(), EMontageType::UnEquip_Sword);
+					montage->PlayMontage(EMontageType::UnEquip_Sword);
 				}
 				else if (Weapon == EWeaponType::Bow)
 				{
-					montage->PlayMontage(GetOwner<ACBaseCharacter>()->GetModelType(), EMontageType::UnEquip_Bow);
+					montage->PlayMontage(EMontageType::UnEquip_Bow);
 				}
 				// 사운드 플레이
 				sound->PlayEquipSound();
@@ -93,22 +97,27 @@ void ACWeapon_Base::OnAttach(FName InSocketName)
 	AttachToComponent(GetOwner<ACBaseCharacter>()->GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), InSocketName);
 }
 
-void ACWeapon_Base::OnCollision()
-{
-	// 자식 클래스에서 정의
-}
-
-void ACWeapon_Base::OffCollision()
-{
-	// 자식 클래스에서 정의
-}
-
 void ACWeapon_Base::OnAttack()
 {
 	// 자식 클래스에서 정의
 }
 
 void ACWeapon_Base::OnReset()
+{
+	// 자식 클래스에서 정의
+}
+
+void ACWeapon_Base::OnAim()
+{
+	// 자식 클래스에서 정의
+}
+
+void ACWeapon_Base::OffAim()
+{
+	// 자식 클래스에서 정의
+}
+
+void ACWeapon_Base::OnFire()
 {
 	// 자식 클래스에서 정의
 }

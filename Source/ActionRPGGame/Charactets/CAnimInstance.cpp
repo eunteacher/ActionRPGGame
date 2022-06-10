@@ -2,7 +2,6 @@
 #include "ActionRPGGame.h"
 #include "CBaseCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
-// #include "Components/CStateComponent.h"
 
 void UCAnimInstance::NativeBeginPlay()
 {
@@ -13,7 +12,6 @@ void UCAnimInstance::NativeBeginPlay()
 void UCAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
-	
 	if (IsValid(OwnerCharacter))
 	{
 		Speed = OwnerCharacter->GetVelocity().Size2D(); // 속도의 크기
@@ -26,5 +24,27 @@ void UCAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		IsMoving = Speed > 3.0f && !UKismetMathLibrary::EqualEqual_VectorVector(OwnerCharacter->GetCharacterMovement()->GetCurrentAcceleration(), FVector(0.0f, 0.0f, 0.0f),0.0f) ? true : false;
 		// 앉기 판단
 		IsCrouch = OwnerCharacter->bIsCrouched;
+		// 에임 여부 판단
+		IsAiming = OwnerCharacter->GetIsAiming();
+		// AimRotation 값 셋팅
+		AimRotation = LookUpRotation();
 	}
+}
+// Aim 상태에서 LookUp 회전 값을 가져오는 함수
+FRotator UCAnimInstance::LookUpRotation()
+{
+	// 컨트롤러의 회전 값을 가져온다.
+	FRotator r = OwnerCharacter->GetControlRotation();
+	if(r.Pitch > 270.0f)
+	{
+		// 아래를 바라보는 경우 
+		r.Pitch = 360.0f - r.Pitch;
+	}
+	else
+	{
+		// 위를 바라보는 경우
+		r.Pitch *= -1.0f;
+	}
+	
+	return FRotator(0.0f,0.0f,r.Pitch);
 }

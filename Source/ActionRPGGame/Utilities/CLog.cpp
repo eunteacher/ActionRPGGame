@@ -20,6 +20,11 @@ void CLog::Print(const FString & InValue, int32 InKey, float InDuration, FColor 
 	GEngine->AddOnScreenDebugMessage(InKey, InDuration, InColor, InValue);
 }
 
+void CLog::Print(const FName& InValue, int32 InKey, float InDuration, FColor InColor)
+{
+	GEngine->AddOnScreenDebugMessage(InKey, InDuration, InColor, InValue.ToString());
+}
+
 void CLog::Print(const FVector & InValue, int32 InKey, float InDuration, FColor InColor)
 {
 	GEngine->AddOnScreenDebugMessage(InKey, InDuration, InColor, InValue.ToString());

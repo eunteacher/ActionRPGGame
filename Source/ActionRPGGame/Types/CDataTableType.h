@@ -58,7 +58,10 @@ struct FWeaponData : public FTableRowBase
 	GENERATED_BODY()
 public:
 	UPROPERTY(EditAnywhere, Category = "Type")
-	TMap<EAttackType, EMontageType> Type;
+	EAttackType AttackType;
+
+	UPROPERTY(EditAnywhere, Category = "Type")
+	EMontageType MontageType;
 
 	UPROPERTY(EditAnywhere, Category = "Value")
 	float Damage;
@@ -72,6 +75,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Effect")
 	UParticleSystem* HitParticle = nullptr;
 
+	UPROPERTY(EditAnywhere, Category = "Effect")
+	UNiagaraSystem* HitNiagaraEffect = nullptr;
+
 	UPROPERTY(EditAnywhere, Category = "CameraShake")
 	TSubclassOf<UMatineeCameraShake> ShakeClass;
 };
@@ -83,28 +89,25 @@ struct FMontageData : public FTableRowBase
 	GENERATED_BODY()
 
 public:
+	// 모델 타입
+	UPROPERTY(EditAnywhere, Category = "Type")
+	EModelType ModelType;
+
 	// 몽타주 타입
 	UPROPERTY(EditAnywhere, Category = "Type")
-	EMontageType Type;
+	EMontageType MontageType;
+
 	// 몽타주
 	UPROPERTY(EditAnywhere, Category = "Montage")
-	TMap<EModelType, UAnimMontage*> AnimMontageMaps;
+	UAnimMontage* AnimMontage;
+
 	// PlayRatio
 	UPROPERTY(EditAnywhere, Category = "Montage")
 	float PlayRatio = 1.0f;
+
 	// 몽타주 시작 지점
 	UPROPERTY(EditAnywhere, Category = "Montage")
 	FName StartSection;
-	// ParticleSystem
-	UPROPERTY(EditAnywhere, Category = "Effect")
-	UParticleSystem* Particle = nullptr;
-	// NiagaraSystem Effect
-	UPROPERTY(EditAnywhere, Category = "Effect")
-	UNiagaraSystem* HitNiagaraEffect = nullptr;
-	// 소켓 이름
-	UPROPERTY(EditAnywhere, Category= "Socket")
-	FName SocketName;
-
 };
 
 // SoundComponent에서 사용, 사용한 모든 Sound 데이터 테이블

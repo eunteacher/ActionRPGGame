@@ -12,6 +12,8 @@ public:
 	static void Print(float InValue, int32 InKey = -1, float InDuration = 10, FColor InColor = FColor::Blue);
 	// FString형
 	static void Print(const FString& InValue, int32 InKey = -1, float InDuration = 10.0f, FColor InColor = FColor::Blue);
+	// FName형
+	static void Print(const FName& InValue, int32 InKey = -1, float InDuration = 10.0f, FColor InColor = FColor::Blue);
 	// FVector형
 	static void Print(const FVector& InValue, int32 InKey = -1, float InDuration = 10.0f, FColor InColor = FColor::Blue);
 	// FRoator형

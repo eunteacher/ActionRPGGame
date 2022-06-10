@@ -118,6 +118,8 @@ void ACEnemyCharacter_Grunting::BeginPlay()
 
 float ACEnemyCharacter_Grunting::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	// TODO : 데미지 
-	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	// TODO : 데미지
+	float damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	CLog::Print(FString("Enemy_Grunting TakeDamage"));
+	return damage;
 }

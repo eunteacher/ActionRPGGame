@@ -1,16 +1,16 @@
----,Type,AnimMontageMaps,PlayRatio,StartSection,Particle,HitNiagaraEffect,SocketName
-1,EvadeForward,"((""GhostLady"", AnimMontage'/Game/Characters/Animations/Montages/EvadeForward_Montage.EvadeForward_Montage'))",1,None,None,None,None
-2,EvadeBack,"((""GhostLady"", AnimMontage'/Game/Characters/Animations/Montages/EvadeBack_Montage.EvadeBack_Montage'))",1,,,,
-3,EvadeLeft,"((""GhostLady"", AnimMontage'/Game/Characters/Animations/Montages/EvadeLeft_Montage.EvadeLeft_Montage'))",1,,,,
-4,EvadeRight,"((""GhostLady"", AnimMontage'/Game/Characters/Animations/Montages/EvadeRight_Montage.EvadeRight_Montage'))",1,,,,
-5,Equip_Sword,"((""GhostLady"", AnimMontage'/Game/Characters/Animations/Montages/Equip_Montage.Equip_Montage'))",1,,,,
-6,Equip_Bow,"((""GhostLady"", ))",1,,,,
-7,UnEquip_Sword,"((""GhostLady"", AnimMontage'/Game/Characters/Animations/Montages/Unequip_Montage.Unequip_Montage'))",1,,,,
-8,UnEquip_Bow,"((""GhostLady"", ))",1,,,,
-9,Sword_Combo1,"((""GhostLady"", AnimMontage'/Game/Characters/Animations/Montages/Attack_Combo1_Montage.Attack_Combo1_Montage'))",1,,,,
-10,Sword_Combo2,"((""GhostLady"", AnimMontage'/Game/Characters/Animations/Montages/Attack_Combo2_Montage.Attack_Combo2_Montage'))",1,,,,
-11,Sword_Combo3,"((""GhostLady"", AnimMontage'/Game/Characters/Animations/Montages/Attack_Combo3_Montage.Attack_Combo3_Montage'))",1,,,,
-12,Hit,"((""GhostLady"", ))",1,,,,
-13,Hit,"((""Gruntling"", AnimMontage'/Game/Enemy/Animations/Grunting/Montages/React_Montage.React_Montage'))",1,,,,
-14,Hit_Knockback,"((""GhostLady"", ))",1,,,,
-15,Hit_Knockback,"((""Gruntling"", AnimMontage'/Game/Enemy/Animations/Grunting/Montages/React_Knockback_Montage.React_Knockback_Montage'))",1,,,,
+---,ModelType,MontageType,AnimMontage,PlayRatio,StartSection
+1,"GhostLady","EvadeForward","AnimMontage'/Game/Characters/Animations/Montages/EvadeForward_Montage.EvadeForward_Montage'","1.000000","None"
+2,"GhostLady","EvadeBack","AnimMontage'/Game/Characters/Animations/Montages/EvadeBack_Montage.EvadeBack_Montage'","1.000000","None"
+3,"GhostLady","EvadeLeft","AnimMontage'/Game/Characters/Animations/Montages/EvadeLeft_Montage.EvadeLeft_Montage'","1.000000","None"
+4,"GhostLady","EvadeRight","AnimMontage'/Game/Characters/Animations/Montages/EvadeRight_Montage.EvadeRight_Montage'","1.000000","None"
+5,"GhostLady","Equip_Sword","AnimMontage'/Game/Characters/Animations/Montages/Equip_Montage.Equip_Montage'","1.000000","None"
+6,"GhostLady","Equip_Bow","AnimMontage'/Game/Characters/Animations/Montages/Bow_Equip_Montage.Bow_Equip_Montage'","1.000000","None"
+7,"GhostLady","UnEquip_Sword","AnimMontage'/Game/Characters/Animations/Montages/Unequip_Montage.Unequip_Montage'","1.000000","None"
+8,"GhostLady","UnEquip_Bow","AnimMontage'/Game/Characters/Animations/Montages/Bow_UnEquip_Montage.Bow_UnEquip_Montage'","1.000000","None"
+9,"GhostLady","Sword_Combo1","AnimMontage'/Game/Characters/Animations/Montages/Attack_Combo1_Montage.Attack_Combo1_Montage'","1.000000","None"
+10,"GhostLady","Sword_Combo2","AnimMontage'/Game/Characters/Animations/Montages/Attack_Combo2_Montage.Attack_Combo2_Montage'","1.000000","None"
+11,"GhostLady","Sword_Combo3","AnimMontage'/Game/Characters/Animations/Montages/Attack_Combo3_Montage.Attack_Combo3_Montage'","1.000000","None"
+12,"GhostLady","Hit","None","1.000000","None"
+13,"GhostLady","Hit_Knockback","None","1.000000","None"
+14,"GhostLady","Bow_Fire","AnimMontage'/Game/Characters/Animations/Montages/Bow_Fire_Montage.Bow_Fire_Montage'","1.000000","None"
+15,"GhostLady","Bow_OverDraw","AnimMontage'/Game/Characters/Animations/Montages/Bow_OverDraw_Montage.Bow_OverDraw_Montage'","1.000000","None"

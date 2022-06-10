@@ -10,14 +10,15 @@ class ACTIONRPGGAME_API UCAnimInstance : public UAnimInstance
 	GENERATED_BODY()
 
 public:
-	// BeginPlay 함수
 	virtual void NativeBeginPlay() override;
 	// Update 함수	
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
 protected:
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Variable")
-	ACharacter* OwnerCharacter;
+	FRotator LookUpRotation();
+
+	UPROPERTY(BlueprintReadOnly,EditAnywhere,Category="Character")
+	class ACBaseCharacter* OwnerCharacter;
 	// 속력
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Variable")
 	float Speed;
@@ -36,4 +37,10 @@ protected:
 	// 캐릭터의 앉기 여부
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Variable")
 	bool IsCrouch;
+	// Aim 판단
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Variable")
+	bool IsAiming;
+	// OwnerCharacter의 ComtrolRotation의 Pitch 값
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Variable")
+	FRotator AimRotation;
 };
