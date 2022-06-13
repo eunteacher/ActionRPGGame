@@ -15,6 +15,14 @@ public:
 	UFUNCTION()
 	void UpdateValue(float InValue, float InMaxValue);
 
+	// ProgressBar Image Change
+	UFUNCTION()
+	void ChangedProgressBarImage(UTexture2D* InTexture2D) const;
+
+	UFUNCTION()
+	void HiddenProgressBar() const;
+	UFUNCTION()
+	void VisibleProgressBar() const;
 protected:
 	UPROPERTY(meta = (BindWidget))
 	class UOverlay* Overlay;

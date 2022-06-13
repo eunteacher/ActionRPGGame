@@ -5,6 +5,7 @@
 #include "Components/CFootStepSoundComponent.h"
 #include "Components/CSoundComponent.h"
 #include "Components/CMontageComponent.h"
+#include "Types/CDamageType.h"
 #include "Weapon/CWeapon_Base.h"
 
 // 생성자
@@ -20,6 +21,35 @@ ACBaseCharacter::ACBaseCharacter()
 	// 멤버변수 초기화
 	SpeedType = ESpeedType::Walk;
 	WeaponType = EWeaponType::Default;
+
+	// Status 데이터 테이블 에셋을 가져와 저장
+	// DataTable'/Game/DataTables/DT_Status.DT_Status'
+	const ConstructorHelpers::FObjectFinder<UDataTable> statusTableAsset(TEXT("DataTable'/Game/DataTables/DT_Status.DT_Status'"));
+	if (statusTableAsset.Succeeded())
+	{
+		StatusTable = statusTableAsset.Object;
+	}
+}
+
+// BeginPlay
+void ACBaseCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// 데이터 테이블의 값을 가져올 배열
+	TArray<FStatusData*> statusDatas;
+	StatusTable->GetAllRows<FStatusData>("", statusDatas);
+	
+	// Status 데이터 테이블 값을 저장
+	for (FStatusData* data : statusDatas)
+	{
+		if (data->Type == StatusType)
+		{
+			UseStatusData = data;
+			break;
+		}
+	}
+
 }
 
 bool ACBaseCharacter::GetIsAiming()
@@ -32,10 +62,9 @@ bool ACBaseCharacter::GetIsAiming()
 	return false;
 }
 
-// BeginPlay
-void ACBaseCharacter::BeginPlay()
+void ACBaseCharacter::OnDead()
 {
-	Super::BeginPlay();
+	Destroy();
 }
 
 // Tick
@@ -64,7 +93,10 @@ void ACBaseCharacter::Landed(const FHitResult& Hit)
 
 float ACBaseCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	float damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	UCDamageType* damageType = Cast<UCDamageType>(DamageEvent.DamageTypeClass->GetDefaultObject());
+
+	return damage;
 }
 
 // 입력으로 SpeedType을 받고, 입력받은 SpeedType으로 변경하고 MaxWalkSpeed 값을 변경

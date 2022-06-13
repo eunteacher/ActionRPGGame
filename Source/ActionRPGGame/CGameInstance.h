@@ -8,5 +8,6 @@ UCLASS()
 class ACTIONRPGGAME_API UCGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
-	
 };
+
+

@@ -1,6 +1,5 @@
 #include "Weapon/CWeapon_Near_Sword.h"
 #include "ActionRPGGame.h"
-#include "Components/CapsuleComponent.h"
 
 // 생성자
 ACWeapon_Near_Sword::ACWeapon_Near_Sword()
@@ -9,8 +8,8 @@ ACWeapon_Near_Sword::ACWeapon_Near_Sword()
 	Weapon = EWeaponType::Sword;
 
 	// 컴포넌트 생성
-	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("StaticMesh");
-	StaticMesh->SetupAttachment(Root);
+	WeaponStaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("StaticMesh");
+	WeaponStaticMesh->SetupAttachment(Root);
 
 	// StaticMesh 초기화
 	// StaticMesh'/Game/Weapons/Meshes/SM_sword.SM_sword'
@@ -18,8 +17,8 @@ ACWeapon_Near_Sword::ACWeapon_Near_Sword()
 	if(staticMeshAsset.Succeeded())
 	{
 		UStaticMesh* staticMesh = staticMeshAsset.Object;
-		StaticMesh->SetStaticMesh(staticMesh);
-		StaticMesh->SetCollisionProfileName("NoCollision");
+		WeaponStaticMesh->SetStaticMesh(staticMesh);
+		WeaponStaticMesh->SetCollisionProfileName("NoCollision");
 	}
 	
 	// Weapon Data Table
@@ -48,26 +47,10 @@ void ACWeapon_Near_Sword::BeginPlay()
 			useWeaponData.Damage = data->Damage;
 			useWeaponData.LaunchValue = data->LaunchValue;
 			useWeaponData.HitStopTime = data->HitStopTime;
-			useWeaponData.HitParticle = data->HitParticle;
+			useWeaponData.HitMontageType = data->HitMontageType;
+			useWeaponData.HitNiagaraEffect = data->HitNiagaraEffect;
 			useWeaponData.ShakeClass = data->ShakeClass;
 			UseWeaponDataMaps.Add(data->AttackType, useWeaponData);
 		}
 	}
 }
-
-void ACWeapon_Near_Sword::Tick(float DeltaSeconds)
-{
-	Super::Tick(DeltaSeconds);
-
-	if(IsAttack)
-	{
-		
-	}
-}
-
-void ACWeapon_Near_Sword::OnSphereTrace()
-{
-	
-}
-
-

@@ -1,4 +1,4 @@
----,AttackType,MontageType,Damage,LaunchValue,HitStopTime,HitParticle,HitNiagaraEffect,ShakeClass
-1,"Near_Combo1","Sword_Combo1","50.000000","100.000000","0.030000","None","NiagaraSystem'/Game/Effects/Blood/NiagaraSystems/NS_SwordHitted.NS_SwordHitted'","None"
-2,"Near_Combo2","Sword_Combo2","75.000000","100.000000","0.030000","None","NiagaraSystem'/Game/Effects/Blood/NiagaraSystems/NS_SwordHitted.NS_SwordHitted'","None"
-3,"Near_Combo3","Sword_Combo3","100.000000","300.000000","0.030000","None","NiagaraSystem'/Game/Effects/Blood/NiagaraSystems/NS_SwordHitted.NS_SwordHitted'","None"
+---,AttackType,MontageType,Damage,LaunchValue,HitStopTime,HitMontageType,HitNiagaraEffect,ShakeClass
+1,"Near_Combo1","Sword_Combo1","50.000000","30.000000","0.030000","HitLight","NiagaraSystem'/Game/Effects/Blood/NiagaraSystems/NS_SwordHitted.NS_SwordHitted'","None"
+2,"Near_Combo2","Sword_Combo2","75.000000","30.000000","0.030000","HitLight","NiagaraSystem'/Game/Effects/Blood/NiagaraSystems/NS_SwordHitted.NS_SwordHitted'","None"
+3,"Near_Combo3","Sword_Combo3","100.000000","60.000000","0.030000","HitHeavy","NiagaraSystem'/Game/Effects/Blood/NiagaraSystems/NS_SwordLastHitted.NS_SwordLastHitted'","None"

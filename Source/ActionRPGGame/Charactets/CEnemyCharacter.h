@@ -5,6 +5,10 @@
 #include "Charactets/CBaseCharacter.h"
 #include "CEnemyCharacter.generated.h"
 
+// 전방선언
+class ACDamageText;
+class UWidgetComponent;
+
 UCLASS()
 class ACTIONRPGGAME_API ACEnemyCharacter : public ACBaseCharacter
 {
@@ -25,5 +29,9 @@ protected:
 	// TeamID
 	UPROPERTY(VisibleDefaultsOnly, Category = "AI")
 	uint8 TeamID;
+
+	UPROPERTY(VisibleDefaultsOnly,Category = "Component")
+	UWidgetComponent* HealthBarWidget;
+
 	
 };

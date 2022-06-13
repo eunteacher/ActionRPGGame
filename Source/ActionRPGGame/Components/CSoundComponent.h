@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Engine/DataTable.h"
+#include "Types/CDataTableType.h"
 #include "CSoundComponent.generated.h"
 
 // 전방 선언
@@ -20,26 +20,31 @@ public:
 
 	// Jump Sound Play
 	UFUNCTION(Category = "PlaySound")
-	void PlayJumpSound();
+	void PlayJumpSound() const;
 	// Land Sound Play
 	UFUNCTION(Category = "PlaySound")
-	void PlayLandSound();
+	void PlayLandSound() const;
 	// Evade Sound Play
 	UFUNCTION(Category = "PlaySound")
-	void PlayEvadeSound();
-	// Equip And Unequip Sound Play
-	UFUNCTION(Category = "PlaySound")
-	void PlayEquipSound();
+	void PlayEvadeSound() const;
 
 	UFUNCTION(Category = "PlaySound")
-	void PlayAttackSound();
+	void PlayAttackSound() const;
+
+	UFUNCTION(Category = "PlaySound")
+	void PlayHitSound() const;
+
+	UFUNCTION(Category = "PlaySound")
+	void PlayDeadSound() const;
 
 protected:
 	// BeginPlay
 	virtual void BeginPlay() override;
 
+	// Sound 컴포넌트에서 사용할 Sound Data Table
 	UPROPERTY(VisibleDefaultsOnly, Category = "DataTable")
-	UDataTable* SoundTable; // 데이터 테이블
+	UDataTable* SoundTable;
+
 private:
-	struct FSoundData* SoundData; // 사운드 데이터
+	FSoundData* SoundData; // 사운드 데이터
 };

@@ -1,3 +1,3 @@
----,AttackType,MontageType,Damage,LaunchValue,HitStopTime,HitParticle,HitNiagaraEffect,ShakeClass
-1,"Far_Fire","Bow_Fire","50.000000","0.000000","0.000000","None","NiagaraSystem'/Game/Effects/Blood/NiagaraSystems/NS_ProjectileHit.NS_ProjectileHit'","None"
-2,"Far_OverDraw","Bow_OverDraw","0.000000","0.000000","0.000000","None","None","None"
+---,AttackType,MontageType,Damage,LaunchValue,HitStopTime,HitMontageType,HitNiagaraEffect,ShakeClass
+1,Far_Fire,Bow_Fire,50,0,0,None,NiagaraSystem'/Game/Effects/Blood/NiagaraSystems/NS_ProjectileHit.NS_ProjectileHit',None
+2,Far_OverDraw,Bow_OverDraw,0,0,0,None,None,None

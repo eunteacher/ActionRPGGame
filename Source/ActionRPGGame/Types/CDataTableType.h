@@ -72,8 +72,8 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Value")
 	float HitStopTime;
 	
-	UPROPERTY(EditAnywhere, Category = "Effect")
-	UParticleSystem* HitParticle = nullptr;
+	UPROPERTY(EditAnywhere, Category = "HitType")
+	EMontageType HitMontageType;
 
 	UPROPERTY(EditAnywhere, Category = "Effect")
 	UNiagaraSystem* HitNiagaraEffect = nullptr;
@@ -126,9 +126,6 @@ public:
 	// 착지
 	UPROPERTY(EditAnywhere, Category = "Sound")
 	USoundBase* Land;
-	// 무기 장착
-	UPROPERTY(EditAnywhere, Category = "Sound")
-	USoundBase* Equip;
 	// 피하기
 	UPROPERTY(EditAnywhere, Category = "Sound")
 	USoundBase* Evade;
@@ -147,6 +144,12 @@ public:
 	// 어빌리티 4
 	UPROPERTY(EditAnywhere, Category = "Sound")
 	USoundBase* Ability4;
+
+	UPROPERTY(EditAnywhere, Category = "Sound")
+	USoundBase* Hit;
+
+	UPROPERTY(EditAnywhere, Category = "Sound")
+	USoundBase* Dead;
 };
 
 // Character 클래스에서 사용, Player와 Monster의 Status 데이터 테이블
@@ -177,6 +180,7 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Status")
 	float MaxStamina;
+
 };
 
 // FootStepComponent에서 사용, 발자국에 관련된 소리와 파티클 데이터 테이블
@@ -197,4 +201,5 @@ public:
 	// Effect
 	UPROPERTY(EditAnywhere, Category = "Effect")
 	UNiagaraSystem* HitNiagaraEffect = nullptr;
+
 };

@@ -1,5 +1,6 @@
 #include "Components/CMontageComponent.h"
 #include "ActionRPGGame.h"
+#include "CGameInstance.h"
 #include "Charactets/CBaseCharacter.h"
 #include "GameFramework/Character.h"
 // 생성자 
@@ -17,8 +18,7 @@ UCMontageComponent::UCMontageComponent()
 void UCMontageComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// 데이터 테이블 값을 가져온다.
+	
 	if(IsValid(MontageTable))
 	{
 		// 데이터 테이블의 Data를 가져와 MontageData에 저장
@@ -36,11 +36,6 @@ void UCMontageComponent::BeginPlay()
 			}
 		}
 	}
-	else
-	{
-		CLog::Log("Montage Table Fail");
-	}
-	
 }
 
 void UCMontageComponent::PlayMontage(const EMontageType InMontageType)

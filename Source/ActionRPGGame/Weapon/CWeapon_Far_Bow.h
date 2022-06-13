@@ -17,11 +17,20 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	
-	// 활
-	UPROPERTY(VisibleDefaultsOnly,Category="Component")
-	USkeletalMeshComponent* SkeletalMesh;
+	// Bow Mesh
+	UPROPERTY(VisibleDefaultsOnly, Category = "Component")
+	USkeletalMeshComponent* BowSkeletalMesh;
 
-	// 화살 
-	UPROPERTY(VisibleDefaultsOnly,Category="Component")
-	UStaticMeshComponent* StaticMesh;
+	// Arrow Mesh
+	UPROPERTY(VisibleDefaultsOnly, Category = "Component")
+	UStaticMeshComponent* ArrowStaticMesh;
+
+	UPROPERTY(VisibleDefaultsOnly, Category = "Quiver Acotr")
+	TSubclassOf<class ACBowQuiver> QuiverClass;
+
+	UPROPERTY(VisibleDefaultsOnly, Category = "Quiver Acotr")
+	FName QuiverSocketName = "QuiverHolster";
+
+private:
+	ACBowQuiver* Quiver;
 };

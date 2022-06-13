@@ -8,6 +8,9 @@
 #include "Types/CStructTypes.h"
 #include "CWeapon_Base.generated.h"
 
+// 전방 선언
+class ACDamageText;
+
 UCLASS()
 class ACTIONRPGGAME_API ACWeapon_Base : public AActor
 {
@@ -41,7 +44,8 @@ public:
 
 	// OnFire 함수, Projectile을 스폰하고 발사한다.
 	virtual void OnFire();
-	
+
+	EMontageType GetHitMontageType() const;
 protected:
 	// BeginPlay
 	virtual void BeginPlay() override;
@@ -61,6 +65,9 @@ protected:
 	// Attack Type, 공격의 Type
 	UPROPERTY(VisibleDefaultsOnly, Category="Type")
 	EAttackType AttackType;
+
+	UPROPERTY(VisibleDefaultsOnly,Category = "Widget")
+	TSubclassOf<ACDamageText> DamageTextClass;
 
 	// 사용할 Weapon Data
 	TMap<EAttackType, FUseWeaponData> UseWeaponDataMaps;

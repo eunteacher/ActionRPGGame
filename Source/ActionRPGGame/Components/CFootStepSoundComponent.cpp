@@ -1,7 +1,6 @@
 #include "Components/CFootStepSoundComponent.h"
 #include "ActionRPGGame.h"
 #include "Charactets/CBaseCharacter.h"
-#include "GameFramework/Character.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 
 // 생성자
@@ -14,7 +13,7 @@ UCFootStepSoundComponent::UCFootStepSoundComponent()
 	{
 		FootStepSoundTable = FootStepSoundTableAsset.Object;
 	}
-
+	
 	// 멤버 변수 초기화
 	LeftFoot = "FootStep_Left";
 	RightFoot = "FootStep_Right";
@@ -26,12 +25,10 @@ UCFootStepSoundComponent::UCFootStepSoundComponent()
 void UCFootStepSoundComponent::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	// DataTable에서 값을 가져와 FootStepSoundData에 저장
+	FootStepSoundTable->GetAllRows<FFootStepSoundData>("", FootStepSoundData);
 
-	// 데이터 테이블 값을 가져온다.
-	if (IsValid(FootStepSoundTable))
-	{
-		FootStepSoundTable->GetAllRows<FFootStepSoundData>("", FootStepSoundData);
-	}
 }
 // 왼발 발자국 
 void UCFootStepSoundComponent::NotifyLeftFootStep(const ESpeedType InType)
@@ -54,15 +51,8 @@ void UCFootStepSoundComponent::PlayFootStepSound(const ESpeedType InType, const 
 	ACBaseCharacter* ownerCharacter = GetOwner<ACBaseCharacter>();
 	if (IsValid(ownerCharacter))
 	{
-		// Line Trace 매개 변수 선언
-		FVector socketLocation; // 소켓 위치
-		FVector start; // Trace 시작
-		FVector end; // Trace 끝
-		FHitResult hit; // Hit 구조체
-		TArray<AActor*> actorToIgnore; // Ignore Actor
-		actorToIgnore.Add(ownerCharacter); // 소유하고 있는 캐릭터 추가
-
 		// 위치 값 저장
+		FVector socketLocation = FVector::ZeroVector; // 소켓 위치
 		if (IsRight)
 		{
 			socketLocation = ownerCharacter->GetMesh()->GetSocketLocation(RightFoot);
@@ -72,18 +62,21 @@ void UCFootStepSoundComponent::PlayFootStepSound(const ESpeedType InType, const 
 			socketLocation = ownerCharacter->GetMesh()->GetSocketLocation(LeftFoot);
 		}
 
-		start = FVector(socketLocation.X, socketLocation.Y, socketLocation.Z + 50);
-		end = FVector(socketLocation.X, socketLocation.Y, socketLocation.Z - 50);
+		// Line Trace 매개 변수 선언
+		FVector start = FVector(socketLocation.X, socketLocation.Y, socketLocation.Z + 50);; // Trace 시작
+		FVector end = FVector(socketLocation.X, socketLocation.Y, socketLocation.Z - 50); // Trace 끝
+		FHitResult hit; // Hit 구조체
+		TArray<AActor*> actorToIgnore; // Ignore Actor
+		actorToIgnore.Add(ownerCharacter); // 소유하고 있는 캐릭터 추가
 
 		// 트레이스 시작
 		if (UKismetSystemLibrary::LineTraceSingle(GetWorld(), start, end, TraceType, false, actorToIgnore, DrawDebugType, hit, true))
 		{
 			// CLog::Log("Trace HitResult True");
 			TEnumAsByte<EPhysicalSurface> physicalSurfaceType = UPhysicalMaterial::DetermineSurfaceType(hit.PhysMaterial.Get());
-			// 데이터가 없으면 종료
-			if (FootStepSoundData[(int32)physicalSurfaceType] == nullptr)
+			if(FootStepSoundData[(int32)physicalSurfaceType] == nullptr)
 			{
-				CLog::Log("FootStepSoundData Fail ");
+				CLog::Log("FootStepData nullptr");
 				return;
 			}
 

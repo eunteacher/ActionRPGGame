@@ -38,10 +38,12 @@ enum class EMontageType : uint8
 	Sword_Combo1,
 	Sword_Combo2,
 	Sword_Combo3,
-	Hit,
-	Hit_Knockback,
+	HitLight,
+	HitHeavy,
+	Hit_KnockBack,
 	Bow_Fire,
 	Bow_OverDraw,
+	Dead,
 	Max
 };
 
@@ -59,7 +61,7 @@ UENUM(BlueprintType)
 enum class EStatusType : uint8
 {
 	Player,
-	Enemy_Gruntling,
+	Enemy_Grunting,
 	Enemy_Boss,
 	Max
 };
@@ -70,20 +72,5 @@ enum class ESpeedType : uint8
 {
 	Walk,
 	Run,
-	Max
-};
-
-// 캐릭터의 상태 타입
-UENUM(BlueprintType)
-enum class EStateType : uint8
-{
-	Idle_Walk_Run,
-	Jump,
-	Evade,
-	Equip,
-	UnEquip,
-	Attack,
-	Hit,
-	Aim,
 	Max
 };

@@ -4,6 +4,8 @@
 #include "Camera/CameraComponent.h"
 #include "Charactets/CBaseCharacter.h"
 #include "Weapon/CProjectile.h"
+#include "Weapon/CBowQuiver.h"
+
 ACWeapon_Far_Bow::ACWeapon_Far_Bow()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -12,14 +14,14 @@ ACWeapon_Far_Bow::ACWeapon_Far_Bow()
 	Weapon = EWeaponType::Bow;
 
 	// SkeletalMesh 초기화
-	SkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>("SkeletalMesh");
-	SkeletalMesh->SetupAttachment(Root);
+	BowSkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>("SkeletalMesh");
+	BowSkeletalMesh->SetupAttachment(Root);
 	// SkeletalMesh'/Game/Weapons/Meshes/SK_ElvenBow.SK_ElvenBow'
 	const ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshAsset(TEXT("SkeletalMesh'/Game/Weapons/Meshes/SK_ElvenBow.SK_ElvenBow'"));
 	if(skeletalMeshAsset.Succeeded())
 	{
 		USkeletalMesh* skeletalMesh = skeletalMeshAsset.Object;
-		SkeletalMesh->SetSkeletalMesh(skeletalMesh);
+		BowSkeletalMesh->SetSkeletalMesh(skeletalMesh);
 	}
 
 	// AnimInstance 생성 및 초기화
@@ -28,22 +30,22 @@ ACWeapon_Far_Bow::ACWeapon_Far_Bow()
 	if (animInstanceClass.Succeeded())
 	{
 		const TSubclassOf<UAnimInstance> animInstance = animInstanceClass.Class;
-		SkeletalMesh->SetAnimInstanceClass(animInstance);
+		BowSkeletalMesh->SetAnimInstanceClass(animInstance);
 	}
 	
 	// StaticMesh 초기화
-	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("StaticMesh");
-	StaticMesh->SetupAttachment(SkeletalMesh, "Arrow");
+	ArrowStaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("ArrowStaticMesh");
+	ArrowStaticMesh->SetupAttachment(BowSkeletalMesh, "Arrow");
 	// StaticMesh'/Game/Weapons/Meshes/RogueArrow.RogueArrow'
-	const ConstructorHelpers::FObjectFinder<UStaticMesh> staticMeshAsset(TEXT("StaticMesh'/Game/Weapons/Meshes/RogueArrow.RogueArrow'"));
-	if(staticMeshAsset.Succeeded())
+	const ConstructorHelpers::FObjectFinder<UStaticMesh> arrowStaticMeshAsset(TEXT("StaticMesh'/Game/Weapons/Meshes/RogueArrow.RogueArrow'"));
+	if(arrowStaticMeshAsset.Succeeded())
 	{
-		UStaticMesh* staticMesh = staticMeshAsset.Object;
-		StaticMesh->SetStaticMesh(staticMesh);
-		StaticMesh->SetCollisionProfileName("NoCollision");
-		StaticMesh->SetVisibility(false);
+		UStaticMesh* staticMesh = arrowStaticMeshAsset.Object;
+		ArrowStaticMesh->SetStaticMesh(staticMesh);
+		ArrowStaticMesh->SetCollisionProfileName("NoCollision");
+		ArrowStaticMesh->SetVisibility(false);
 	}
-
+	
 	// Weapon Data Table
 	// DataTable'/Game/DataTables/DT_Weapon_Bow.DT_Weapon_Bow'
 	const ConstructorHelpers::FObjectFinder<UDataTable> WeaponDataTableAsset(TEXT("DataTable'/Game/DataTables/DT_Weapon_Bow.DT_Weapon_Bow'"));
@@ -59,12 +61,23 @@ ACWeapon_Far_Bow::ACWeapon_Far_Bow()
 	{
 		ProjectileClass = ProjectileBlueprintClass.Class;
 	}
+
+	ConstructorHelpers::FClassFinder<ACBowQuiver> QuiverBlueprintClass(TEXT("Blueprint'/Game/Weapons/Blueprints/BP_CBowQuiver.BP_CBowQuiver_C'"));
+	if(QuiverBlueprintClass.Succeeded())
+	{
+		QuiverClass = QuiverBlueprintClass.Class;
+	}
 }
 
 // BeginPlay
 void ACWeapon_Far_Bow::BeginPlay()
 {
 	Super::BeginPlay();
+
+	FTransform transform;
+	Quiver = GetWorld()->SpawnActorDeferred<ACBowQuiver>(QuiverClass, transform, GetOwner<ACBaseCharacter>());
+	Quiver->AttachToComponent(GetOwner<ACBaseCharacter>()->GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), QuiverSocketName);
+	UGameplayStatics::FinishSpawningActor(Quiver, transform);
 	
 	if(IsValid(WeaponTable))
 	{
@@ -78,14 +91,14 @@ void ACWeapon_Far_Bow::BeginPlay()
 			useWeaponData.Damage = data->Damage;
 			useWeaponData.LaunchValue = data->LaunchValue;
 			useWeaponData.HitStopTime = data->HitStopTime;
-			useWeaponData.HitParticle = data->HitParticle;
+			useWeaponData.HitMontageType = data->HitMontageType;
 			useWeaponData.HitNiagaraEffect = data->HitNiagaraEffect;
 			useWeaponData.ShakeClass = data->ShakeClass;
 			UseWeaponDataMaps.Add(data->AttackType, useWeaponData);
 		}
 	}
 
-	UCAnimInstance_Bow* animInstance_Bow = Cast<UCAnimInstance_Bow>(SkeletalMesh->GetAnimInstance());
+	UCAnimInstance_Bow* animInstance_Bow = Cast<UCAnimInstance_Bow>(BowSkeletalMesh->GetAnimInstance());
 	if (IsValid(animInstance_Bow))
 	{
 		CLog::Log("IsValid(animInstance_Bow)");
@@ -93,6 +106,7 @@ void ACWeapon_Far_Bow::BeginPlay()
 		animInstance_Bow->InitAnimInstance(ownerCharacter);
 	}
 }
+
 // Tick
 void ACWeapon_Far_Bow::Tick(float DeltaSeconds)
 {
@@ -100,11 +114,11 @@ void ACWeapon_Far_Bow::Tick(float DeltaSeconds)
 
 	if (IsOverDraw)
 	{
-		StaticMesh->SetVisibility(true);
+		ArrowStaticMesh->SetVisibility(true);
 	}
 	else
 	{
-		StaticMesh->SetVisibility(false);
+		ArrowStaticMesh->SetVisibility(false);
 	}
 }
 
@@ -122,13 +136,14 @@ void ACWeapon_Far_Bow::OnFire()
 		FRotator rotation = GetOwner<ACBaseCharacter>()->GetControlRotation();
 		transform.SetRotation(rotation.Quaternion());
 
-		ACProjectile* projectile = GetWorld()->SpawnActorDeferred<ACProjectile>(ProjectileClass, transform, GetOwner<ACBaseCharacter>());
+		ACProjectile* projectile = GetWorld()->SpawnActorDeferred<ACProjectile>(ProjectileClass, transform, this);
 		projectile->InitHittedInfo
 		(
 			UseWeaponDataMaps.Find(AttackType)->Damage,
 			UseWeaponDataMaps.Find(AttackType)->LaunchValue,
-			UseWeaponDataMaps.Find(AttackType)->HitParticle,
-			UseWeaponDataMaps.Find(AttackType)->HitNiagaraEffect
+			UseWeaponDataMaps.Find(AttackType)->HitNiagaraEffect,
+			DamageTextClass,
+			true
 		);
 		UGameplayStatics::FinishSpawningActor(projectile, transform);
 	}

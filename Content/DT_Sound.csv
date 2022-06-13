@@ -1,3 +1,3 @@
----,Type,Jump,Land,Equip,Evade,Attack,Ability1,Ability2,Ability3,Ability4
-1,GhostLady,SoundCue'/Game/Sounds/Cue_Jump.Cue_Jump',SoundCue'/Game/Sounds/Cue_Land.Cue_Land',SoundCue'/Game/Sounds/Cue_HeavyLand.Cue_HeavyLand',SoundCue'/Game/Sounds/Cue_Evade.Cue_Evade',SoundCue'/Game/Sounds/Cue_Attack.Cue_Attack',,,,
-2,Gruntling,,,,,,,,,
+---,Type,Jump,Land,Evade,Attack,Ability1,Ability2,Ability3,Ability4,Hit,Dead
+1,"GhostLady","SoundCue'/Game/Sounds/Cue_Jump.Cue_Jump'","SoundCue'/Game/Sounds/Cue_Land.Cue_Land'","SoundCue'/Game/Sounds/Cue_Evade.Cue_Evade'","SoundCue'/Game/Sounds/Cue_Attack.Cue_Attack'","None","None","None","None","None","None"
+2,"Gruntling","None","None","None","None","None","None","None","None","SoundCue'/Game/Sounds/Enemy/Grunting/Cue_Grunting_Hit.Cue_Grunting_Hit'","SoundCue'/Game/Sounds/Enemy/Grunting/Cue_Grunting_Dead.Cue_Grunting_Dead'"

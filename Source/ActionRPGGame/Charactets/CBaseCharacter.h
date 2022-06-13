@@ -3,7 +3,6 @@
 #include "CoreMinimal.h"
 #include "Types/CEnumTypes.h"
 #include "Types/CStructTypes.h"
-#include "Types/CDataTableType.h"
 #include "Engine/DataTable.h"
 #include "GameFramework/Character.h"
 #include "CBaseCharacter.generated.h"
@@ -31,7 +30,7 @@ public:
 	void SetMaxSpeed(ESpeedType InSpeed);
 
 	UFUNCTION(Category = "Setter")
-	void SetDefaultWeapon();
+	virtual void SetDefaultWeapon();
 	
 	// 현재 SpeedType을 반환
 	UFUNCTION(Category = "Getter")
@@ -45,6 +44,9 @@ public:
 	UFUNCTION(Category = "Getter")
 	EWeaponType GetWeaponType() const { return WeaponType; }
 
+	UFUNCTION(Category = "Getter")
+	EStatusType GetStatusType() const { return StatusType; }
+
 	// EquipedWeaponDataMaps을 반환
 	UFUNCTION(Category = "Getter")
 	TMap<EWeaponType, FEquipedWeaponData>& GetEquipedWeaponDataMaps() { return EquipedWeaponDataMaps; }
@@ -52,6 +54,7 @@ public:
 	UFUNCTION(Category = "Getter")
 	bool GetIsAiming();
 	
+	void OnDead();
 protected:
 	// BeginPlay 함수
 	virtual void BeginPlay() override;
@@ -73,23 +76,28 @@ protected:
 	// 캐릭터의 SpeedType
 	UPROPERTY(VisibleDefaultsOnly, Category = "Type")
 	ESpeedType SpeedType;
+
 	// 캐릭터의 ModelType
 	UPROPERTY(VisibleDefaultsOnly, Category = "Type")
 	EModelType ModelType;
+
 	// 캐릭터의 WeaponType
 	UPROPERTY(VisibleDefaultsOnly, Category = "Type")
 	EWeaponType WeaponType;
 
-	// Status Data Table
+	UPROPERTY(VisibleDefaultsOnly, Category = "Type")
+	EStatusType StatusType;
+
+	// 캐릭터의 Status Data Table
 	UPROPERTY(VisibleDefaultsOnly, Category = "DataTable")
 	UDataTable* StatusTable;
-	
-	// 소유 중인 무기 데이터 테이블
+
+	// Player 무기 데이터 테이블
 	UPROPERTY(VisibleDefaultsOnly, Category = "DataTable")
-	UDataTable* WeaponDataTable; 
+	UDataTable* WeaponTable;
 
 	// Status 데이터
-	FStatusData* StatusData;
+	FUseStatusData UseStatusData;
 
 	// 장착 무기 데이터 Map
 	TMap<EWeaponType, FEquipedWeaponData> EquipedWeaponDataMaps;

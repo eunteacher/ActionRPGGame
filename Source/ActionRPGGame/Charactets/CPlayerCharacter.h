@@ -32,9 +32,11 @@ public:
 	UFUNCTION()
 	void UpdateStamina(float& InStamina, float& InMaxStamina);
 
+	virtual void SetDefaultWeapon() override;
 protected:
 	// BeginPlay
 	virtual void BeginPlay() override;
+
 	// Bind Axis
 	UFUNCTION()
 	void MoveForward(float InValue); // 앞 뒤 입력

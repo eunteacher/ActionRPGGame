@@ -24,9 +24,10 @@ public:
 protected:
 	// BeingPlay
 	virtual void BeginPlay() override;
-
+	
+	// Montage 컴포넌트에서 사용할 Montage Data Table
 	UPROPERTY(VisibleDefaultsOnly, Category = "DataTable")
-	UDataTable* MontageTable; // 데이터 테이블
+	UDataTable* MontageTable;
 
 private:
 	TMap<EMontageType, FUseMontageData> UseMontageDataMaps; // Montage Data Maps

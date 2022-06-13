@@ -40,7 +40,6 @@ protected:
 
 	// Aim 상태일 경우 Target을 Trace를 통해 찾는다.
 	bool TargetTrace();
-
 	
 	// Weapon의 OwnerCharacter의 SpringArm
 	USpringArmComponent* OwnerSpringArm;

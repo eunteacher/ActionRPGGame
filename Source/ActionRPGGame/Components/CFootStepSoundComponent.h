@@ -2,8 +2,8 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Engine/DataTable.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Types/CDataTableType.h"
 #include "CFootStepSoundComponent.generated.h"
 
 // 전방 선언
@@ -45,8 +45,8 @@ protected:
 	void PlayFootStepSound(const ESpeedType InType, const bool IsRight);
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "DataTable")
-	UDataTable* FootStepSoundTable; // 데이터 테이블
-
+	UDataTable* FootStepSoundTable;
+	
 private:
-	TArray<struct FFootStepSoundData*> FootStepSoundData; // FootStepSound 데이터 TArray
+	TArray<FFootStepSoundData* > FootStepSoundData; // FootStepSound 데이터 TArray
 };

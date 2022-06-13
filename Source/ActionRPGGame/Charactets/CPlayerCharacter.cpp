@@ -1,5 +1,6 @@
 #include "Charactets/CPlayerCharacter.h"
 #include "ActionRPGGame.h"
+#include "CGameInstance.h"
 #include "CPlayerController.h"
 #include "Components/InputComponent.h"
 #include "Camera/CameraComponent.h"
@@ -22,6 +23,7 @@ ACPlayerCharacter::ACPlayerCharacter()
 	TeamID = 0;
 	ModelType = EModelType::GhostLady; // ModelType 정의
 	WeaponType = EWeaponType::Default;
+	StatusType = EStatusType::Player;
 
 	// UseControllerRotation 값 설정
 	bUseControllerRotationPitch = false;
@@ -77,22 +79,13 @@ ACPlayerCharacter::ACPlayerCharacter()
 	 	GetMesh()->SetAnimInstanceClass(animInstance);
 	 }
 
-	// Status 데이터 테이블 에셋을 가져와 저장
-	// DataTable'/Game/DataTables/DT_Status.DT_Status'
-	const ConstructorHelpers::FObjectFinder<UDataTable> statusTableAsset(TEXT("DataTable'/Game/DataTables/DT_Status.DT_Status'"));
-	if (statusTableAsset.Succeeded())
-	{
-		StatusTable = statusTableAsset.Object;
-	}
-
 	// OwningWeapon 데이터 테이블 에셋을 가져와 저장
 	// DataTable'/Game/DataTables/DT_PlayerOwningWeapon.DT_PlayerOwningWeapon'
-	const ConstructorHelpers::FObjectFinder<UDataTable> owningWeaponDataTableAsset(TEXT("DataTable'/Game/DataTables/DT_PlayerOwningWeapon.DT_PlayerOwningWeapon'"));
-	if (owningWeaponDataTableAsset.Succeeded())
+	const ConstructorHelpers::FObjectFinder<UDataTable> GruntingWeaponDataTableAsset(TEXT("DataTable'/Game/DataTables/DT_PlayerOwningWeapon.DT_PlayerOwningWeapon'"));
+	if (GruntingWeaponDataTableAsset.Succeeded())
 	{
-		WeaponDataTable = owningWeaponDataTableAsset.Object;
+		WeaponTable = GruntingWeaponDataTableAsset.Object;
 	}
-
 }
 
 // BeginPlay
@@ -100,67 +93,40 @@ void ACPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (IsValid(StatusTable))
-	{
-		// Status 데이터 테이블 값을 저장
-		TArray<FStatusData*> statusDatas;
-		StatusTable->GetAllRows<FStatusData>("", statusDatas);
-		for (FStatusData* data : statusDatas)
-		{
-			if (data->Type == EStatusType::Player) // Type이 Player일 경우
-			{
-				StatusData = data;
-				break;
-			}
-		}
-	}
+	// 데이터 테이블의 값을 저장할 배열
+	TArray<FOwningWeaponData*> owningWeaponDatas;
+	WeaponTable->GetAllRows<FOwningWeaponData>("", owningWeaponDatas);
 
-	// 소유 중인 무기 데이터 테이블 값을 저장
-	if(IsValid(WeaponDataTable))
+	// WeaponType에 맞게 데이터를 저장
+	for (int32 i = 0; i < (int32)EWeaponType::Max; i++)
 	{
-		// 데이터 테이블의 Data를 가져와 owningWeaponDatas에 저장
-		TArray<FOwningWeaponData*> owningWeaponDatas;
-		WeaponDataTable->GetAllRows<FOwningWeaponData>("", owningWeaponDatas);
-
-		// WeaponType에 맞게 데이터를 저장
-		for (int32 i = 0; i < (int32)EWeaponType::Max; i++)
+		for (FOwningWeaponData* data : owningWeaponDatas)
 		{
-			for (FOwningWeaponData* data : owningWeaponDatas)
+			// WeaponType이 같고, bOwning이 true인 경우
+			if(data->Type == (EWeaponType)i && data->bOwning == true)
 			{
-				// WeaponType이 같고, bOwning이 true인 경우
-				if(data->Type == (EWeaponType)i && data->bOwning == true)
+				ACWeapon_Base* weapon = nullptr;
+				// WeaponClass가 존재한다면 Actor Spawn
+				if(IsValid(data->WeaponClass))
 				{
-					ACWeapon_Base* weapon = nullptr;
-					// WeaponClass가 존재한다면 Actor Spawn
-					if(IsValid(data->WeaponClass))
-					{
-						FTransform transform;
-						weapon = GetWorld()->SpawnActorDeferred<ACWeapon_Base>(data->WeaponClass, transform, this);
-						weapon->AttachToComponent(GetMesh(),FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), data->WeaponHolsterSocketName);
-						UGameplayStatics::FinishSpawningActor(weapon,transform);
-					}
-					// owningWeapon 구조체 값 설정 
-					FEquipedWeaponData equipedWeapon;
-					equipedWeapon.Weapon = weapon;
-					equipedWeapon.WeaponSocketName = data->WeaponSocketName;
-					equipedWeapon.WeaponHolsterSocketName = data->WeaponHolsterSocketName;
-					equipedWeapon.WeaponIconInfo.WeaponIcon = data->WeaponIcon;
-					equipedWeapon.WeaponIconInfo.Ability1_Icon = data->Ability1_Icon;
-					equipedWeapon.WeaponIconInfo.Ability2_Icon = data->Ability2_Icon;
-					equipedWeapon.WeaponIconInfo.Ability3_Icon = data->Ability3_Icon;
-					equipedWeapon.WeaponIconInfo.Ability4_Icon = data->Ability4_Icon;
-					EquipedWeaponDataMaps.Add((EWeaponType)i, equipedWeapon); // Map에 추가
-				} // if 웨폰 타입 && bOwning
-			} // for owningWeaponDatas
-		} // for EWeaponType
-	}
+					FTransform transform;
+					weapon = GetWorld()->SpawnActorDeferred<ACWeapon_Base>(data->WeaponClass, transform, this);
+					weapon->AttachToComponent(GetMesh(),FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), data->WeaponHolsterSocketName);
+					UGameplayStatics::FinishSpawningActor(weapon,transform);
+				}
+				// FEquipedWeaponData 구조체 값 설정 
+				FEquipedWeaponData equipedWeapon(data, weapon);
+				EquipedWeaponDataMaps.Add((EWeaponType)i, equipedWeapon); // Map에 추가
+			} // if 웨폰 타입 && bOwning
+		} // for owningWeaponDatas
+	} // for EWeaponType
 
 	// Player가 시작할 때 WeaponType이 Default이기 때문에 아이콘 변경
-	FWeaponIconInfo weaponIconInfo;
 	const ACPlayerController* controller = GetController<ACPlayerController>();
 	if(IsValid(controller) && controller->OnSlotChanged.IsBound())
 	{
-		bool IsDefault = WeaponType == EWeaponType::Default ? true : false;
+		const bool IsDefault = WeaponType == EWeaponType::Default ? true : false;
+		FWeaponIconInfo weaponIconInfo;
 		controller->OnSlotChanged.Broadcast(weaponIconInfo, IsDefault);
 	}
 }
@@ -168,10 +134,16 @@ void ACPlayerCharacter::BeginPlay()
 float ACPlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	float damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	StatusData->Health -= damage;
-	UpdateHealth(StatusData->Health, StatusData->MaxHealth);
-	// TODO : Damage Widget 
-	return StatusData->Health;
+
+	UseStatusData.Health -= damage;
+	if(UseStatusData.Health < 0.0f)
+	{
+		// TODO : Dead
+		OnDead();
+	}
+	
+	UpdateHealth(UseStatusData.Health, UseStatusData.MaxHealth);
+	return damage;
 }
 
 // Tick
@@ -179,30 +151,27 @@ void ACPlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if(StatusData != nullptr)
+	// 뛰기 상태일 경우 
+	if (SpeedType == ESpeedType::Run)
 	{
-		// 뛰기 상태일 경우 
-		if(SpeedType == ESpeedType::Run)
+		// MaxStamina의 10%보다 작을 경우 OnWalk()
+		if (UseStatusData.Stamina < UseStatusData.MaxStamina * 0.1f)
 		{
-			// MaxStamina의 10%보다 작을 경우 OnWalk()
-			if(StatusData->Stamina < StatusData->MaxStamina * 0.1f)
-			{
-				OnWalk();
-			}
-			else
-			{
-				// 스테미너 감소 
-				StatusData->Stamina -= 100.0f * DeltaTime;
-				UpdateStamina(StatusData->Stamina,StatusData->MaxStamina);
-			}
+			OnWalk();
 		}
 		else
 		{
-			// 뛰기 상태가 아니라면 스테미너 증가
-			StatusData->Stamina += 50.0f * DeltaTime;
-			UpdateStamina(StatusData->Stamina,StatusData->MaxStamina);
-		}		
+			// 스테미너 감소
+			UseStatusData.Stamina = UKismetMathLibrary::FClamp(UseStatusData.Stamina - 100.0f * DeltaTime, 0.0f, UseStatusData.MaxStamina);
+			UpdateStamina(UseStatusData.Stamina, UseStatusData.MaxStamina);
+		}
 	}
+	else
+	{
+		// 뛰기 상태가 아니라면 스테미너 증가
+		UseStatusData.Stamina = UKismetMathLibrary::FClamp(UseStatusData.Stamina + 50.0f * DeltaTime, 0.0f, UseStatusData.MaxStamina);
+		UpdateStamina(UseStatusData.Stamina, UseStatusData.MaxStamina);
+	}		
 }
 
 void ACPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -235,6 +204,19 @@ void ACPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAction("Aim", IE_Pressed, this, &ACPlayerCharacter::OnAim);
 	PlayerInputComponent->BindAction("Aim", IE_Released, this, &ACPlayerCharacter::OffAim);
 
+}
+
+void ACPlayerCharacter::SetDefaultWeapon()
+{
+	Super::SetDefaultWeapon();
+
+	const ACPlayerController* controller = GetController<ACPlayerController>();
+	if (IsValid(controller) && controller->OnSlotChanged.IsBound())
+	{
+		FWeaponIconInfo weaponIconInfo;
+		bool isDefault = WeaponType == EWeaponType::Default ? true : false;
+		controller->OnSlotChanged.Broadcast(weaponIconInfo, isDefault);
+	}
 }
 
 // TeamID이 반환
@@ -499,7 +481,7 @@ void ACPlayerCharacter::OnAim()
 		// 현재 WeaponType을 Map이 Key로 포함되어 있다면
 		if(EquipedWeaponDataMaps.Contains(WeaponType))
 		{
-			// Weapon의 OnEquip() 호출
+			// Weapon의 OnAim() 호출
 			EquipedWeaponDataMaps.Find(WeaponType)->IsAiming = true;
 			EquipedWeaponDataMaps.Find(WeaponType)->Weapon->OnAim();
 		}		
@@ -514,7 +496,7 @@ void ACPlayerCharacter::OffAim()
 		// 현재 WeaponType을 Map이 Key로 포함되어 있다면
 		if(EquipedWeaponDataMaps.Contains(WeaponType))
 		{
-			// Weapon의 OnEquip() 호출
+			// Weapon의 OffAim() 호출
 			EquipedWeaponDataMaps.Find(WeaponType)->IsAiming = false;
 			EquipedWeaponDataMaps.Find(WeaponType)->Weapon->OffAim();
 		}		
