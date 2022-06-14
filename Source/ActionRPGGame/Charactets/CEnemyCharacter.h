@@ -8,6 +8,7 @@
 // 전방선언
 class ACDamageText;
 class UWidgetComponent;
+class UCPatrolComponent;
 
 UCLASS()
 class ACTIONRPGGAME_API ACEnemyCharacter : public ACBaseCharacter
@@ -18,20 +19,17 @@ public:
 	ACEnemyCharacter();
 	// TakeDamage
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
-	
-	UFUNCTION(Category = "Getter")
-	uint8 GetTeamID() const { return TeamID; }
 
+	virtual void OnDead() override;
 protected:
 	// BeginPlay
 	virtual void BeginPlay() override;
 
-	// TeamID
-	UPROPERTY(VisibleDefaultsOnly, Category = "AI")
-	uint8 TeamID;
-
 	UPROPERTY(VisibleDefaultsOnly,Category = "Component")
 	UWidgetComponent* HealthBarWidget;
+
+	UPROPERTY(VisibleDefaultsOnly,Category = "Component")
+	UCPatrolComponent* Patrol;
 
 	
 };

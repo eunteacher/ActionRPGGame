@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Types/CEnumTypes.h"
 #include "Types/CStructTypes.h"
+#include "GenericTeamAgentInterface.h"
 #include "Engine/DataTable.h"
 #include "GameFramework/Character.h"
 #include "CBaseCharacter.generated.h"
@@ -10,7 +11,7 @@
 // 기본 캐릭터 클래스
 // Player와 Monster 모두 이 클래스를 상속 받는다.
 UCLASS()
-class ACTIONRPGGAME_API ACBaseCharacter : public ACharacter
+class ACTIONRPGGAME_API ACBaseCharacter : public ACharacter, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
 
@@ -53,8 +54,10 @@ public:
 
 	UFUNCTION(Category = "Getter")
 	bool GetIsAiming();
-	
-	void OnDead();
+
+	virtual FGenericTeamId GetGenericTeamId() const override;
+
+	virtual void OnDead();
 protected:
 	// BeginPlay 함수
 	virtual void BeginPlay() override;
@@ -95,6 +98,9 @@ protected:
 	// Player 무기 데이터 테이블
 	UPROPERTY(VisibleDefaultsOnly, Category = "DataTable")
 	UDataTable* WeaponTable;
+
+	UPROPERTY(VisibleDefaultsOnly, Category = "Team")
+	uint8 TeamID;
 
 	// Status 데이터
 	FUseStatusData UseStatusData;

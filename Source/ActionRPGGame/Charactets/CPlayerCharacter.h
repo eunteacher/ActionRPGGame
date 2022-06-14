@@ -1,33 +1,36 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GenericTeamAgentInterface.h"
 #include "Charactets/CBaseCharacter.h"
 #include "CPlayerCharacter.generated.h"
 
 // Player Character
 UCLASS()
-class ACTIONRPGGAME_API ACPlayerCharacter : public ACBaseCharacter, public IGenericTeamAgentInterface
+class ACTIONRPGGAME_API ACPlayerCharacter : public ACBaseCharacter
 {
 	GENERATED_BODY()
 
 public:
 	// 생성자
 	ACPlayerCharacter();
+
 	// Tick
 	virtual void Tick(float DeltaTime) override;
+
 	// SetupPlayerInputComponent
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
 	// TakeDamage
 	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
-	// TeamID 반환 
-	virtual FGenericTeamId GetGenericTeamId() const override;
+
 	// 체력 위젯 업데이트
 	UFUNCTION()
 	void UpdateHealth(float& InHealth, float& InMaxHealth);
+
 	// 마나 위젯 업데이트
 	UFUNCTION()
 	void UpdateMana(float& InMana, float& InMaxMana);
+
 	// 스테미나 위젯 업데이트
 	UFUNCTION()
 	void UpdateStamina(float& InStamina, float& InMaxStamina);
@@ -96,6 +99,5 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly, Category = "Camera")
 	float TurnRate; // 회전 비율
 
-	UPROPERTY(VisibleDefaultsOnly, Category = "Team")
-	uint8 TeamID;
+
 };

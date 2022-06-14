@@ -62,8 +62,23 @@ bool ACBaseCharacter::GetIsAiming()
 	return false;
 }
 
+FGenericTeamId ACBaseCharacter::GetGenericTeamId() const
+{
+	return TeamID;
+}
+
 void ACBaseCharacter::OnDead()
 {
+	// 무기 삭제
+	for(auto& equipedWeaponData : EquipedWeaponDataMaps)
+	{
+		if (IsValid(equipedWeaponData.Value.Weapon))
+		{
+			equipedWeaponData.Value.Weapon->Destroy();
+		}
+	}
+	
+	// 캐릭터 삭제
 	Destroy();
 }
 

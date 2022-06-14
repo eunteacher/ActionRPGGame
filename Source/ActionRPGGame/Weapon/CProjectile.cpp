@@ -143,6 +143,7 @@ void ACProjectile::OnSphereTrace()
 			else
 			{
 				CLog::Log(FString("Not BaseCharacter"));
+				// Attach
 				OnAttach(hit.GetActor(), hit.ImpactPoint);
 			}
 		}

@@ -3,6 +3,16 @@
 #include "CoreMinimal.h"
 
 UENUM(BlueprintType)
+enum class EPatrolType : uint8
+{
+	None,
+	Line,
+	Triangle,
+	Square,
+	Max	
+};
+
+UENUM(BlueprintType)
 enum class EAttackType : uint8
 {
 	Near_Combo1,

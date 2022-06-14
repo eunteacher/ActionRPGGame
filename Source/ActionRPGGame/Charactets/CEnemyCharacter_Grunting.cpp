@@ -3,8 +3,7 @@
 #include "CAIController_Grunting.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/CFootStepSoundComponent.h"
-#include "Components/CMontageComponent.h"
-#include "Components/CSoundComponent.h"
+#include "Patrols//CPatrolComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Weapon/CWeapon_Base.h"
 #include "Widgets/CUserWidget_BaseProgressBar.h"
@@ -21,6 +20,7 @@ ACEnemyCharacter_Grunting::ACEnemyCharacter_Grunting()
 	if(aiControllerBlueprintClass.Succeeded())
 	{
 		AIControllerClass = aiControllerBlueprintClass.Class;
+		AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 	}
 	
 	// Capsule 컴포넌트 반경 설정
@@ -68,6 +68,9 @@ ACEnemyCharacter_Grunting::ACEnemyCharacter_Grunting()
 	{
 		WeaponTable = GruntingWeaponDataTableAsset.Object;
 	}
+
+	// Patrol 컴포넌트 생성
+	Patrol = CreateDefaultSubobject<UCPatrolComponent>("Patrol");
 }
 
 void ACEnemyCharacter_Grunting::BeginPlay()
@@ -111,19 +114,6 @@ float ACEnemyCharacter_Grunting::TakeDamage(float DamageAmount, FDamageEvent con
 {
 	const float damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
-	UseStatusData.Health -= damage;
-	if(UseStatusData.Health < 0.0f)
-	{
-		// Dead
-		Sound->PlayDeadSound();
-		Montage->PlayMontage(EMontageType::Dead);
-	}
-	else
-	{
-		// Hit
-		Sound->PlayHitSound();
-		Montage->PlayMontage(Cast<ACWeapon_Base>(DamageCauser)->GetHitMontageType());
-	}
-	Cast<UCUserWidget_BaseProgressBar>(HealthBarWidget->GetWidget())->UpdateValue(UseStatusData.Health, UseStatusData.MaxHealth);
+
 	return damage;
 }

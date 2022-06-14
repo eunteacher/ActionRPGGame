@@ -219,12 +219,6 @@ void ACPlayerCharacter::SetDefaultWeapon()
 	}
 }
 
-// TeamID이 반환
-FGenericTeamId ACPlayerCharacter::GetGenericTeamId() const
-{
-	return FGenericTeamId(TeamID);
-}
-
 void ACPlayerCharacter::MoveForward(float InValue)
 {
 	if (IsValid(Controller) && InValue != 0.0f)

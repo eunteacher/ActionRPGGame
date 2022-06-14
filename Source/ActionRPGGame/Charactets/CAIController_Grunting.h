@@ -8,6 +8,7 @@ UCLASS()
 class ACTIONRPGGAME_API ACAIController_Grunting : public ACAIController
 {
 	GENERATED_BODY()
+	
 public:
 	ACAIController_Grunting();
 	
