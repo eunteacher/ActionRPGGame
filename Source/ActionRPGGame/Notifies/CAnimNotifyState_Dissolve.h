@@ -16,7 +16,6 @@ class ACTIONRPGGAME_API UCAnimNotifyState_Dissolve : public UAnimNotifyState
 public:
 	FString GetNotifyName_Implementation() const override;
 	virtual void NotifyTick(USkeletalMeshComponent * MeshComp, UAnimSequenceBase * Animation, float FrameDeltaTime);
-	virtual void NotifyEnd(USkeletalMeshComponent * MeshComp, UAnimSequenceBase * Animation, const FAnimNotifyEventReference& EventReference);
 
 	
 };

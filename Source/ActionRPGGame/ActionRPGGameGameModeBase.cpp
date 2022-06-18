@@ -1,5 +1,5 @@
 #include "ActionRPGGameGameModeBase.h"
-#include "Charactets/CPlayerController.h"
+#include "Characters/CPlayerController.h"
 
 AActionRPGGameGameModeBase::AActionRPGGameGameModeBase()
 {

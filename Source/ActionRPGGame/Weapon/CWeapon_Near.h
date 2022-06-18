@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "Weapon/CWeapon_Base.h"
+#include "Weapon/CWeapon.h"
 #include "CWeapon_Near.generated.h"
 
 // 전방 선언
@@ -13,7 +13,7 @@ class UCapsuleComponent;
  * 콤보 공격과 충돌체 On/Off
  */
 UCLASS()
-class ACTIONRPGGAME_API ACWeapon_Near : public ACWeapon_Base
+class ACTIONRPGGAME_API ACWeapon_Near : public ACWeapon
 {
 	GENERATED_BODY()
 
@@ -54,6 +54,7 @@ protected:
 	bool CanCombo;
 
 	// 이미 공격받은 Actors
+	UPROPERTY()
 	TArray<AActor*> HittedActors;
 
 };

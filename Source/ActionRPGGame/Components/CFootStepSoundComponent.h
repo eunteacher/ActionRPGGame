@@ -43,9 +43,6 @@ protected:
 	virtual void BeginPlay() override;
 	// 지면을 검사하고, 지면에 맞는 사운드를 플레이
 	void PlayFootStepSound(const ESpeedType InType, const bool IsRight);
-
-	UPROPERTY(VisibleDefaultsOnly, Category = "DataTable")
-	UDataTable* FootStepSoundTable;
 	
 private:
 	TArray<FFootStepSoundData* > FootStepSoundData; // FootStepSound 데이터 TArray

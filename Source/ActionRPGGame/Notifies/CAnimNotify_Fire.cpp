@@ -1,6 +1,6 @@
 #include "Notifies/CAnimNotify_Fire.h"
-#include "Charactets/CBaseCharacter.h"
-#include "Weapon/CWeapon_Base.h"
+#include "Characters/CBaseCharacter.h"
+#include "Weapon/CWeapon.h"
 
 FString UCAnimNotify_Fire::GetNotifyName_Implementation() const
 {
@@ -13,10 +13,11 @@ void UCAnimNotify_Fire::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBa
 	{
 		// Owner 캐릭터를 가져온다.
 		ACBaseCharacter* ownerCharacter = MeshComp->GetOwner<ACBaseCharacter>();
-		// OnwingWeaponData를 가져온다.
-		TMap<EWeaponType, FEquipedWeaponData> owningWeaponDataMap = ownerCharacter->GetEquipedWeaponDataMaps();
-		// 가져온 Map에서 Weapon 클래스를 찾아 저장한다.
-		ACWeapon_Base* weapon = owningWeaponDataMap.Find(ownerCharacter->GetWeaponType())->Weapon;
-		weapon->OnFire();
+		if(ownerCharacter->GetEquipWeaponDataMaps().Contains(ownerCharacter->GetWeaponType()))
+		{
+			// 현재 Equip인 Weapon을 가져온다.
+			ACWeapon* weapon = ownerCharacter->GetEquipWeaponDataMaps().Find(ownerCharacter->GetWeaponType())->Weapon;
+			weapon->OnFire();
+		}
 	}
 }

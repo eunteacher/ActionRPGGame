@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Types/CEnumTypes.h"
 #include "Types/CStructTypes.h"
 #include "CUserWidget_HUD.generated.h"
 
@@ -15,8 +16,7 @@ class ACTIONRPGGAME_API UCUserWidget_HUD : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	// PlayerController의 델리게이트 바인딩
-	void Bind();
+	virtual void NativeConstruct() override;
 	
 protected:
 	UPROPERTY(meta = (BindWidget))
@@ -46,14 +46,21 @@ protected:
 	// 변경된 Stamina 값을 Update
 	UFUNCTION()
 	void UpdateStamina(float& InStamina, float& InMaxStamina);
+
 	// 변경된 Health 값을 Update
 	UFUNCTION()
 	void UpdateHealth(float& InValue, float& InMaxValue);
+
 	// 변경된 Mana 값을 Update
 	UFUNCTION()
 	void UpdateMana(float& InMana, float& InMaxMana);
 
 	// Slots 변경
 	UFUNCTION()
-	void UpdateSlot(const FWeaponIconInfo& InIconInfo, bool IsDefault);
+	void UpdateSlot(UTexture2D* InWeaponIcon, TArray<ACAbility*> InAbilities, bool InIsDefault);
+
+	// Ability Activated
+	UFUNCTION()
+	void OnAbilityActivated(ACAbility* InAbility);
+
 };

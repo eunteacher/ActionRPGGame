@@ -1,6 +1,6 @@
 #include "Weapon/CAnimInstance_Bow.h"
 #include "ActionRPGGame.h"
-#include "Charactets/CBaseCharacter.h"
+#include "Characters/CBaseCharacter.h"
 #include "CWeapon_Far.h"
 #include "Types/CEnumTypes.h"
 
@@ -15,7 +15,7 @@ void UCAnimInstance_Bow::NativeUpdateAnimation(float DeltaSeconds)
 		if(weaponType == EWeaponType::Bow) // 웨폰 타입이 Bow일 경우
 		{
 			// OwnerCharacter에서 Weapon 클래스를 가져와 IsOverDraw를 저장한다.
-			IsOverDraw = Cast<ACWeapon_Far>(OwnerCharacter->GetEquipedWeaponDataMaps().Find(weaponType)->Weapon)->GetIsOverDraw();
+			IsOverDraw = Cast<ACWeapon_Far>(OwnerCharacter->GetEquipWeaponDataMaps().Find(weaponType)->Weapon)->GetIsOverDraw();
 			if (IsOverDraw)
 			{
 				// IsOverDraw가 true일 경우 

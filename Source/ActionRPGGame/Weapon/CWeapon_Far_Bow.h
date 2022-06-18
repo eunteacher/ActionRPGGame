@@ -25,12 +25,13 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly, Category = "Component")
 	UStaticMeshComponent* ArrowStaticMesh;
 
-	UPROPERTY(VisibleDefaultsOnly, Category = "Quiver Acotr")
+	UPROPERTY(VisibleDefaultsOnly, Category = "Quiver")
 	TSubclassOf<class ACBowQuiver> QuiverClass;
 
-	UPROPERTY(VisibleDefaultsOnly, Category = "Quiver Acotr")
+	UPROPERTY(VisibleDefaultsOnly, Category = "Quiver")
 	FName QuiverSocketName = "QuiverHolster";
 
 private:
+	UPROPERTY()
 	ACBowQuiver* Quiver;
 };

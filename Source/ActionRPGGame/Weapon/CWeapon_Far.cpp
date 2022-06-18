@@ -1,7 +1,7 @@
 #include "Weapon/CWeapon_Far.h"
 #include "ActionRPGGame.h"
 #include "Camera/CameraComponent.h"
-#include "Charactets/CBaseCharacter.h"
+#include "Characters/CBaseCharacter.h"
 #include "Components/CMontageComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 

@@ -1,6 +1,6 @@
 #include "Patrols/CPatrolComponent.h"
 #include "ActionRPGGame.h"
-#include "Charactets/CBaseCharacter.h"
+#include "Characters/CBaseCharacter.h"
 #include "Components/SplineComponent.h"
 #include "Patrols/CPatrolPath.h"
 #include "Types/CEnumTypes.h"

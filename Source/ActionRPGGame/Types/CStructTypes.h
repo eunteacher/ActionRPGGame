@@ -6,11 +6,6 @@
 #include "NiagaraSystem.h"
 #include "CStructTypes.generated.h"
 
-// 전방 선언
-enum class EMontageType : uint8;
-class ACWeapon_Base;
-class ACProjectile;
-
 USTRUCT(BlueprintType)
 struct FUseStatusData
 {
@@ -108,70 +103,38 @@ public:
 };
 
 USTRUCT(BlueprintType)
-struct FWeaponIconInfo
+struct FEquipAbilityData
 {
 	GENERATED_BODY()
-
 public:
-	FWeaponIconInfo(): WeaponIcon(nullptr), Ability1_Icon(nullptr), Ability2_Icon(nullptr), Ability3_Icon(nullptr), Ability4_Icon(nullptr)
+	FEquipAbilityData(): Ability(nullptr)
 	{
-		
 	}
-
-	UPROPERTY(EditAnywhere, Category = "Icon")
-	UTexture2D* WeaponIcon;
-
-	UPROPERTY(EditAnywhere, Category = "Icon")
-	UTexture2D* Ability1_Icon;
-
-	UPROPERTY(EditAnywhere, Category = "Icon")
-	UTexture2D* Ability2_Icon;
-
-	UPROPERTY(EditAnywhere, Category = "Icon")
-	UTexture2D* Ability3_Icon;
-
-	UPROPERTY(EditAnywhere, Category = "Icon")
-	UTexture2D* Ability4_Icon;
+	
+	UPROPERTY(EditAnywhere, Category = "Ability")
+	ACAbility* Ability;
 };
 
 USTRUCT(BlueprintType)
-struct FEquipedWeaponData
+struct FEquipWeaponData
 {
 	GENERATED_BODY()
 public:
-	FEquipedWeaponData(): Weapon(nullptr), IsAiming(false), WeaponSocketName("None"), WeaponHolsterSocketName("None")
+	FEquipWeaponData(): Weapon(nullptr), IsAiming(false), WeaponSocketName("None"), WeaponHolsterSocketName("None")
 	{
 		
 	}
 
-	FEquipedWeaponData(const FOwningWeaponData* InData, ACWeapon_Base* InWeapon)
-	{
-		this->Weapon = InWeapon;
-		this->WeaponSocketName = InData->WeaponSocketName;
-		this->WeaponHolsterSocketName = InData->WeaponHolsterSocketName;
-
-		this->WeaponIconInfo.WeaponIcon = InData->WeaponIcon;
-		this->WeaponIconInfo.Ability1_Icon = InData->Ability1_Icon;
-		this->WeaponIconInfo.Ability2_Icon = InData->Ability2_Icon;
-		this->WeaponIconInfo.Ability3_Icon = InData->Ability3_Icon;
-		this->WeaponIconInfo.Ability4_Icon = InData->Ability4_Icon;
-
-		this->IsAiming = false;
-	}
-	
 	UPROPERTY(EditAnywhere, Category = "Weapon")
-	ACWeapon_Base* Weapon;
+	ACWeapon* Weapon;
 
 	UPROPERTY(EditAnywhere, Category = "Weapon")
 	bool IsAiming;
 	
-	UPROPERTY(EditAnywhere, Category = "Socket")
+	UPROPERTY(EditAnywhere, Category = "SocketName")
 	FName WeaponSocketName;
 
-	UPROPERTY(EditAnywhere, Category = "Socket")
+	UPROPERTY(EditAnywhere, Category = "SocketName")
 	FName WeaponHolsterSocketName;
-
-	UPROPERTY(EditAnywhere, Category = "Icon")
-	FWeaponIconInfo WeaponIconInfo;
-
 };
+

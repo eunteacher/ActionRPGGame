@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Weapon/CWeapon_Base.h"
+#include "Weapon/CWeapon.h"
 #include "CWeapon_Far.generated.h"
 
 // 전방 선언
@@ -10,7 +10,7 @@ class USpringArmComponent;
 class UCameraComponent;
 
 UCLASS()
-class ACTIONRPGGAME_API ACWeapon_Far : public ACWeapon_Base
+class ACTIONRPGGAME_API ACWeapon_Far : public ACWeapon
 {
 	GENERATED_BODY()
 public:

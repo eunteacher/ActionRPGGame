@@ -2,7 +2,7 @@
 #include "ActionRPGGame.h"
 #include "CAnimInstance_Bow.h"
 #include "Camera/CameraComponent.h"
-#include "Charactets/CBaseCharacter.h"
+#include "Characters/CBaseCharacter.h"
 #include "Weapon/CProjectile.h"
 #include "Weapon/CBowQuiver.h"
 
@@ -12,6 +12,7 @@ ACWeapon_Far_Bow::ACWeapon_Far_Bow()
 	
 	// WeaponType 초기화
 	Weapon = EWeaponType::Bow;
+
 
 	// SkeletalMesh 초기화
 	BowSkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>("SkeletalMesh");
@@ -66,6 +67,13 @@ ACWeapon_Far_Bow::ACWeapon_Far_Bow()
 	if(QuiverBlueprintClass.Succeeded())
 	{
 		QuiverClass = QuiverBlueprintClass.Class;
+	}
+
+	// Texture2D'/Game/Widgets/Textures/Icon/T_Bow.T_Bow'
+	const ConstructorHelpers::FObjectFinder<UTexture2D> weaponIconAsset(TEXT("Texture2D'/Game/Widgets/Textures/Icon/T_Bow.T_Bow'"));
+	if (weaponIconAsset.Succeeded())
+	{
+		WeaponIcon = weaponIconAsset.Object;
 	}
 }
 
@@ -136,8 +144,9 @@ void ACWeapon_Far_Bow::OnFire()
 		FRotator rotation = GetOwner<ACBaseCharacter>()->GetControlRotation();
 		transform.SetRotation(rotation.Quaternion());
 
+		// Spawn Projectile
 		ACProjectile* projectile = GetWorld()->SpawnActorDeferred<ACProjectile>(ProjectileClass, transform, this);
-		projectile->InitHittedInfo
+		projectile->InitHitInfo
 		(
 			UseWeaponDataMaps.Find(AttackType)->Damage,
 			UseWeaponDataMaps.Find(AttackType)->LaunchValue,

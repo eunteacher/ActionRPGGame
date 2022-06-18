@@ -7,19 +7,4 @@ void UCUserWidget_BaseProgressBar::UpdateValue(float InValue, float InMaxValue)
 	ProgressBar->SetPercent(InValue / InMaxValue);
 }
 
-void UCUserWidget_BaseProgressBar::ChangedProgressBarImage(UTexture2D* InTexture2D) const
-{
-	ProgressBar->WidgetStyle.BackgroundImage.SetResourceObject(InTexture2D);
-	ProgressBar->WidgetStyle.FillImage.SetResourceObject(InTexture2D);
-}
-
-void UCUserWidget_BaseProgressBar::HiddenProgressBar() const
-{
-	ProgressBar->SetVisibility(ESlateVisibility::Hidden);
-}
-
-void UCUserWidget_BaseProgressBar::VisibleProgressBar() const
-{
-	ProgressBar->SetVisibility(ESlateVisibility::Visible);
-}
 

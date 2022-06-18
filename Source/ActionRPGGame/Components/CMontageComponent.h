@@ -2,8 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Engine/DataTable.h"
-#include "Types/CDataTableType.h"
 #include "Types/CStructTypes.h"
 #include "CMontageComponent.generated.h"
 
@@ -24,10 +22,6 @@ public:
 protected:
 	// BeingPlay
 	virtual void BeginPlay() override;
-	
-	// Montage 컴포넌트에서 사용할 Montage Data Table
-	UPROPERTY(VisibleDefaultsOnly, Category = "DataTable")
-	UDataTable* MontageTable;
 
 private:
 	TMap<EMontageType, FUseMontageData> UseMontageDataMaps; // Montage Data Maps

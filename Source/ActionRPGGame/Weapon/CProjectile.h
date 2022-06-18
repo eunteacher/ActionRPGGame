@@ -12,7 +12,6 @@ class USphereComponent;
 class ACDamageText;
 enum class EMontageType : uint8;
 
-
 UCLASS()
 class ACTIONRPGGAME_API ACProjectile : public AActor
 {
@@ -25,7 +24,8 @@ public:
 	// Tick
 	virtual void Tick(float DeltaTime) override;
 
-	void InitHittedInfo(float& InDamage, float& InLaunchValue, UNiagaraSystem* InHitNiagaraEffect, TSubclassOf<ACDamageText>& InDamageTextClass, bool InIsAttach = false);
+	// Projectile Hit 정보 초기화 
+	void InitHitInfo(float& InDamage, float& InLaunchValue, UNiagaraSystem* InHitNiagaraEffect, TSubclassOf<ACDamageText>& InDamageTextClass, bool InIsAttach = false);
 
 	UPROPERTY(EditAnywhere, Category = "Trace")
 	TEnumAsByte<EDrawDebugTrace::Type> DrawDebugType;

@@ -1,6 +1,6 @@
 #include "Notifies/CAnimNotify_DefaultWeapon.h"
 
-#include "Charactets/CBaseCharacter.h"
+#include "Characters/CBaseCharacter.h"
 
 FString UCAnimNotify_DefaultWeapon::GetNotifyName_Implementation() const
 {

@@ -1,5 +1,5 @@
 #include "Notifies/CAnimNotify_Dead.h"
-#include "Charactets/CBaseCharacter.h"
+#include "Characters/CBaseCharacter.h"
 
 FString UCAnimNotify_Dead::GetNotifyName_Implementation() const
 {

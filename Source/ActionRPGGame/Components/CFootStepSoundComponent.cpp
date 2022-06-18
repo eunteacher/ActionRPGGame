@@ -1,22 +1,14 @@
 #include "Components/CFootStepSoundComponent.h"
 #include "ActionRPGGame.h"
-#include "Charactets/CBaseCharacter.h"
+#include "CGameInstance.h"
+#include "Characters/CBaseCharacter.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 
 // 생성자
 UCFootStepSoundComponent::UCFootStepSoundComponent()
 {
-	// 데이터 테이블 에셋을 가져와 저장
-	// DataTable'/Game/DataTables/DT_FootStepSound.DT_FootStepSound'
-	static ConstructorHelpers::FObjectFinder<UDataTable> FootStepSoundTableAsset(TEXT("DataTable'/Game/DataTables/DT_FootStepSound.DT_FootStepSound'"));
-	if (FootStepSoundTableAsset.Succeeded())
-	{
-		FootStepSoundTable = FootStepSoundTableAsset.Object;
-	}
-	
-	// 멤버 변수 초기화
-	LeftFoot = "FootStep_Left";
-	RightFoot = "FootStep_Right";
+	LeftFoot = "FootStep_Left"; // 왼쪽 발
+	RightFoot = "FootStep_Right"; // 오른쪽 발
 	TraceType = ETraceTypeQuery::TraceTypeQuery2;
 	DrawDebugType = EDrawDebugTrace::ForDuration;
 }
@@ -25,10 +17,18 @@ UCFootStepSoundComponent::UCFootStepSoundComponent()
 void UCFootStepSoundComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	// DataTable에서 값을 가져와 FootStepSoundData에 저장
-	FootStepSoundTable->GetAllRows<FFootStepSoundData>("", FootStepSoundData);
 
+	// GameInstance에서 데이터 테이블 읽어오기
+	if (IsValid(GetOwner<ACBaseCharacter>()->GetGameInstance<UCGameInstance>()))
+	{
+		UDataTable* footStepSoundTable = GetOwner<ACBaseCharacter>()->GetGameInstance<UCGameInstance>()->ReadFootStepSoundTable();
+
+		if(IsValid(footStepSoundTable))
+		{
+			// DataTable에서 값을 가져와 FootStepSoundData에 저장
+			footStepSoundTable->GetAllRows<FFootStepSoundData>("", FootStepSoundData);
+		}
+	}
 }
 // 왼발 발자국 
 void UCFootStepSoundComponent::NotifyLeftFootStep(const ESpeedType InType)

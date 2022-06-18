@@ -1,7 +1,7 @@
 #include "Weapon/CWeapon_Near.h"
 #include "ActionRPGGame.h"
 #include "NiagaraFunctionLibrary.h"
-#include "Charactets/CBaseCharacter.h"
+#include "Characters/CBaseCharacter.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/CMontageComponent.h"
 #include "Components/CSoundComponent.h"
@@ -20,6 +20,7 @@ ACWeapon_Near::ACWeapon_Near()
 void ACWeapon_Near::BeginPlay()
 {
 	Super::BeginPlay();
+	
 	
 }
 

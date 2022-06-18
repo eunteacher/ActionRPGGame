@@ -1,6 +1,6 @@
 #include "Weapon/CProjectile.h"
 #include "ActionRPGGame.h"
-#include "Charactets/CBaseCharacter.h"
+#include "Characters/CBaseCharacter.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "NiagaraFunctionLibrary.h"
@@ -55,7 +55,7 @@ void ACProjectile::Tick(float DeltaTime)
 }
 
 // Projectile의 필요한 Htited 데이터 초기화 함수
-void ACProjectile::InitHittedInfo(float& InDamage, float& InLaunchValue, UNiagaraSystem* InHitNiagaraEffect, TSubclassOf<ACDamageText>& InDamageTextClass, bool InIsAttach)
+void ACProjectile::InitHitInfo(float& InDamage, float& InLaunchValue, UNiagaraSystem* InHitNiagaraEffect, TSubclassOf<ACDamageText>& InDamageTextClass, bool InIsAttach)
 {
 	Damage = InDamage;
 	LaunchValue = InLaunchValue;
@@ -175,7 +175,7 @@ void ACProjectile::OnAttach(AActor* InHitActor, FVector InAttachLoaction)
 	{
 		// Projectile 컴포넌트를 삭제한다.
 		Projectile->DestroyComponent();
-		// HitActor에 Proejctile을 Attach한다.
+		// HitActor에 Projectile을 Attach한다.
 		AttachToActor(InHitActor,FAttachmentTransformRules(EAttachmentRule::KeepWorld, true));
 		// HitImpact 위치로 위치를 조정한다.
 		SetActorLocation(InAttachLoaction + GetActorForwardVector() * -40.0f, false, nullptr, ETeleportType::TeleportPhysics);

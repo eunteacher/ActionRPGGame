@@ -1,0 +1,5 @@
+---,AbilityType,MontageType,Damage,CoolDown,MaxCoolDown,AbilityEffectClass
+1,SwordFire,None,,,,Blueprint'/Game/AbilityEffects/BP_AE_SwordFrie.BP_AE_SwordFrie_C'
+2,SwordTakeDown,SwordTakeDown,,,,Blueprint'/Game/AbilityEffects/BP_AE_SwordTakeDown.BP_AE_SwordTakeDown_C'
+3,SwordRangeAttack,SwordRangeAttack,,,,Blueprint'/Game/AbilityEffects/BP_AE_SwordRangeAttack.BP_AE_SwordRangeAttack_C'
+4,SwordStar,SwordStar,,,,Blueprint'/Game/AbilityEffects/BP_AE_SwordStar.BP_AE_SwordStar_C'

@@ -3,6 +3,17 @@
 #include "CoreMinimal.h"
 
 UENUM(BlueprintType)
+enum class EAbilityType : uint8
+{
+	None,
+	FireSword,
+	TakeDown,
+	RangeAttack,
+	Star,
+	Max
+};
+
+UENUM(BlueprintType)
 enum class EPatrolType : uint8
 {
 	None,
@@ -15,6 +26,7 @@ enum class EPatrolType : uint8
 UENUM(BlueprintType)
 enum class EAttackType : uint8
 {
+	None,
 	Near_Combo1,
 	Near_Combo2,
 	Near_Combo3,
@@ -37,6 +49,7 @@ enum class EWeaponType : uint8
 UENUM(BlueprintType)
 enum class EMontageType : uint8
 {
+	None,
 	EvadeForward,
 	EvadeBack,
 	EvadeLeft,
@@ -54,6 +67,10 @@ enum class EMontageType : uint8
 	Bow_Fire,
 	Bow_OverDraw,
 	Dead,
+	TakeDown,
+	RangeAttack,
+	Star,
+	FireSword,
 	Max
 };
 
@@ -61,8 +78,9 @@ enum class EMontageType : uint8
 UENUM(BlueprintType)
 enum class EModelType : uint8
 {
+	None,
 	GhostLady,
-	Gruntling,
+	Grunting,
 	Max
 };
 
@@ -70,6 +88,7 @@ enum class EModelType : uint8
 UENUM(BlueprintType)
 enum class EStatusType : uint8
 {
+	None,
 	Player,
 	Enemy_Grunting,
 	Enemy_Boss,
@@ -80,7 +99,9 @@ enum class EStatusType : uint8
 UENUM(BlueprintType)
 enum class ESpeedType : uint8
 {
+	None,
 	Walk,
 	Run,
 	Max
 };
+

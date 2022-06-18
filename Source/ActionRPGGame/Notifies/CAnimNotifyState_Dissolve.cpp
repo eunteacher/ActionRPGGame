@@ -13,7 +13,3 @@ void UCAnimNotifyState_Dissolve::NotifyTick(USkeletalMeshComponent* MeshComp, UA
 	}
 }
 
-void UCAnimNotifyState_Dissolve::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
-{
-	
-}

@@ -1,5 +1,5 @@
 #include "Notifies/CAnimNotify_OverDraw.h"
-#include "Charactets/CBaseCharacter.h"
+#include "Characters/CBaseCharacter.h"
 #include "Weapon/CWeapon_Far.h"
 
 FString UCAnimNotify_OverDraw::GetNotifyName_Implementation() const
@@ -13,10 +13,12 @@ void UCAnimNotify_OverDraw::Notify(USkeletalMeshComponent* MeshComp, UAnimSequen
 	{
 		// Owner 캐릭터를 가져온다.
 		ACBaseCharacter* ownerCharacter = MeshComp->GetOwner<ACBaseCharacter>();
-		// OnwingWeaponData를 가져온다.
-		TMap<EWeaponType, FEquipedWeaponData> equipeWeaponDataMap = ownerCharacter->GetEquipedWeaponDataMaps();
-		// 가져온 Map에서 Weapon 클래스를 찾아 저장한다.
-		ACWeapon_Far* far = Cast<ACWeapon_Far>(equipeWeaponDataMap.Find(ownerCharacter->GetWeaponType())->Weapon);
-		far->SetIsOverDraw(true);
+
+		if(ownerCharacter->GetEquipWeaponDataMaps().Contains(ownerCharacter->GetWeaponType()))
+		{
+			// 현재 Equip인 Weapon을 가져온다.
+			ACWeapon_Far* far = Cast<ACWeapon_Far>(ownerCharacter->GetEquipWeaponDataMaps().Find(ownerCharacter->GetWeaponType())->Weapon);
+			far->SetIsOverDraw(true);
+		}
 	}
 }

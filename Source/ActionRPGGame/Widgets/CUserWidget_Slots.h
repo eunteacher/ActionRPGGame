@@ -7,7 +7,7 @@
 // 전방 선언
 class UOverlay;
 class UImage;
-class UCUserWidget_BaseProgressBar;
+class UCUserWidget_AbilitySlot;
 
 UCLASS()
 class ACTIONRPGGAME_API UCUserWidget_Slots : public UUserWidget
@@ -15,11 +15,16 @@ class ACTIONRPGGAME_API UCUserWidget_Slots : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	// 무기 변경 시 호출
-	// 입력으로 변경할 이미지들과 WeaponType이 Default의 여부를 받는다.
-	UFUNCTION()
-	void SetIcon(UTexture2D* InWeapon, UTexture2D* InAbility01, UTexture2D* InAbility02, UTexture2D* InAbility03, UTexture2D* InAbility04, bool IsDefault);
+	virtual void NativeConstruct() override;
 	
+	// 무기 변경 시 호출
+	UFUNCTION()
+	void UpdateSlot(UTexture2D* InWeaponIcon, TArray<class ACAbility*> InAbilities, bool InIsDefault);
+
+	UFUNCTION()
+	void OnAbilityActivated(ACAbility* InAbility);
+
+	TArray<UCUserWidget_AbilitySlot*> GetAbilitySlots();
 protected:
 	UPROPERTY(meta = (BindWidget))
 	UOverlay* Overlay;
@@ -40,14 +45,15 @@ protected:
 	UImage* WeaponImage;
 
 	UPROPERTY(meta = (BindWidget))
-	UCUserWidget_BaseProgressBar* AbilitySlot01;
+	UCUserWidget_AbilitySlot* AbilitySlot01;
 	
 	UPROPERTY(meta = (BindWidget))
-	UCUserWidget_BaseProgressBar* AbilitySlot02;
+	UCUserWidget_AbilitySlot* AbilitySlot02;
 
 	UPROPERTY(meta = (BindWidget))
-	UCUserWidget_BaseProgressBar* AbilitySlot03;
+	UCUserWidget_AbilitySlot* AbilitySlot03;
 
 	UPROPERTY(meta = (BindWidget))
-	UCUserWidget_BaseProgressBar* AbilitySlot04;
+	UCUserWidget_AbilitySlot* AbilitySlot04;
+
 };

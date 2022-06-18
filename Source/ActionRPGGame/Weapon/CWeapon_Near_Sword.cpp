@@ -23,11 +23,19 @@ ACWeapon_Near_Sword::ACWeapon_Near_Sword()
 	
 	// Weapon Data Table
 	// DataTable'/Game/DataTables/DT_Wepaon_Sword.DT_Wepaon_Sword'
-	const ConstructorHelpers::FObjectFinder<UDataTable> WeaponDataTableAsset(TEXT("DataTable'/Game/DataTables/DT_Wepaon_Sword.DT_Wepaon_Sword'"));
-	if (WeaponDataTableAsset.Succeeded())
+	const ConstructorHelpers::FObjectFinder<UDataTable> weaponDataTableAsset(TEXT("DataTable'/Game/DataTables/DT_Wepaon_Sword.DT_Wepaon_Sword'"));
+	if (weaponDataTableAsset.Succeeded())
 	{
-		WeaponTable = WeaponDataTableAsset.Object;
+		WeaponTable = weaponDataTableAsset.Object;
 	}
+
+	// Texture2D'/Game/Widgets/Textures/Icon/T_Sword.T_Sword'
+	const ConstructorHelpers::FObjectFinder<UTexture2D> weaponIconAsset(TEXT("Texture2D'/Game/Widgets/Textures/Icon/T_Sword.T_Sword'"));
+	if (weaponIconAsset.Succeeded())
+	{
+		WeaponIcon = weaponIconAsset.Object;
+	}
+
 }
 
 // BeginPlay
@@ -53,4 +61,11 @@ void ACWeapon_Near_Sword::BeginPlay()
 			UseWeaponDataMaps.Add(data->AttackType, useWeaponData);
 		}
 	}
+
+}
+
+void ACWeapon_Near_Sword::GetStaticMeshComponent(UStaticMeshComponent*& OutStaticMeshComponent)
+{
+	CLog::Log("ACWeapon_Near_Sword GetStaticMesh");
+	OutStaticMeshComponent = WeaponStaticMesh;
 }

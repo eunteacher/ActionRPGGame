@@ -1,0 +1,5 @@
+---,Type,AbilityClass,bOwning
+1,"FireSword","BlueprintGeneratedClass'/Game/Abilities/BP_CAbility_FireSword.BP_CAbility_FireSword_C'","True"
+2,"TakeDown","BlueprintGeneratedClass'/Game/Abilities/BP_CAbility_TakeDown.BP_CAbility_TakeDown_C'","True"
+3,"RangeAttack","BlueprintGeneratedClass'/Game/Abilities/BP_CAbility_RangeAttack.BP_CAbility_RangeAttack_C'","True"
+4,"Star","BlueprintGeneratedClass'/Game/Abilities/BP_CAbility_Star.BP_CAbility_Star_C'","True"
