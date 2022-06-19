@@ -42,9 +42,11 @@ protected:
 	bool TargetTrace();
 	
 	// Weapon의 OwnerCharacter의 SpringArm
+	UPROPERTY()
 	USpringArmComponent* OwnerSpringArm;
 
 	// Weapon의 OwnerCharacter의 Camera
+	UPROPERTY()
 	UCameraComponent* OwnerCamera;
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "ProjectileClass")

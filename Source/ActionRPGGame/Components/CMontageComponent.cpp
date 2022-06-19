@@ -7,7 +7,7 @@
 // 생성자 
 UCMontageComponent::UCMontageComponent()
 {
-
+	CanMove = true;
 }
 
 void UCMontageComponent::BeginPlay()
@@ -40,7 +40,7 @@ void UCMontageComponent::BeginPlay()
 }
 
 // UseMontageMaps에서 Montage를 찾아 실행한다.
-void UCMontageComponent::PlayMontage(const EMontageType InMontageType)
+void UCMontageComponent::PlayMontage(const EMontageType InMontageType, bool InCanMove)
 {
 	// ownerCharacter가 존재할 경우
 	if (IsValid(GetOwner<ACBaseCharacter>()))
@@ -48,8 +48,24 @@ void UCMontageComponent::PlayMontage(const EMontageType InMontageType)
 		if (UseMontageDataMaps.Contains(InMontageType))
 		{
 			// 몽타주 실행
-			GetOwner<ACBaseCharacter>()->PlayAnimMontage(UseMontageDataMaps.Find(InMontageType)->AnimMontage, UseMontageDataMaps.Find(InMontageType)->PlayRatio, UseMontageDataMaps.Find(InMontageType)->StartSection);
-		}
+			const float timerRate = GetOwner<ACBaseCharacter>()->PlayAnimMontage(UseMontageDataMaps.Find(InMontageType)->AnimMontage, UseMontageDataMaps.Find(InMontageType)->PlayRatio, UseMontageDataMaps.Find(InMontageType)->StartSection);
+
+			if(!InCanMove)
+			{
+				// Timer가 활성화되어 있다면, Timer를 지운다.
+				// 새로운 몽타주가 연속적으로 Play될 경우, 몽타주 실행 도중에 CanMove가 true로 변경되는 경우를 방지하기 위해서 이전 Timer를 지운다.
+				if (GetWorld()->GetTimerManager().IsTimerActive(TimerHandle))
+				{
+					GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
+				}
+				
+				CanMove = false;
+				GetWorld()->GetTimerManager().SetTimer(TimerHandle, FTimerDelegate::CreateLambda([&]()
+				{
+					CanMove = true;
+				}), timerRate, false);
+			} // if !InCanMove
+		} // if Contains
 	}
 	else
 	{

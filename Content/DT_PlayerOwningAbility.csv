@@ -3,3 +3,7 @@
 2,"TakeDown","BlueprintGeneratedClass'/Game/Abilities/BP_CAbility_TakeDown.BP_CAbility_TakeDown_C'","True"
 3,"RangeAttack","BlueprintGeneratedClass'/Game/Abilities/BP_CAbility_RangeAttack.BP_CAbility_RangeAttack_C'","True"
 4,"Star","BlueprintGeneratedClass'/Game/Abilities/BP_CAbility_Star.BP_CAbility_Star_C'","True"
+5,"FireArrow","BlueprintGeneratedClass'/Game/Abilities/BP_CAbility_FireArrow.BP_CAbility_FireArrow_C'","True"
+6,"ExplosionArrow","BlueprintGeneratedClass'/Game/Abilities/BP_CAbility_ExplosionArrow.BP_CAbility_ExplosionArrow_C'","True"
+7,"PenetratingArrow","BlueprintGeneratedClass'/Game/Abilities/BP_CAbility_PenetratingArrow.BP_CAbility_PenetratingArrow_C'","True"
+8,"RainArrow","BlueprintGeneratedClass'/Game/Abilities/BP_CAbility_RainArrow.BP_CAbility_RainArrow_C'","True"

@@ -9,7 +9,7 @@ class ACTIONRPGGAME_API UCUserWidget_DamageText : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	void SetDamageText(FText InText, bool IsPlayer);
+	void SetDamageText(FText InText, bool InIsPlayer, bool InIsDamageEffect = false);
 	
 protected:
 	UPROPERTY(meta = (BindWidget))

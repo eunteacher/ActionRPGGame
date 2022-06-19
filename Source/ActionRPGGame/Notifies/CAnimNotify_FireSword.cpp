@@ -15,7 +15,7 @@ void UCAnimNotify_FireSword::Notify(USkeletalMeshComponent* MeshComp, UAnimSeque
 		ACBaseCharacter* ownerCharacter = MeshComp->GetOwner<ACBaseCharacter>();
 		if(ownerCharacter->GetEquipAbilityDataMaps().Contains(ownerCharacter->GetAbilityType()))
 		{
-			ownerCharacter->GetEquipAbilityDataMaps().Find(ownerCharacter->GetAbilityType())->Ability->OnNotify();
+			ownerCharacter->GetEquipAbilityDataMaps().Find(ownerCharacter->GetAbilityType())->Ability->OnProgress();
 		}
 	}
 }

@@ -66,6 +66,8 @@ public:
 	virtual FGenericTeamId GetGenericTeamId() const override;
 
 	virtual void OnDead();
+
+	bool GetAlive();
 protected:
 	// BeginPlay 함수
 	virtual void BeginPlay() override;

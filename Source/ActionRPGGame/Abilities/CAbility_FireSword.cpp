@@ -6,9 +6,9 @@
 #include "Components/CMontageComponent.h"
 #include "Kismet/KismetTextLibrary.h"
 #include "Math/TransformCalculus3D.h"
-#include "Types/CDamageType.h"
 #include "Weapon/CWeapon_Near_Sword.h"
 #include "Widgets/CDamageText.h"
+#include "CBurningEffect.h"
 
 ACAbility_FireSword::ACAbility_FireSword()
 {
@@ -18,18 +18,15 @@ ACAbility_FireSword::ACAbility_FireSword()
 	MontageType = EMontageType::FireSword;
 	
 	// 데미지, 쿨다운, 코스트, 지속시간 초기화
-	Damage = 5.0f;
+	Damage = 0.2f;
 	CoolDown = 10.0f;
 	ManaCost = 50.0f;
 	Duration = 5;
 	AttachSocketName = "EffectSocket";
 
-	DrawDebugType = EDrawDebugTrace::ForOneFrame;
-	TraceType = ETraceTypeQuery::TraceTypeQuery2;
-
 	// Ability Icon 초기화
-	// Texture2D'/Game/Widgets/Textures/Icon/T_SwordAbility01.T_SwordAbility01'
-	const ConstructorHelpers::FObjectFinder<UTexture2D> abilityIconAsset(TEXT("Texture2D'/Game/Widgets/Textures/Icon/T_SwordAbility01.T_SwordAbility01'"));
+	// Texture2D'/Game/Widgets/Textures/Icon/T_FireSwordIcon.T_FireSwordIcon'
+	const ConstructorHelpers::FObjectFinder<UTexture2D> abilityIconAsset(TEXT("Texture2D'/Game/Widgets/Textures/Icon/T_FireSwordIcon.T_FireSwordIcon'"));
 	if (abilityIconAsset.Succeeded())
 	{
 		AbilityIcon = abilityIconAsset.Object;
@@ -50,17 +47,23 @@ ACAbility_FireSword::ACAbility_FireSword()
 	{
 		AuraEffect = auraNiagaraSystemAsset.Object;
 	}
-	
+
+	// Blueprint'/Game/Abilities/BP_CBurningEffect.BP_CBurningEffect'
+	ConstructorHelpers::FClassFinder<ACBurningEffect> burningEffectBlueprintClass(TEXT("Blueprint'/Game/Abilities/BP_CBurningEffect.BP_CBurningEffect_C'"));
+	if(burningEffectBlueprintClass.Succeeded())
+	{
+		BurningEffectClass = burningEffectBlueprintClass.Class;
+	}
+
 }
 
 void ACAbility_FireSword::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	// TODO : Trace
 	if(IsActivation)
 	{
-		
+		OnSphereTrace();
 	}
 }
 
@@ -73,6 +76,7 @@ void ACAbility_FireSword::OnActivation()
 	if(IsAvailable)
 	{
 		IsAvailable = false;
+		IsActivation = true;
 
 		// Ability Slot 쿨다운 호출 
 		ACPlayerController* playerController = OwnerCharacter->GetController<ACPlayerController>();
@@ -103,9 +107,9 @@ void ACAbility_FireSword::OnActivation()
 	} // IsAvailable
 }
 
-void ACAbility_FireSword::OnNotify()
+void ACAbility_FireSword::OnProgress()
 {
-	Super::OnNotify();
+	Super::OnProgress();
 
 	if(IsValid(FireEffect))
 	{
@@ -122,6 +126,9 @@ void ACAbility_FireSword::OnNotify()
 			true
 		);	
 	}
+
+	OriginalDamage = OwnerWeapon->GetWeaponDamage();
+	OwnerWeapon->SetWeaponDamage(OriginalDamage + OriginalDamage * Damage);
 }
 
 void ACAbility_FireSword::OnDeActivation()
@@ -130,6 +137,9 @@ void ACAbility_FireSword::OnDeActivation()
 	CLog::Print(FString("SwordFire OnDeActivation"));
 
 	IsActivation = false;
+
+	OwnerWeapon->SetWeaponDamage(OriginalDamage);
+	HittedActors.Empty();
 }
 
 void ACAbility_FireSword::OnSphereTrace()
@@ -152,36 +162,16 @@ void ACAbility_FireSword::OnSphereTrace()
 			HittedActors.Add(hit.GetActor());
 			ACBaseCharacter* hitCharacter = Cast<ACBaseCharacter>(hit.GetActor());
 			if (IsValid(hitCharacter))
-			{	
-				// Spwan Effect
-				// if(IsValid(UseWeaponDataMaps.Find(AttackType)->HitNiagaraEffect))
-				// {
-				// 	UNiagaraFunctionLibrary::SpawnSystemAtLocation
-				// 	(
-				// 		GetWorld(),
-				// 		UseWeaponDataMaps.Find(AttackType)->HitNiagaraEffect,
-				// 		hit.ImpactPoint,
-				// 		hit.ImpactNormal.Rotation()
-				// 	);
-				// }
-
-				// TODO : DamgeEvet Burning 만들어서 추가하고 추가적으로 5정도의 공격력 
-				// Spawn DamageText 
-				// FTransform transform;
-				// transform.SetLocation(hit.ImpactPoint);
-				// ACDamageText* damageText = GetWorld()->SpawnActorDeferred<ACDamageText>(DamageTextClass, transform, hitCharacter);
-				// UGameplayStatics::FinishSpawningActor(damageText, transform);
-				// bool isPlayer = hitCharacter->GetStatusType() == EStatusType::Player ? true : false;
-				// damageText->SetDamageText(UKismetTextLibrary::Conv_FloatToText(UseWeaponDataMaps.Find(AttackType)->Damage, ERoundingMode::HalfFromZero), isPlayer);
-				//
-				// // TakeDamage
-				// FDamageEvent damageEvent(UCDamageType::StaticClass());
-				// hitCharacter->TakeDamage(UseWeaponDataMaps.Find(AttackType)->Damage, damageEvent, hitCharacter->GetController(), this);
-			}
+			{
+				if(IsValid(BurningEffectClass))
+				{
+					FTransform transform;
+					ACBurningEffect* burningEffect = GetWorld()->SpawnActorDeferred<ACBurningEffect>(BurningEffectClass, transform, OwnerCharacter);
+					burningEffect->InitBurningEffect(hitCharacter, this);
+					burningEffect->AttachToActor(hitCharacter,FAttachmentTransformRules(EAttachmentRule::KeepRelative, true),"Burning");
+					UGameplayStatics::FinishSpawningActor(burningEffect, transform);
+				} // if IsValid BuringEffectClass
+			} // If IsValid hitCharacter
 		}
-	}
-	else
-	{
-		HittedActors.Empty();
 	}
 }

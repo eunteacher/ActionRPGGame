@@ -28,7 +28,7 @@ void UCUserWidget_AbilitySlot::NativeTick(const FGeometry& MyGeometry, float InD
 
 	if (IsAvailable)
 	{
-		Value += InDeltaTime;
+		Value -= InDeltaTime;
 		ProgressBar->SetPercent(Value / MaxValue);
 
 		RemainAbilityTimeText->SetText(UKismetTextLibrary::Conv_IntToText(RemainAbilityTime));
@@ -53,7 +53,7 @@ void UCUserWidget_AbilitySlot::NativeTick(const FGeometry& MyGeometry, float InD
 			RemainAbilityTime--;
 		}
 		
-		if(Value > MaxValue)
+		if(Value < 0.0f)
 		{
 			Reset();
 		}
@@ -96,10 +96,7 @@ void UCUserWidget_AbilitySlot::SetAbility(ACAbility* InAbility)
 		AvailableAbilityTime = InAbility->GetDuration();
 		RemainAbilityTime = InAbility->GetDuration();
 		MaxValue = InAbility->GetCoolDown();
-
-		CLog::Print(AvailableAbilityTime);
-		CLog::Print(RemainAbilityTime);
-		CLog::Print(MaxValue);
+		Value = InAbility->GetCoolDown();
 
 		ChangedProgressBarImage(Ability->GetAbilityIcon());
 	}
@@ -108,6 +105,8 @@ void UCUserWidget_AbilitySlot::SetAbility(ACAbility* InAbility)
 void UCUserWidget_AbilitySlot::Reset()
 {
 	IsAvailable = false;
+	IsTimer = true;
+	
 	Value = 0.0f;
 	RemainAbilityTime = AvailableAbilityTime;
 

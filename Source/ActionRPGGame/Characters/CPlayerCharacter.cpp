@@ -258,27 +258,33 @@ void ACPlayerCharacter::SetDefaultWeapon()
 
 void ACPlayerCharacter::MoveForward(float InValue)
 {
-	if (IsValid(GetController<ACPlayerController>()) && InValue != 0.0f)
+	if (Montage->GetCanMove())
 	{
-		// 컨트롤러의 Yaw 값
-		const FRotator rotation = GetController<ACPlayerController>()->GetControlRotation(); // 컨트롤러의 회전 값
-		const FRotator yawRotation(0, rotation.Yaw, 0);
+		if (IsValid(GetController<ACPlayerController>()) && InValue != 0.0f)
+		{
+			// 컨트롤러의 Yaw 값
+			const FRotator rotation = GetController<ACPlayerController>()->GetControlRotation(); // 컨트롤러의 회전 값
+			const FRotator yawRotation(0, rotation.Yaw, 0);
 
-		const FVector direction = FRotationMatrix(yawRotation).GetUnitAxis(EAxis::X); // 행렬의 x축
-		AddMovementInput(direction, InValue);
+			const FVector direction = FRotationMatrix(yawRotation).GetUnitAxis(EAxis::X); // 행렬의 x축
+			AddMovementInput(direction, InValue);
+		}
 	}
 }
 
 void ACPlayerCharacter::MoveRight(float InValue)
 {
-	if (IsValid(GetController<ACPlayerController>()) && InValue != 0.0f)
+	if (Montage->GetCanMove())
 	{
-		// 컨트롤러의 Yaw 값
-		const FRotator rotation = GetController<ACPlayerController>()->GetControlRotation();
-		const FRotator yawRotation(0, rotation.Yaw, 0);
+		if (IsValid(GetController<ACPlayerController>()) && InValue != 0.0f)
+		{
+			// 컨트롤러의 Yaw 값
+			const FRotator rotation = GetController<ACPlayerController>()->GetControlRotation();
+			const FRotator yawRotation(0, rotation.Yaw, 0);
 
-		const FVector direction = FRotationMatrix(yawRotation).GetUnitAxis(EAxis::Y); // 행렬의 y축
-		AddMovementInput(direction, InValue);
+			const FVector direction = FRotationMatrix(yawRotation).GetUnitAxis(EAxis::Y); // 행렬의 y축
+			AddMovementInput(direction, InValue);
+		}		
 	}
 }
 
@@ -381,6 +387,7 @@ void ACPlayerCharacter::OnEvade()
 			Sound->PlayEvadeSound(); // 사운드 실행
 
 			FVector direction; // 구르기 방향
+			
 			// MontageType에 따라 방향 결정
 			switch (montageType)
 			{
@@ -564,11 +571,16 @@ void ACPlayerCharacter::OnAbility01()
 		{
 			AbilityType = EAbilityType::FireSword;
 		}
+		else if(WeaponType == EWeaponType::Bow)
+		{
+			AbilityType = EAbilityType::FireArrow;
+		}
 
 		if (EquipAbilityDataMaps.Contains(AbilityType))
 		{
 			// Update MansBar
-			float mana = UseStatusData.Mana - EquipAbilityDataMaps.Find(AbilityType)->Ability->GetManaCost();
+			UseStatusData.Mana -= EquipAbilityDataMaps.Find(AbilityType)->Ability->GetManaCost();
+			float mana = UseStatusData.Mana;
 			UpdateMana(mana, UseStatusData.MaxMana);
 
 			EquipAbilityDataMaps.Find(AbilityType)->Ability->OnActivation();
@@ -587,8 +599,20 @@ void ACPlayerCharacter::OnAbility02()
 		{
 			AbilityType = EAbilityType::RangeAttack;
 		}
+		else if(WeaponType == EWeaponType::Bow)
+		{
+			AbilityType = EAbilityType::ExplosionArrow;
+		}
 
-		// TODO : Ability 쿨다운, 마나 코스트 
+		if (EquipAbilityDataMaps.Contains(AbilityType))
+		{
+			// Update MansBar
+			UseStatusData.Mana -= EquipAbilityDataMaps.Find(AbilityType)->Ability->GetManaCost();
+			float mana = UseStatusData.Mana;
+			UpdateMana(mana, UseStatusData.MaxMana);
+
+			EquipAbilityDataMaps.Find(AbilityType)->Ability->OnActivation();
+		}
 	}
 
 }
@@ -603,8 +627,20 @@ void ACPlayerCharacter::OnAbility03()
 		{
 			AbilityType = EAbilityType::TakeDown;
 		}
+		else if(WeaponType == EWeaponType::Bow)
+		{
+			AbilityType = EAbilityType::PenetratingArrow;
+		}
 
-		// TODO : Ability 쿨다운, 마나 코스트 
+		if (EquipAbilityDataMaps.Contains(AbilityType))
+		{
+			// Update MansBar
+			UseStatusData.Mana -= EquipAbilityDataMaps.Find(AbilityType)->Ability->GetManaCost();
+			float mana = UseStatusData.Mana;
+			UpdateMana(mana, UseStatusData.MaxMana);
+
+			EquipAbilityDataMaps.Find(AbilityType)->Ability->OnActivation();
+		}
 	}
 
 }
@@ -619,8 +655,20 @@ void ACPlayerCharacter::OnAbility04()
 		{
 			AbilityType = EAbilityType::Star;
 		}
+		else if(WeaponType == EWeaponType::Bow)
+		{
+			AbilityType = EAbilityType::RainArrow;
+		}
 
-		// TODO : Ability 쿨다운, 마나 코스트 
+		if (EquipAbilityDataMaps.Contains(AbilityType))
+		{
+			// Update MansBar
+			UseStatusData.Mana -= EquipAbilityDataMaps.Find(AbilityType)->Ability->GetManaCost();
+			float mana = UseStatusData.Mana;
+			UpdateMana(mana, UseStatusData.MaxMana);
+
+			EquipAbilityDataMaps.Find(AbilityType)->Ability->OnActivation();
+		}
 	}
 	
 }

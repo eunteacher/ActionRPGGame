@@ -11,5 +11,12 @@ class ACTIONRPGGAME_API ACAbility_RangeAttack : public ACAbility
 
 public:
 	ACAbility_RangeAttack();
+
+	virtual void Tick(float DeltaSeconds) override;
+
+	virtual void OnActivation() override;
+	virtual void OnProgress() override;
+	virtual void OnDeActivation() override;
+
 	
 };

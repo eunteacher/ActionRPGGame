@@ -1,5 +1,10 @@
 #include "CGameInstance.h"
 
+#include "Characters/CBaseCharacter.h"
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetTextLibrary.h"
+#include "Widgets/CDamageText.h"
+
 UCGameInstance::UCGameInstance()
 {
 	// Sound Data Table
@@ -32,6 +37,29 @@ UCGameInstance::UCGameInstance()
 	{
 		StatusTable = statusTableAsset.Object;
 	}
+
+	// Blueprint'/Game/Widgets/Blueprints/BP_CDamageText.BP_CDamageText'
+	ConstructorHelpers::FClassFinder<ACDamageText> damageTextClass(TEXT("Blueprint'/Game/Widgets/Blueprints/BP_CDamageText.BP_CDamageText_C'"));
+	if(damageTextClass.Succeeded())
+	{
+		DamageTextClass = damageTextClass.Class;
+	}
+}
+
+void UCGameInstance::SpawnDamageText(FVector InLocation, ACBaseCharacter* InHitCharacter, float InDamage, bool InIsDamageEffect)
+{
+	// Spawn DamageText 
+	FTransform transform;
+	transform.SetLocation(InLocation);
+	ACDamageText* damageText = GetWorld()->SpawnActorDeferred<ACDamageText>(DamageTextClass, transform, InHitCharacter);
+	UGameplayStatics::FinishSpawningActor(damageText, transform);
+	bool isPlayer = InHitCharacter->GetStatusType() == EStatusType::Player ? true : false;
+	damageText->SetDamageText(UKismetTextLibrary::Conv_FloatToText(InDamage, ERoundingMode::HalfFromZero), isPlayer, InIsDamageEffect);
+}
+
+TSubclassOf<ACDamageText> UCGameInstance::GetDamageTextClass()
+{
+	return DamageTextClass;
 }
 
 UDataTable* UCGameInstance::ReadSoundTable()

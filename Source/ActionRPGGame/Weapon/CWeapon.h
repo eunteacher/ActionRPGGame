@@ -19,6 +19,8 @@ class ACTIONRPGGAME_API ACWeapon : public AActor
 public:
 	// 생성자	
 	ACWeapon();
+
+	// Tick 
 	virtual void Tick(float DeltaSeconds) override;
 
 	// 무기 장착 몽타주 실행 및 무기 장착 여부 설정
@@ -45,11 +47,18 @@ public:
 	// OnFire 함수, Projectile을 스폰하고 발사한다.
 	virtual void OnFire();
 
+	// Spawn DamageText Widget
+	void SpawnDamageText(FVector InLocation, class ACBaseCharacter* InHitCharacter, float InDamage, bool InIsDamageEffect = false);
+
+	// 무기의 StaticMesh 반환
 	virtual void GetStaticMeshComponent(UStaticMeshComponent*& OutStaticMeshComponent);
 	
 	EMontageType GetHitMontageType() const;
 	
 	UTexture2D* GetWeaponIcon() { return WeaponIcon; }
+
+	float GetWeaponDamage() { return WeaponDamage; }
+	void SetWeaponDamage(float InDamage) { WeaponDamage = InDamage; }
 protected:
 	// BeginPlay
 	virtual void BeginPlay() override;
@@ -60,7 +69,7 @@ protected:
 	
 	// Weapon Type
 	UPROPERTY(VisibleDefaultsOnly, Category = "UserSetting")
-	EWeaponType Weapon;
+	EWeaponType WeaponType;
 
 	// Attack Type, 공격의 Type
 	UPROPERTY(VisibleDefaultsOnly, Category = "UserSetting")
@@ -70,14 +79,9 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly, Category = "UserSetting")
 	UDataTable* WeaponTable;
 
+	// Weapon Icon
 	UPROPERTY(VisibleDefaultsOnly, Category = "UserSetting")
 	UTexture2D* WeaponIcon;
-	
-	UPROPERTY(VisibleDefaultsOnly, Category = "UserSetting")
-	TSubclassOf<ACDamageText> DamageTextClass;
-
-	UPROPERTY(VisibleDefaultsOnly, Category = "UserSetting")
-	TArray<EAbilityType> OwningAbilities;
 	
 	// 사용할 Weapon Data, 공격 형태가 하나가 아닐 수 있기 때문에 TMap으로 구현
 	UPROPERTY(VisibleDefaultsOnly, Category = "UserSetting")
@@ -85,4 +89,6 @@ protected:
 
 	bool IsEquip; // 무기 장착 유무
 	bool IsAttack; // 공격 실행 여부
+
+	float WeaponDamage; // 무기의 기본 Damage
 };

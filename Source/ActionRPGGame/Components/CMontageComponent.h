@@ -17,12 +17,17 @@ public:
 	// 생성자
 	UCMontageComponent();
 	// 몽타주 실행
-	void PlayMontage(const EMontageType InMontageType);
+	void PlayMontage(const EMontageType InMontageType, bool InCanMove = false);
 
+	bool GetCanMove() { return CanMove; }
 protected:
 	// BeingPlay
 	virtual void BeginPlay() override;
 
 private:
 	TMap<EMontageType, FUseMontageData> UseMontageDataMaps; // Montage Data Maps
+
+	FTimerHandle TimerHandle;
+	bool CanMove;
+	
 };

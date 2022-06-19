@@ -6,8 +6,6 @@
 #include "Components/CMontageComponent.h"
 #include "Components/CSoundComponent.h"
 #include "Kismet/KismetTextLibrary.h"
-#include "Types/CDamageType.h"
-#include "Widgets/CDamageText.h"
 
 ACWeapon_Near::ACWeapon_Near()
 {
@@ -17,23 +15,6 @@ ACWeapon_Near::ACWeapon_Near()
 	TraceType = ETraceTypeQuery::TraceTypeQuery2;
 }
 
-void ACWeapon_Near::BeginPlay()
-{
-	Super::BeginPlay();
-	
-	
-}
-
-void ACWeapon_Near::Tick(float DeltaSeconds)
-{
-	Super::Tick(DeltaSeconds);
-
-	if(IsAttack)
-	{
-		OnSphereTrace();
-	}
-}
-
 void ACWeapon_Near::OnReset()
 {
 	Super::OnReset();
@@ -41,7 +22,7 @@ void ACWeapon_Near::OnReset()
 	CanCombo = false;
 	IsAttack = false;
 	AttackType = EAttackType::Near_Combo1;
-	HittedActors.Empty();
+	HitActors.Empty();
 }
 
 void ACWeapon_Near::OnAttack()
@@ -113,57 +94,6 @@ void ACWeapon_Near::ComboAttack()
 	}
 }
 
-void ACWeapon_Near::OnSphereTrace()
-{
-	// StaticMesh에 소켓을 추가해야한다.
-	FVector start = WeaponStaticMesh->GetSocketLocation("Socket1");
-	FVector end = WeaponStaticMesh->GetSocketLocation("Socket2");
-	TArray<AActor*> ActorToIgnore;
-	ActorToIgnore.Add(GetOwner());
-	FHitResult hit;
-
-	// SphereTrace 시작
-	if(UKismetSystemLibrary::SphereTraceSingle(GetWorld(), start, end, 5.0f, TraceType, false, ActorToIgnore, DrawDebugType, hit, true))
-	{
-		// HittedActors에 없는 경우, 즉 중복 데미지 방지
-		if(!HittedActors.Contains(hit.GetActor()))
-		{
-			HittedActors.Add(hit.GetActor());
-			ACBaseCharacter* hitCharacter = Cast<ACBaseCharacter>(hit.GetActor());
-			if (IsValid(hitCharacter))
-			{	
-				// Spwan Effect
-				if(IsValid(UseWeaponDataMaps.Find(AttackType)->HitNiagaraEffect))
-				{
-					UNiagaraFunctionLibrary::SpawnSystemAtLocation
-					(
-						GetWorld(),
-						UseWeaponDataMaps.Find(AttackType)->HitNiagaraEffect,
-						hit.ImpactPoint,
-						hit.ImpactNormal.Rotation()
-					);
-				}
-
-				// Spawn DamageText 
-				FTransform transform;
-				transform.SetLocation(hit.ImpactPoint);
-				ACDamageText* damageText = GetWorld()->SpawnActorDeferred<ACDamageText>(DamageTextClass, transform, hitCharacter);
-				UGameplayStatics::FinishSpawningActor(damageText, transform);
-				bool isPlayer = hitCharacter->GetStatusType() == EStatusType::Player ? true : false;
-				damageText->SetDamageText(UKismetTextLibrary::Conv_FloatToText(UseWeaponDataMaps.Find(AttackType)->Damage, ERoundingMode::HalfFromZero), isPlayer);
-
-				// TakeDamage
-				FDamageEvent damageEvent(UCDamageType::StaticClass());
-				hitCharacter->TakeDamage(UseWeaponDataMaps.Find(AttackType)->Damage, damageEvent, hitCharacter->GetController(), this);
-			}
-		}
-	}
-	else
-	{
-		HittedActors.Empty();
-	}
-}
-
 void ACWeapon_Near::LaunchAttacker()
 {
 	FLatentActionInfo info;
@@ -186,5 +116,50 @@ void ACWeapon_Near::LaunchAttacker()
 		info
 	);
 }
+
+void ACWeapon_Near::OnSphereTrace(FVector InStartLocation, FVector InEndLocation)
+{
+	TArray<AActor*> ActorToIgnore;
+	ActorToIgnore.Add(GetOwner());
+	FHitResult hit;
+
+	// SphereTrace 시작
+	if(UKismetSystemLibrary::SphereTraceSingle(GetWorld(), InStartLocation, InEndLocation, TraceRadius, TraceType, false, ActorToIgnore, DrawDebugType, hit, true))
+	{
+		// HitActors에 없는 경우, 즉 중복 데미지 방지
+		if(!HitActors.Contains(hit.GetActor()))
+		{
+			HitActors.Add(hit.GetActor());
+			ACBaseCharacter* hitCharacter = Cast<ACBaseCharacter>(hit.GetActor());
+			if (IsValid(hitCharacter))
+			{	
+				// Spwan Effect
+				if(IsValid(UseWeaponDataMaps.Find(AttackType)->HitNiagaraEffect))
+				{
+					UNiagaraFunctionLibrary::SpawnSystemAtLocation
+					(
+						GetWorld(),
+						UseWeaponDataMaps.Find(AttackType)->HitNiagaraEffect,
+						hit.ImpactPoint,
+						hit.ImpactNormal.Rotation()
+					);
+				}
+
+				float damage = WeaponDamage + WeaponDamage * UseWeaponDataMaps.Find(AttackType)->Damage;
+
+				SpawnDamageText(hit.ImpactPoint, hitCharacter, damage);
+
+				// TakeDamage
+				FDamageEvent damageEvent;
+				hitCharacter->TakeDamage(damage, damageEvent, hitCharacter->GetController(), this);
+			}
+		}
+	}
+	else
+	{
+		HitActors.Empty();
+	}
+}
+
 
 

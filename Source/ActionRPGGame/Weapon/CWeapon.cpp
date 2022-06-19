@@ -1,9 +1,9 @@
 #include "Weapon/CWeapon.h"
 #include "ActionRPGGame.h"
+#include "CGameInstance.h"
 #include "Characters/CBaseCharacter.h"
 #include "Components/CMontageComponent.h"
 #include "Types/CEnumTypes.h"
-#include "Widgets/CDamageText.h"
 
 ACWeapon::ACWeapon()
 {
@@ -16,13 +16,6 @@ ACWeapon::ACWeapon()
 	// 컴포넌트 생성 및 초기화
 	Root = CreateDefaultSubobject<USceneComponent>("Root");
 	SetRootComponent(Root);
-
-	// Blueprint'/Game/Widgets/Blueprints/BP_CDamageText.BP_CDamageText'
-	ConstructorHelpers::FClassFinder<ACDamageText> damageTextClass(TEXT("Blueprint'/Game/Widgets/Blueprints/BP_CDamageText.BP_CDamageText_C'"));
-	if(damageTextClass.Succeeded())
-	{
-		DamageTextClass = damageTextClass.Class;
-	}
 }
 
 void ACWeapon::GetStaticMeshComponent(UStaticMeshComponent*& OutStaticMeshComponent)
@@ -33,6 +26,25 @@ void ACWeapon::GetStaticMeshComponent(UStaticMeshComponent*& OutStaticMeshCompon
 void ACWeapon::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if(IsValid(WeaponTable))
+	{
+		// 데이터 테이블의 데이터를 읽어와서 저장
+		TArray<FWeaponData*> weaponDatas;
+		WeaponTable->GetAllRows<FWeaponData>("", weaponDatas);
+		for (FWeaponData* data : weaponDatas)
+		{
+			FUseWeaponData useWeaponData;
+			useWeaponData.MontageType = data->MontageType;
+			useWeaponData.Damage = data->Damage;
+			useWeaponData.LaunchValue = data->LaunchValue;
+			useWeaponData.HitStopTime = data->HitStopTime;
+			useWeaponData.HitMontageType = data->HitMontageType;
+			useWeaponData.HitNiagaraEffect = data->HitNiagaraEffect;
+			useWeaponData.ShakeClass = data->ShakeClass;
+			UseWeaponDataMaps.Add(data->AttackType, useWeaponData);
+		}
+	}
 
 }
 
@@ -49,18 +61,18 @@ void ACWeapon::OnEquip()
 		// 무기를 소유한 캐릭터의 Montage 컴포넌트\를 가져온다.
 		UCMontageComponent* montage = Cast<UCMontageComponent>(GetOwner<ACBaseCharacter>()->GetComponentByClass(UCMontageComponent::StaticClass()));
 		// 무기가 장착되어 있지 않고, WeaponType이 캐릭터의 WeaponType과 같을 경우
-		if (GetOwner<ACBaseCharacter>()->GetWeaponType() == Weapon) 
+		if (GetOwner<ACBaseCharacter>()->GetWeaponType() == WeaponType) 
 		{
 			IsEquip = true; // 무기 장착 여부 true
 			
 			if (IsValid(montage))
 			{
 				// WeaponType에 맞게 몽타주 실행
-				if (Weapon == EWeaponType::Sword)
+				if (WeaponType == EWeaponType::Sword)
 				{
 					montage->PlayMontage(EMontageType::Equip_Sword);
 				}
-				else if (Weapon == EWeaponType::Bow)
+				else if (WeaponType == EWeaponType::Bow)
 				{
 					montage->PlayMontage(EMontageType::Equip_Bow);
 				}
@@ -76,18 +88,18 @@ void ACWeapon::OnUnEquip()
 	{
 		UCMontageComponent* montage = Cast<UCMontageComponent>(GetOwner<ACBaseCharacter>()->GetComponentByClass(UCMontageComponent::StaticClass()));
 		// 무기가 장착되어 있고, WeaponType이 캐릭터의 WeaponType과 같을 경우
-		if (IsEquip && GetOwner<ACBaseCharacter>()->GetWeaponType() == Weapon)
+		if (IsEquip && GetOwner<ACBaseCharacter>()->GetWeaponType() == WeaponType)
 		{
 			IsEquip = false; // 무기 장착 여부 false
 			// 무기를 소유한 캐릭터의 Montage 컴포넌트를 가져온다.
 			if (IsValid(montage))
 			{
 				// WeaponType에 맞게 몽타주 실행
-				if (Weapon == EWeaponType::Sword)
+				if (WeaponType == EWeaponType::Sword)
 				{
 					montage->PlayMontage(EMontageType::UnEquip_Sword);
 				}
-				else if (Weapon == EWeaponType::Bow)
+				else if (WeaponType == EWeaponType::Bow)
 				{
 					montage->PlayMontage(EMontageType::UnEquip_Bow);
 				}
@@ -126,6 +138,11 @@ void ACWeapon::OffAim()
 void ACWeapon::OnFire()
 {
 	// 자식 클래스에서 정의
+}
+
+void ACWeapon::SpawnDamageText(FVector InLocation, ACBaseCharacter* InHitCharacter, float InDamage, bool InIsDamageEffect)
+{
+	GetGameInstance<UCGameInstance>()->SpawnDamageText(InLocation, InHitCharacter, InDamage, InIsDamageEffect);
 }
 
 EMontageType ACWeapon::GetHitMontageType() const

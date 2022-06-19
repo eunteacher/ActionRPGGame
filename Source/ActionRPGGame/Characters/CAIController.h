@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
+#include "Perception/AIPerceptionTypes.h"
 #include "CAIController.generated.h"
 
 // 전방 선언
@@ -16,11 +17,19 @@ public:
 	// 생성자
 	ACAIController();
 
+	ACBaseCharacter* GetTarget();
+
+	void SetDistanceToTarget(float InDistance);
+	void SetFindTarget(bool InFindTarget);
+
 protected:
 	virtual void BeginPlay() override;
 
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void OnUnPossess() override;
+
+	UFUNCTION()
+	void OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus);
 
 	UPROPERTY(VisibleDefaultsOnly, Category = "Component")
 	UAIPerceptionComponent* Perception;

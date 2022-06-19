@@ -6,7 +6,6 @@
 #include "Components/CFootStepSoundComponent.h"
 #include "Components/CSoundComponent.h"
 #include "Components/CMontageComponent.h"
-#include "Types/CDamageType.h"
 #include "Weapon/CWeapon.h"
 
 // 생성자
@@ -79,6 +78,11 @@ void ACBaseCharacter::OnDead()
 	Destroy();
 }
 
+bool ACBaseCharacter::GetAlive()
+{
+	return UseStatusData.Health > 0.0f ? true : false;
+}
+
 // Tick
 void ACBaseCharacter::Tick(float DeltaTime)
 {
@@ -106,7 +110,6 @@ void ACBaseCharacter::Landed(const FHitResult& Hit)
 float ACBaseCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	float damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	UCDamageType* damageType = Cast<UCDamageType>(DamageEvent.DamageTypeClass->GetDefaultObject());
 
 	return damage;
 }

@@ -20,12 +20,12 @@ void UCBTTaskNode_Patrol::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 
 	// 컨트롤러를 가져온다.
-	ACAIController* controller = Cast<ACAIController>(OwnerComp.GetOwner());
+	ACAIController* controller = OwnerComp.GetOwner<ACAIController>();
 	
 	if(IsValid(controller))
 	{
 		// 가져온 컨트롤러로 OwnerCharcter를 가져온다.
-		ACBaseCharacter* ownerCharacter = Cast<ACBaseCharacter>(controller->GetPawn());
+		ACBaseCharacter* ownerCharacter = controller->GetPawn<ACBaseCharacter>();
 		if(IsValid(ownerCharacter))
 		{
 			// OwnerCharacter의 Patrol 컴포넌트를 가져온다.

@@ -11,5 +11,7 @@ class ACTIONRPGGAME_API ACAIController_Grunting : public ACAIController
 	
 public:
 	ACAIController_Grunting();
+
+	
 	
 };

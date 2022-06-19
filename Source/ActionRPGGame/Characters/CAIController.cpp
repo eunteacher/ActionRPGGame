@@ -27,10 +27,10 @@ ACAIController::ACAIController()
 
 	// AISenseConfig_Sight 생성 및 초기화
 	Sight = CreateDefaultSubobject<UAISenseConfig_Sight>("Sight");
-	Sight->SightRadius = 2000.0f;
-	Sight->LoseSightRadius = 2000.0f;
-	Sight->PeripheralVisionAngleDegrees = 120.0f;
-	Sight->SetMaxAge(2.0f);
+	Sight->SightRadius = 3000.0f;
+	Sight->LoseSightRadius = 3500.0f;
+	Sight->PeripheralVisionAngleDegrees = 90.0f;
+	Sight->SetMaxAge(0.0f);
 	
 	// Perception 설정
 	Perception->ConfigureSense(*Sight);
@@ -39,6 +39,24 @@ ACAIController::ACAIController()
 	Sight->DetectionByAffiliation.bDetectEnemies = true;
 	Sight->DetectionByAffiliation.bDetectFriendlies = false;
 	Sight->DetectionByAffiliation.bDetectNeutrals = false;
+}
+
+ACBaseCharacter* ACAIController::GetTarget()
+{
+	FName keyName = "Target";
+	return Cast<ACBaseCharacter>(Blackboard->GetValueAsObject(keyName));
+}
+
+void ACAIController::SetDistanceToTarget(float InDistance)
+{
+	FName keyName = "DistanceToTarget";
+	Blackboard->SetValueAsFloat(keyName, InDistance);
+}
+
+void ACAIController::SetFindTarget(bool InFindTarget)
+{
+	FName keyName = "FindTarget";
+	Blackboard->SetValueAsBool(keyName, InFindTarget);
 }
 
 void ACAIController::BeginPlay()
@@ -61,13 +79,22 @@ void ACAIController::OnPossess(APawn* InPawn)
 	OwnerCharacter = Cast<ACBaseCharacter>(InPawn);
 	SetGenericTeamId(OwnerCharacter->GetGenericTeamId());
 
-	// Perception->OnPerceptionUpdated.AddDynamic(this, &ACAIController::OnPerceptionUpdated);
-
-	// UseBlackboard(BehaviorTree->BlackboardAsset, Blackboard);
-	// RunBehaviorTree(BehaviorTree);
+	Perception->OnTargetPerceptionUpdated.AddDynamic(this, &ACAIController::OnTargetPerceptionUpdated);
 }
 
 void ACAIController::OnUnPossess()
 {
 	Super::OnUnPossess();
+}
+
+void ACAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus)
+{
+	if(Cast<ACBaseCharacter>(Actor)->GetStatusType() == EStatusType::Player && Stimulus.WasSuccessfullySensed())
+	{
+		Blackboard->SetValueAsObject("Target", Cast<ACBaseCharacter>(Actor));
+	}
+	else
+	{
+		Blackboard->SetValueAsObject("Target", nullptr);
+	}
 }

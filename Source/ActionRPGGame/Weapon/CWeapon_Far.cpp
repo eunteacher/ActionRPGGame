@@ -50,7 +50,7 @@ void ACWeapon_Far::OnAttack()
 		UCMontageComponent* montage = Cast<UCMontageComponent>(GetOwner<ACBaseCharacter>()->GetComponentByClass(UCMontageComponent::StaticClass()));
 		if(IsValid(montage))
 		{
-			montage->PlayMontage(UseWeaponDataMaps.Find(AttackType)->MontageType);
+			montage->PlayMontage(UseWeaponDataMaps.Find(AttackType)->MontageType, true);
 		}
 	}
 }
@@ -69,7 +69,7 @@ void ACWeapon_Far::OnReset()
 			AttackType = EAttackType::Far_OverDraw;
 			if(UseWeaponDataMaps.Contains(AttackType))
 			{
-				montage->PlayMontage(UseWeaponDataMaps.Find(AttackType)->MontageType);
+				montage->PlayMontage(UseWeaponDataMaps.Find(AttackType)->MontageType, true);
 			}
 		}
 	}
@@ -94,7 +94,7 @@ void ACWeapon_Far::OnAim()
 		UCMontageComponent* montage = Cast<UCMontageComponent>(GetOwner<ACBaseCharacter>()->GetComponentByClass(UCMontageComponent::StaticClass()));
 		if (IsValid(montage) && UseWeaponDataMaps.Contains(AttackType))
 		{
-			montage->PlayMontage(UseWeaponDataMaps.Find(AttackType)->MontageType);
+			montage->PlayMontage(UseWeaponDataMaps.Find(AttackType)->MontageType, true);
 		}
 
 		// TODO : 커브로 변경하기

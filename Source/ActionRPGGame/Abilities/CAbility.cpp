@@ -1,5 +1,6 @@
 #include "CAbility.h"
 #include "ActionRPGGame.h"
+#include "CGameInstance.h"
 #include "Characters/CBaseCharacter.h"
 #include "Characters/CPlayerController.h"
 #include "Weapon/CWeapon.h"
@@ -11,6 +12,9 @@ ACAbility::ACAbility()
 
 	IsAvailable = true;
 	IsActivation = false;
+
+	DrawDebugType = EDrawDebugTrace::ForOneFrame;
+	TraceType = ETraceTypeQuery::TraceTypeQuery2;
 }
 
 void ACAbility::InitAbility(ACBaseCharacter* InOwnerCharacter, ACWeapon* InOwnerWeapon)
@@ -24,9 +28,9 @@ void ACAbility::OnActivation()
 	CLog::Log("ACAbility OnActivation");
 }
 
-void ACAbility::OnNotify()
+void ACAbility::OnProgress()
 {
-	CLog::Log("ACAbility OnNotify");
+	CLog::Log("ACAbility OnProgress");
 }
 
 void ACAbility::OnDeActivation()
@@ -36,7 +40,12 @@ void ACAbility::OnDeActivation()
 
 void ACAbility::SetIsAvailable(bool InIsAvailable)
 {
-	IsAvailable = InIsAvailable;
 	CLog::Print(FString("SetIsAvailable"));
+	IsAvailable = InIsAvailable;
+}
+
+void ACAbility::SpawnDamageText(FVector InLocation, ACBaseCharacter* InHitCharacter, float InDamage, bool InIsDamageEffect)
+{
+	GetGameInstance<UCGameInstance>()->SpawnDamageText(InLocation, InHitCharacter, InDamage, InIsDamageEffect);
 }
 

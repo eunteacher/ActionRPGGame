@@ -25,7 +25,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	// Projectile Hit 정보 초기화 
-	void InitHitInfo(float& InDamage, float& InLaunchValue, UNiagaraSystem* InHitNiagaraEffect, TSubclassOf<ACDamageText>& InDamageTextClass, bool InIsAttach = false);
+	void InitHitInfo(float& InDamage, UNiagaraSystem* InHitNiagaraEffect, bool InIsAttach = false);
 
 	UPROPERTY(EditAnywhere, Category = "Trace")
 	TEnumAsByte<EDrawDebugTrace::Type> DrawDebugType;
@@ -36,25 +36,17 @@ protected:
 	// Beginplay
 	virtual void BeginPlay() override;
 
-	void OnSphereTrace();
-	void OnAttach(class ACBaseCharacter* InHitCharacter, FName InSocketName);
-	void OnAttach(AActor* InHitActor, FVector InAttachLoaction);
+	void OnSphereTrace(FVector InStartLocation, FVector InEndLocation);
+	virtual void OnAttach(class ACBaseCharacter* InHitCharacter, FName InSocketName);
+	virtual void OnAttach(AActor* InHitActor, FVector InAttachLoaction);
 	
 	// Scene 컴포넌트, 루트 컴포넌트
 	UPROPERTY(VisibleDefaultsOnly, Category = "Component")
 	USceneComponent* Root;
 
-	// StaticMesh 컴포넌트, Projectile의 Mesh
-	UPROPERTY(VisibleDefaultsOnly, Category = "Component")
-	UStaticMeshComponent* StaticMesh;
-
 	// Projectile 컴포넌트
 	UPROPERTY(VisibleDefaultsOnly, Category = "Component")
 	UProjectileMovementComponent* Projectile;
-
-	// ParticleSystem 컴포넌트
-	UPROPERTY(VisibleDefaultsOnly,Category = "Component")
-	UParticleSystemComponent* ProjectileTrail;
 
 	UPROPERTY(VisibleDefaultsOnly,Category = "LifeTime")
 	float LifeTime; // Projectile이 존재하는 시간
@@ -82,6 +74,7 @@ protected:
 	TSubclassOf<ACDamageText> DamageTextClass;
 
 	// 이미 공격받은 Actors
-	TArray<AActor*> HittedActors;
+	UPROPERTY()
+	TArray<AActor*> HitActors;
 };
 

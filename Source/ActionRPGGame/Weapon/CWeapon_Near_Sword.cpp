@@ -1,15 +1,19 @@
 #include "Weapon/CWeapon_Near_Sword.h"
 #include "ActionRPGGame.h"
+#include "NiagaraFunctionLibrary.h"
+#include "Characters/CBaseCharacter.h"
 
 // 생성자
 ACWeapon_Near_Sword::ACWeapon_Near_Sword()
 {
 	// WeaponType 초기화
-	Weapon = EWeaponType::Sword;
+	WeaponType = EWeaponType::Sword;
+	WeaponDamage = 30.0f;
+	TraceRadius = 10.0f;
 
 	// 컴포넌트 생성
-	WeaponStaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("StaticMesh");
-	WeaponStaticMesh->SetupAttachment(Root);
+	SwordStaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("WeaponStaticMesh");
+	SwordStaticMesh->SetupAttachment(Root);
 
 	// StaticMesh 초기화
 	// StaticMesh'/Game/Weapons/Meshes/SM_sword.SM_sword'
@@ -17,8 +21,8 @@ ACWeapon_Near_Sword::ACWeapon_Near_Sword()
 	if(staticMeshAsset.Succeeded())
 	{
 		UStaticMesh* staticMesh = staticMeshAsset.Object;
-		WeaponStaticMesh->SetStaticMesh(staticMesh);
-		WeaponStaticMesh->SetCollisionProfileName("NoCollision");
+		SwordStaticMesh->SetStaticMesh(staticMesh);
+		SwordStaticMesh->SetCollisionProfileName("NoCollision");
 	}
 	
 	// Weapon Data Table
@@ -38,34 +42,24 @@ ACWeapon_Near_Sword::ACWeapon_Near_Sword()
 
 }
 
-// BeginPlay
-void ACWeapon_Near_Sword::BeginPlay()
+void ACWeapon_Near_Sword::Tick(float DeltaSeconds)
 {
-	Super::BeginPlay();
+	Super::Tick(DeltaSeconds);
 
-	if(IsValid(WeaponTable))
+	if(IsAttack)
 	{
-		// 데이터 테이블의 데이터를 읽어와서 저장
-		TArray<FWeaponData*> weaponDatas;
-		WeaponTable->GetAllRows<FWeaponData>("", weaponDatas);
-		for (FWeaponData* data : weaponDatas)
-		{
-			FUseWeaponData useWeaponData;
-			useWeaponData.MontageType = data->MontageType;
-			useWeaponData.Damage = data->Damage;
-			useWeaponData.LaunchValue = data->LaunchValue;
-			useWeaponData.HitStopTime = data->HitStopTime;
-			useWeaponData.HitMontageType = data->HitMontageType;
-			useWeaponData.HitNiagaraEffect = data->HitNiagaraEffect;
-			useWeaponData.ShakeClass = data->ShakeClass;
-			UseWeaponDataMaps.Add(data->AttackType, useWeaponData);
-		}
+		FVector start = SwordStaticMesh->GetSocketLocation("Start");
+		FVector end = SwordStaticMesh->GetSocketLocation("End");
+		OnSphereTrace(start, end);
 	}
-
 }
 
 void ACWeapon_Near_Sword::GetStaticMeshComponent(UStaticMeshComponent*& OutStaticMeshComponent)
 {
+	Super::GetStaticMeshComponent(OutStaticMeshComponent);
+
 	CLog::Log("ACWeapon_Near_Sword GetStaticMesh");
-	OutStaticMeshComponent = WeaponStaticMesh;
+	OutStaticMeshComponent = SwordStaticMesh;
 }
+
+

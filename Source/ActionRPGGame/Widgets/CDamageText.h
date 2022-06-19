@@ -16,7 +16,7 @@ public:
 	// Tick
 	virtual void Tick(float DeltaTime) override;
 
-	void SetDamageText(FText InText, bool IsPlayer);
+	void SetDamageText(FText InText, bool InIsPlayer, bool InIsDamageEffect = false);
 protected:
 	// BeginPlay
 	virtual void BeginPlay() override;

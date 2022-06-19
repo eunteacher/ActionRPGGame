@@ -1,14 +1,12 @@
 #include "Weapon/CProjectile.h"
 #include "ActionRPGGame.h"
+#include "CWeapon.h"
 #include "Characters/CBaseCharacter.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Components/CMontageComponent.h"
 #include "Kismet/KismetTextLibrary.h"
-#include "Types/CDamageType.h"
-#include "Types/CEnumTypes.h"
-#include "Widgets/CDamageText.h"
 
 ACProjectile::ACProjectile()
 {
@@ -23,65 +21,45 @@ ACProjectile::ACProjectile()
 	// 컴포넌트 생성 및 초기화
 	Root = CreateDefaultSubobject<USceneComponent>("Root");
 	SetRootComponent(Root);
-	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>("StaticMesh");
-	StaticMesh->SetupAttachment(Root);
-	StaticMesh->SetCollisionProfileName("NoCollision");
+
 	Projectile = CreateDefaultSubobject<UProjectileMovementComponent>("Projectile");
-
-	// ParticleSystemComponent 생성 및 초기화
-	ProjectileTrail = CreateDefaultSubobject<UParticleSystemComponent>("ArrowTrail");
-	ProjectileTrail->SetupAttachment(StaticMesh);
-
-	// ParticleSystem'/Game/Effects/Trails/ParticleSystems/PS_ProjectileTrail.PS_ProjectileTrail'
-	const ConstructorHelpers::FObjectFinder<UParticleSystem> projectileTrailParticleSystemAsset(TEXT("ParticleSystem'/Game/Effects/Trails/ParticleSystems/PS_ProjectileTrail.PS_ProjectileTrail'"));
-	if(projectileTrailParticleSystemAsset.Succeeded())
-	{
-		ProjectileTrail->SetTemplate(projectileTrailParticleSystemAsset.Object);
-	}
 }
 
 void ACProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	ProjectileTrail->BeginTrails("Socket1", "Socket2", ETrailWidthMode_FromFirst, 3.0f);
 	SetLifeSpan(LifeTime);
 }
 
 void ACProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	OnSphereTrace();
+	
 }
 
 // Projectile의 필요한 Htited 데이터 초기화 함수
-void ACProjectile::InitHitInfo(float& InDamage, float& InLaunchValue, UNiagaraSystem* InHitNiagaraEffect, TSubclassOf<ACDamageText>& InDamageTextClass, bool InIsAttach)
+void ACProjectile::InitHitInfo(float& InDamage, UNiagaraSystem* InHitNiagaraEffect, bool InIsAttach)
 {
 	Damage = InDamage;
-	LaunchValue = InLaunchValue;
 	HitNiagaraEffect = InHitNiagaraEffect;
-	DamageTextClass = InDamageTextClass;
 	IsAttach = InIsAttach;
 }
 
 // Sphere Trace
 // Spawn Effect, HeadShot 유무, Hit된 Character Laucnch, TakeDamage, Attach
-void ACProjectile::OnSphereTrace()
+void ACProjectile::OnSphereTrace(FVector InStartLocation, FVector InEndLocation)
 {
-	// StaticMesh에 소켓을 추가해야한다.
-	FVector start = StaticMesh->GetSocketLocation("Socket1");
-	FVector end = StaticMesh->GetSocketLocation("Socket2");
 	TArray<AActor*> ActorToIgnore;
 	ActorToIgnore.Add(GetOwner());
 	FHitResult hit;
 
 	// SphereTrace 시작
-	if(UKismetSystemLibrary::SphereTraceSingle(GetWorld(), start, end, 5.0f, TraceType, false, ActorToIgnore, DrawDebugType, hit, true))
+	if(UKismetSystemLibrary::SphereTraceSingle(GetWorld(), InStartLocation, InEndLocation, 5.0f, TraceType, false, ActorToIgnore, DrawDebugType, hit, true))
 	{
 		// HittedActors에 없는 경우, 즉 중복 데미지 방지
-		if(!HittedActors.Contains(hit.GetActor()))
+		if(!HitActors.Contains(hit.GetActor()))
 		{
-			HittedActors.Add(hit.GetActor());
+			HitActors.Add(hit.GetActor());
 			ACBaseCharacter* hitCharacter = Cast<ACBaseCharacter>(hit.GetActor());
 			FName closedBone = hit.BoneName;
 			if (IsValid(hitCharacter))
@@ -107,9 +85,9 @@ void ACProjectile::OnSphereTrace()
 							{
 								min = distance;
 								closedBone = boneName;
-							}
-						}
-					}
+							} // if min > distance
+						} // for boneNames
+					} // if closeBone == "None"
 				}
 
 				// Effect 스폰
@@ -124,16 +102,13 @@ void ACProjectile::OnSphereTrace()
 					);
 				}
 
-				// Spawn DamageText 
-				FTransform transform;
-				transform.SetLocation(hit.ImpactPoint);
-				ACDamageText* damageText = GetWorld()->SpawnActorDeferred<ACDamageText>(DamageTextClass, transform, hitCharacter);
-				UGameplayStatics::FinishSpawningActor(damageText, transform);
-				bool isPlayer = hitCharacter->GetStatusType() == EStatusType::Player ? true : false;
-				damageText->SetDamageText(UKismetTextLibrary::Conv_FloatToText(Damage, ERoundingMode::HalfFromZero), isPlayer);
-
+				if(IsValid(GetOwner<ACWeapon>()))
+				{
+					GetOwner<ACWeapon>()->SpawnDamageText(hit.ImpactPoint, hitCharacter, Damage);
+				}
+				
 				// TakeDamage
-				FDamageEvent damageEvent(UCDamageType::StaticClass());
+				FDamageEvent damageEvent;
 				hitCharacter->TakeDamage(Damage, damageEvent, hitCharacter->GetController(), GetOwner());
 
 				// Attach
@@ -160,8 +135,6 @@ void ACProjectile::OnAttach(ACBaseCharacter* InHitCharacter, FName InSocketName)
 		AttachToComponent(InHitCharacter->GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepWorld, true), InSocketName);
 		// 위치 조정
 		SetActorLocation(InHitCharacter->GetMesh()->GetSocketLocation(InSocketName) + GetActorForwardVector() * -75.0f, false, nullptr, ETeleportType::TeleportPhysics);
-		// 트레일 종료
-		ProjectileTrail->EndTrails();		
 	}
 	else
 	{
@@ -179,8 +152,6 @@ void ACProjectile::OnAttach(AActor* InHitActor, FVector InAttachLoaction)
 		AttachToActor(InHitActor,FAttachmentTransformRules(EAttachmentRule::KeepWorld, true));
 		// HitImpact 위치로 위치를 조정한다.
 		SetActorLocation(InAttachLoaction + GetActorForwardVector() * -40.0f, false, nullptr, ETeleportType::TeleportPhysics);
-		// 트레일 종료
-		ProjectileTrail->EndTrails();		
 	}
 	else
 	{

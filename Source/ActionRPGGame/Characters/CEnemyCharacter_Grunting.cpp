@@ -13,6 +13,7 @@ ACEnemyCharacter_Grunting::ACEnemyCharacter_Grunting()
 	// ModelType 초기화
 	ModelType = EModelType::Grunting;
 	StatusType = EStatusType::Enemy_Grunting;
+	WeaponType = EWeaponType::Hammer;
 	
 	// AIController 설정
 	// Blueprint'/Game/Enemy/Blueprints/Grunting/BP_CAIController_Grunting.BP_CAIController_Grunting'
@@ -113,6 +114,11 @@ void ACEnemyCharacter_Grunting::BeginPlay()
 	// 위젯 활성화
 	HealthBarWidget->InitWidget();
 	Cast<UCUserWidget_BaseProgressBar>(HealthBarWidget->GetWidget())->UpdateValue(UseStatusData.Health, UseStatusData.MaxHealth);
+
+	if(EquipWeaponDataMaps.Contains(WeaponType))
+	{
+		EquipWeaponDataMaps.Find(WeaponType)->Weapon->OnEquip();
+	}
 }
 
 float ACEnemyCharacter_Grunting::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)

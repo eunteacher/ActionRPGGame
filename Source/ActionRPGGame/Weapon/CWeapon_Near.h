@@ -20,8 +20,6 @@ class ACTIONRPGGAME_API ACWeapon_Near : public ACWeapon
 public:
 	// 생성자
 	ACWeapon_Near();
-
-	virtual void Tick(float DeltaSeconds) override;
 	
 	// 공격 실행 함수
 	virtual void OnAttack() override;
@@ -37,24 +35,21 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Trace")
 	TEnumAsByte<ETraceTypeQuery> TraceType;
 
-protected:
-	// BeginPlay()
-	virtual void BeginPlay() override;
+	UPROPERTY(EditAnywhere, Category = "Trace")
+	float TraceRadius;
 
-	// 충돌 검사
-	void OnSphereTrace();
+protected:
+	void OnSphereTrace(FVector InStartLocation, FVector InEndLocation);
 
 	void LaunchAttacker();
-	
-	// StaticMesh 컴포넌트, 무기의 Mesh
-	UPROPERTY(VisibleDefaultsOnly, Category = "Component")
-	UStaticMeshComponent* WeaponStaticMesh;
+
 	
 	// 콤보 공격 여부
 	bool CanCombo;
 
 	// 이미 공격받은 Actors
 	UPROPERTY()
-	TArray<AActor*> HittedActors;
+	TArray<AActor*> HitActors;
+
 
 };

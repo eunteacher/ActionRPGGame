@@ -10,6 +10,10 @@ enum class EAbilityType : uint8
 	TakeDown,
 	RangeAttack,
 	Star,
+	FireArrow,
+	ExplosionArrow,
+	PenetratingArrow,	
+	RainArrow,
 	Max
 };
 
@@ -42,6 +46,7 @@ enum class EWeaponType : uint8
 	Default,
 	Sword,
 	Bow,
+	Hammer,
 	Max
 };
 
@@ -71,6 +76,11 @@ enum class EMontageType : uint8
 	RangeAttack,
 	Star,
 	FireSword,
+	FireArrow,
+	ExplosionArrow,
+	PenetratingArrow,
+	RainArrow,
+	Hammer_Swing,
 	Max
 };
 

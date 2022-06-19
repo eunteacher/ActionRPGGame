@@ -1,5 +1,6 @@
 #include "Characters/CEnemyCharacter.h"
 #include "ActionRPGGame.h"
+#include "Abilities/CAbility.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/CMontageComponent.h"
 #include "Components/CSoundComponent.h"
@@ -36,22 +37,32 @@ float ACEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 {
 	float damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
-	UseStatusData.Health -= damage;
-	Cast<UCUserWidget_BaseProgressBar>(HealthBarWidget->GetWidget())->UpdateValue(UseStatusData.Health, UseStatusData.MaxHealth);
-	
-	if(UseStatusData.Health < 0.0f)
+	if(GetAlive())
 	{
-		// Dead
-		Sound->PlayDeadSound();
-		Montage->PlayMontage(EMontageType::Dead);
-	}
-	else
-	{
-		// Hit
-		Sound->PlayHitSound();
-		Montage->PlayMontage(Cast<ACWeapon>(DamageCauser)->GetHitMontageType());
-	}
+		UseStatusData.Health -= damage;
+		Cast<UCUserWidget_BaseProgressBar>(HealthBarWidget->GetWidget())->UpdateValue(UseStatusData.Health, UseStatusData.MaxHealth);
 	
+		if(UseStatusData.Health < 0.0f)
+		{
+			// Dead
+			Sound->PlayDeadSound();
+			Montage->PlayMontage(EMontageType::Dead);
+		}
+		else
+		{
+			// Hit
+			if(IsValid(Cast<ACWeapon>(DamageCauser)))
+			{
+				Sound->PlayHitSound();
+				Montage->PlayMontage(Cast<ACWeapon>(DamageCauser)->GetHitMontageType());
+			}
+			else if(IsValid(Cast<ACAbility>(DamageCauser)))
+			{
+				// TODO : Burning Animation
+			}
+
+		}		
+	}
 
 	return damage;
 }

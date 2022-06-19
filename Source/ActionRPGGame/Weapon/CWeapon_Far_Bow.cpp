@@ -11,12 +11,14 @@ ACWeapon_Far_Bow::ACWeapon_Far_Bow()
 	PrimaryActorTick.bCanEverTick = true;
 	
 	// WeaponType 초기화
-	Weapon = EWeaponType::Bow;
+	WeaponType = EWeaponType::Bow;
+	WeaponDamage = 50.0f;
 
 
 	// SkeletalMesh 초기화
 	BowSkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>("SkeletalMesh");
 	BowSkeletalMesh->SetupAttachment(Root);
+
 	// SkeletalMesh'/Game/Weapons/Meshes/SK_ElvenBow.SK_ElvenBow'
 	const ConstructorHelpers::FObjectFinder<USkeletalMesh> skeletalMeshAsset(TEXT("SkeletalMesh'/Game/Weapons/Meshes/SK_ElvenBow.SK_ElvenBow'"));
 	if(skeletalMeshAsset.Succeeded())
@@ -86,30 +88,10 @@ void ACWeapon_Far_Bow::BeginPlay()
 	Quiver = GetWorld()->SpawnActorDeferred<ACBowQuiver>(QuiverClass, transform, GetOwner<ACBaseCharacter>());
 	Quiver->AttachToComponent(GetOwner<ACBaseCharacter>()->GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), QuiverSocketName);
 	UGameplayStatics::FinishSpawningActor(Quiver, transform);
-	
-	if(IsValid(WeaponTable))
-	{
-		// 데이터 테이블의 데이터를 읽어와서 저장
-		TArray<FWeaponData*> weaponDatas;
-		WeaponTable->GetAllRows<FWeaponData>("", weaponDatas);
-		for (FWeaponData* data : weaponDatas)
-		{
-			FUseWeaponData useWeaponData;
-			useWeaponData.MontageType = data->MontageType;
-			useWeaponData.Damage = data->Damage;
-			useWeaponData.LaunchValue = data->LaunchValue;
-			useWeaponData.HitStopTime = data->HitStopTime;
-			useWeaponData.HitMontageType = data->HitMontageType;
-			useWeaponData.HitNiagaraEffect = data->HitNiagaraEffect;
-			useWeaponData.ShakeClass = data->ShakeClass;
-			UseWeaponDataMaps.Add(data->AttackType, useWeaponData);
-		}
-	}
 
 	UCAnimInstance_Bow* animInstance_Bow = Cast<UCAnimInstance_Bow>(BowSkeletalMesh->GetAnimInstance());
 	if (IsValid(animInstance_Bow))
 	{
-		CLog::Log("IsValid(animInstance_Bow)");
 		ACBaseCharacter* ownerCharacter = GetOwner<ACBaseCharacter>();
 		animInstance_Bow->InitAnimInstance(ownerCharacter);
 	}
@@ -146,12 +128,11 @@ void ACWeapon_Far_Bow::OnFire()
 
 		// Spawn Projectile
 		ACProjectile* projectile = GetWorld()->SpawnActorDeferred<ACProjectile>(ProjectileClass, transform, this);
+		float damage = WeaponDamage + WeaponDamage * UseWeaponDataMaps.Find(AttackType)->Damage;
 		projectile->InitHitInfo
 		(
-			UseWeaponDataMaps.Find(AttackType)->Damage,
-			UseWeaponDataMaps.Find(AttackType)->LaunchValue,
+			damage,
 			UseWeaponDataMaps.Find(AttackType)->HitNiagaraEffect,
-			DamageTextClass,
 			true
 		);
 		UGameplayStatics::FinishSpawningActor(projectile, transform);

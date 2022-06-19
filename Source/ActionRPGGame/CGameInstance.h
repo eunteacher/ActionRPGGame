@@ -13,13 +13,14 @@ class ACTIONRPGGAME_API UCGameInstance : public UGameInstance
 public:
 	UCGameInstance();
 
+	void SpawnDamageText(FVector InLocation, class ACBaseCharacter* InHitCharacter, float InDamage, bool InIsDamageEffect = false);
+	
+	TSubclassOf<class ACDamageText> GetDamageTextClass();
+
 	UDataTable* ReadSoundTable();
 	UDataTable* ReadMontageTable();
 	UDataTable* ReadFootStepSoundTable();
 	UDataTable* ReadStatusTable();
-
-
-	int32 Index = 0;
 protected:
 	// Sound 컴포넌트에서 사용할 Sound Data Table
 	UPROPERTY(VisibleDefaultsOnly, Category = "DataTable")
@@ -37,7 +38,8 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly, Category = "DataTable")
 	UDataTable* StatusTable;
 
-
+	UPROPERTY(VisibleDefaultsOnly, Category = "UserSetting")
+	TSubclassOf<ACDamageText> DamageTextClass;
 };
 
 

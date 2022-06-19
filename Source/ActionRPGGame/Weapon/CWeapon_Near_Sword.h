@@ -17,8 +17,15 @@ public:
 	// 생성자
 	ACWeapon_Near_Sword();
 
+	virtual void Tick(float DeltaSeconds) override;
+
 	virtual void GetStaticMeshComponent(UStaticMeshComponent*& OutStaticMeshComponent) override;
+
 protected:
-	// BeginPlay
-	virtual void BeginPlay() override;
+
+	// StaticMesh 컴포넌트, 무기의 Mesh
+	UPROPERTY(VisibleDefaultsOnly, Category = "Component")
+	UStaticMeshComponent* SwordStaticMesh;
+
+
 };

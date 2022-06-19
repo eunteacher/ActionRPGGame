@@ -8,10 +8,30 @@ ACAbility_RangeAttack::ACAbility_RangeAttack()
 	MontageType = EMontageType::RangeAttack;
 
 	// Ability Icon 초기화
-	// Texture2D'/Game/Widgets/Textures/Icon/T_SwordAbility02.T_SwordAbility02'
-	const ConstructorHelpers::FObjectFinder<UTexture2D> abilityIconAsset(TEXT("Texture2D'/Game/Widgets/Textures/Icon/T_SwordAbility02.T_SwordAbility02'"));
+	// Texture2D'/Game/Widgets/Textures/Icon/T_RangeAttackIcon.T_RangeAttackIcon'
+	const ConstructorHelpers::FObjectFinder<UTexture2D> abilityIconAsset(TEXT("Texture2D'/Game/Widgets/Textures/Icon/T_RangeAttackIcon.T_RangeAttackIcon'"));
 	if (abilityIconAsset.Succeeded())
 	{
 		AbilityIcon = abilityIconAsset.Object;
 	}
+}
+
+void ACAbility_RangeAttack::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+}
+
+void ACAbility_RangeAttack::OnActivation()
+{
+	Super::OnActivation();
+}
+
+void ACAbility_RangeAttack::OnProgress()
+{
+	Super::OnProgress();
+}
+
+void ACAbility_RangeAttack::OnDeActivation()
+{
+	Super::OnDeActivation();
 }

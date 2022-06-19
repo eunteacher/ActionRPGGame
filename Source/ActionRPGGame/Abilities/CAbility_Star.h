@@ -11,5 +11,12 @@ class ACTIONRPGGAME_API ACAbility_Star : public ACAbility
 
 public:
 	ACAbility_Star();
+
+	virtual void Tick(float DeltaSeconds) override;
+
+	virtual void OnActivation() override;
+	virtual void OnProgress() override;
+	virtual void OnDeActivation() override;
+
 	
 };

@@ -33,9 +33,9 @@ void ACDamageText::BeginPlay()
 	DamageTextWidget->InitWidget();
 }
 
-void ACDamageText::SetDamageText(FText InText, bool IsPlayer)
+void ACDamageText::SetDamageText(FText InText, bool InIsPlayer, bool InIsDamageEffect)
 {
-	Cast<UCUserWidget_DamageText>(DamageTextWidget->GetWidget())->SetDamageText(InText, IsPlayer);
+	Cast<UCUserWidget_DamageText>(DamageTextWidget->GetWidget())->SetDamageText(InText, InIsPlayer, InIsDamageEffect);
 }
 
 // Called every frame
